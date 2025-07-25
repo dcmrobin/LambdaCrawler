@@ -1,12 +1,14 @@
 #include "game.h"
-#include <SDL.h>
+#include "Sprites.h"
 
 void game_setup() {
-    // Initialize game state, load resources, etc.
-    // This function can be expanded as needed.
+    for (int i = 0; i < NUM_SPRITES; ++i) {
+        LoadSprite(sprite_names[i], ("assets/" + sprite_names[i] + ".png").c_str());
+    }
 }
 
 void game_loop() {
-    // Game logic goes here
-    // This function can be expanded to include game updates, rendering, etc.
+    // Draw sprite at LOGICAL (100, 100) with automatic scaling
+    // Parameters: (sprite_name, logical_x, logical_y, logical_width, logical_height)
+    DrawSprite("player_idle", 100, 100, 16, 16);
 }

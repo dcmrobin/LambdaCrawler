@@ -1,10 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
+#include "Sprites.h"
 
-#include <stdint.h>
-
-// Game state functions
 void game_setup();
 void game_loop();
-
-#endif
