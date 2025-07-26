@@ -1,14 +1,25 @@
 #include "game.h"
-#include "Sprites.h"
+#include "GFX.h"
+#include "HelperFunctions.h"
+#include "Player.h"
 
 void game_setup() {
-    for (int i = 0; i < NUM_SPRITES; ++i) {
-        LoadSprite(sprite_names[i], ("assets/" + sprite_names[i] + ".png").c_str());
+    for (const auto& name : sprite_names) {
+        LoadSprite(name, ("assets/" + name + ".png").c_str());
     }
 }
 
 void game_loop() {
-    // Draw sprite at LOGICAL (100, 100) with automatic scaling
-    // Parameters: (sprite_name, logical_x, logical_y, logical_width, logical_height)
-    DrawSprite("player_idle", 100, 100, 16, 16);
+    UpdateGame();
+    RenderGame();
+}
+
+void UpdateGame() {
+    UpdateKeyStates();
+    HandlePlayerInput();
+}
+
+void RenderGame() {
+    FillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT, { 20, 20, 20, 255 }); // Clear screen
+    DrawSprite(player.spriteName, player.x, player.y, 16, 16);
 }

@@ -1,0 +1,33 @@
+#pragma once
+
+struct KeyStates {
+  bool upPressed;
+  bool upPressedPrev;
+  bool downPressed;
+  bool downPressedPrev;
+  bool zPressed;
+  bool zPressedPrev;
+  bool xPressed;
+  bool xPressedPrev;
+  bool leftPressed;
+  bool leftPressedPrev;
+  bool rightPressed;
+  bool rightPressedPrev;
+  bool startPressed;
+  bool startPressedPrev;
+};
+
+extern KeyStates keystates;
+
+enum InputKey {
+    KEY_UP,
+    KEY_DOWN,
+    KEY_LEFT,
+    KEY_RIGHT,
+    KEY_Z,
+    KEY_X,
+    KEY_START
+};
+
+void UpdateKeyStates();
+bool IsKeyPressed(InputKey key, bool held);

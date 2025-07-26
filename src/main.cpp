@@ -2,21 +2,14 @@
 #include <SDL.h>
 #include <iostream>
 #include "game.h"
-#include "Sprites.h"
+#include "GFX.h"
 
 // Constants and globals
-const int LOGICAL_WIDTH = 320;    // Game's native resolution (4:3)
+const int LOGICAL_WIDTH = 320;
 const int LOGICAL_HEIGHT = 240;
 SDL_Window* window = nullptr;
 bool is_fullscreen = false;
 SDL_Rect viewport = {0, 0, 0, 0};  // Scaled viewport
-
-// Toggle fullscreen
-void toggle_fullscreen() {
-    is_fullscreen = !is_fullscreen;
-    SDL_SetWindowFullscreen(window, is_fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    SDL_GetWindowSize(window, &viewport.w, &viewport.h);  // Update viewport immediately
-}
 
 // Update viewport to maintain aspect ratio
 void update_viewport() {
@@ -27,13 +20,11 @@ void update_viewport() {
     float window_aspect = (float)window_width / window_height;
 
     if (game_aspect > window_aspect) {
-        // Window is taller (pillarbox)
         viewport.w = window_width;
         viewport.h = (int)(window_width / game_aspect);
         viewport.x = 0;
         viewport.y = (window_height - viewport.h) / 2;
     } else {
-        // Window is wider (letterbox)
         viewport.h = window_height;
         viewport.w = (int)(window_height * game_aspect);
         viewport.x = (window_width - viewport.w) / 2;
@@ -41,6 +32,13 @@ void update_viewport() {
     }
 
     SDL_RenderSetViewport(renderer, &viewport);
+}
+
+// Toggle fullscreen
+void toggle_fullscreen() {
+    is_fullscreen = !is_fullscreen;
+    SDL_SetWindowFullscreen(window, is_fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    update_viewport();
 }
 
 int main(int argc, char* argv[]) {
@@ -99,13 +97,11 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Clear screen (black bars + dark gray game area)
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black bars
+        // Clear screen (black bars or letterboxes)
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);  // Game background
-        SDL_RenderFillRect(renderer, &viewport);
 
-        // Game rendering (uses LOGICAL_WIDTH/HEIGHT coordinates)
+        // Game rendering (in logical 320x240 space)
         game_loop();
 
         SDL_RenderPresent(renderer);
