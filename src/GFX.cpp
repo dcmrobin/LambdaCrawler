@@ -14,6 +14,7 @@ extern SDL_Rect viewport;
 
 std::vector<std::string> sprite_names = {
     "player_idle",
+    "tile",
 };
 
 void Init(SDL_Renderer* ren) {

@@ -52,3 +52,10 @@ bool IsKeyPressed(InputKey key, bool held) {
         }
     }
 }
+
+bool Intersects(Hitbox& current, Hitbox other){
+    return (current.x < other.x + other.width &&
+            current.x + current.width > other.x &&
+            current.y < other.y + other.height &&
+            current.y + current.height > other.y);
+}
