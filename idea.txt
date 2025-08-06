@@ -1,0 +1,13 @@
+Lambda Crawler game plan
+
+This will be a roguelike, where the player is a calculator. The player starts in a hub room, with multiple entrances in it. Each entrance will have a lambda expression (rendered as a diagram) right next to or above it, and the player, once entering one of these, will be transported to a traditional maze of corridors and rooms. Scattered around the place will be enemies, items, and exits. Each level is basically a lambda expression, and each exit will be a beta reduction to that lambda expression- leading to another maze. Each beta reduction will require an amount of Power to perform, and different lambda statements require different amounts of beta reductions to complete- so the player might not be able to finish the lambda expression before running out of power. Maybe there could be power cells which restore some power.
+Another idea is that the player could find little lambda expressions around the level, and then when at the exit, would be able to add that lambda expression chunk to the current lambda expression, potentially completely changing it. Some lambda expressions can be infinitely reduced, so that'll be interesting- maybe there could be a special item that could predict a certain amount of beta reductions into the future?
+
+#ENEMIES#
+These could be irrational numbers.
+
+#ITEMS#
+Small lambda expression, power cells, maybe upgrades to player?
+
+#PLAYER#
+Player can fire projectiles which might be plus signs, multiply signs, divide by signs, minus signs, etc. depending on the weapon used.
