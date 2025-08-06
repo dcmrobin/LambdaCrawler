@@ -1,40 +1,45 @@
 #define SDL_MAIN_HANDLED
+
 #include <SDL.h>
 #include <iostream>
 #include "game.h"
 #include "GFX.h"
 
-// Constants and globals
 const int LOGICAL_WIDTH = 320;
 const int LOGICAL_HEIGHT = 240;
 SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
 bool is_fullscreen = false;
-SDL_Rect viewport = {0, 0, 0, 0};  // Scaled viewport
+SDL_Rect viewport = {0, 0, 0, 0};
 
-// Update viewport to maintain aspect ratio
 void update_viewport() {
     int window_width, window_height;
     SDL_GetWindowSize(window, &window_width, &window_height);
-
-    float game_aspect = (float)LOGICAL_WIDTH / LOGICAL_HEIGHT;
+    
+    // Calculate aspect ratio preserving viewport
+    float target_aspect = (float)LOGICAL_WIDTH / LOGICAL_HEIGHT;
     float window_aspect = (float)window_width / window_height;
-
-    if (game_aspect > window_aspect) {
-        viewport.w = window_width;
-        viewport.h = (int)(window_width / game_aspect);
-        viewport.x = 0;
-        viewport.y = (window_height - viewport.h) / 2;
+    int w, h;
+    
+    if (window_aspect > target_aspect) {
+        // Window is wider - bars on sides
+        h = window_height;
+        w = (int)(h * target_aspect);
     } else {
-        viewport.h = window_height;
-        viewport.w = (int)(window_height * game_aspect);
-        viewport.x = (window_width - viewport.w) / 2;
-        viewport.y = 0;
+        // Window is taller - bars on top/bottom
+        w = window_width;
+        h = (int)(w / target_aspect);
     }
-
+    
+    // Center the viewport
+    viewport.x = (window_width - w) / 2;
+    viewport.y = (window_height - h) / 2;
+    viewport.w = w;
+    viewport.h = h;
+    
     SDL_RenderSetViewport(renderer, &viewport);
 }
 
-// Toggle fullscreen
 void toggle_fullscreen() {
     is_fullscreen = !is_fullscreen;
     SDL_SetWindowFullscreen(window, is_fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -42,17 +47,15 @@ void toggle_fullscreen() {
 }
 
 int main(int argc, char* argv[]) {
-    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    // Create window
     window = SDL_CreateWindow(
         "Lambda Crawler",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        LOGICAL_WIDTH, LOGICAL_HEIGHT,
+        LOGICAL_WIDTH * 2, LOGICAL_HEIGHT * 2,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
     );
     if (!window) {
@@ -61,7 +64,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create renderer (with vsync)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
@@ -70,12 +72,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Initialize viewport and sprite system
+    // Set blend mode for transparency support
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    
+    // Set initial viewport
     update_viewport();
+    
     Init(renderer);
     game_setup();
 
-    // Main loop
     bool running = true;
     SDL_Event event;
     while (running) {
@@ -90,24 +95,24 @@ int main(int argc, char* argv[]) {
                     }
                     break;
                 case SDL_WINDOWEVENT:
-                    if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+                        event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                         update_viewport();
                     }
                     break;
             }
         }
 
-        // Clear screen (black bars or letterboxes)
+        // Clear the entire window to black
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
-        // Game rendering (in logical 320x240 space)
+        
+        // Draw game content within the viewport
         game_loop();
-
+        
         SDL_RenderPresent(renderer);
     }
 
-    // Cleanup
     Cleanup();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

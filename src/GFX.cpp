@@ -4,7 +4,7 @@
 #include <cmath>
 
 // Globals
-SDL_Renderer* renderer = nullptr;
+extern SDL_Renderer* renderer;
 std::unordered_map<std::string, SDL_Texture*> sprites;
 
 // Logical resolution defined elsewhere
@@ -58,16 +58,19 @@ void DrawSprite(const std::string& name, int x, int y, int w, int h) {
         return;
     }
 
+    // Calculate scale factors
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
+    
     SDL_Rect dest = {
-        viewport.x + (int)(x * scale_x),
-        viewport.y + (int)(y * scale_y),
+        (int)(x * scale_x),
+        (int)(y * scale_y),
         (int)(w * scale_x),
         (int)(h * scale_y)
     };
-
+    
+    // Set the viewport for this drawing operation
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_RenderCopy(renderer, it->second, nullptr, &dest);
 }
 
@@ -75,16 +78,16 @@ void DrawSprite(const std::string& name, int x, int y, int w, int h) {
 void DrawRect(int x, int y, int w, int h, SDL_Color color) {
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
+    
     SDL_Rect rect = {
-        viewport.x + (int)(x * scale_x),
-        viewport.y + (int)(y * scale_y),
+        (int)(x * scale_x),
+        (int)(y * scale_y),
         (int)(w * scale_x),
         (int)(h * scale_y)
     };
-
+    
+    SDL_RenderSetViewport(renderer, &viewport);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderDrawRect(renderer, &rect);
 }
 
@@ -92,16 +95,16 @@ void DrawRect(int x, int y, int w, int h, SDL_Color color) {
 void FillRect(int x, int y, int w, int h, SDL_Color color) {
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
+    
     SDL_Rect rect = {
-        viewport.x + (int)(x * scale_x),
-        viewport.y + (int)(y * scale_y),
+        (int)(x * scale_x),
+        (int)(y * scale_y),
         (int)(w * scale_x),
         (int)(h * scale_y)
     };
-
+    
+    SDL_RenderSetViewport(renderer, &viewport);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -109,15 +112,15 @@ void FillRect(int x, int y, int w, int h, SDL_Color color) {
 void DrawLine(int x1, int y1, int x2, int y2, SDL_Color color) {
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
+    
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
     SDL_RenderDrawLine(
         renderer,
-        viewport.x + (int)(x1 * scale_x),
-        viewport.y + (int)(y1 * scale_y),
-        viewport.x + (int)(x2 * scale_x),
-        viewport.y + (int)(y2 * scale_y)
+        (int)(x1 * scale_x),
+        (int)(y1 * scale_y),
+        (int)(x2 * scale_x),
+        (int)(y2 * scale_y)
     );
 }
 
@@ -125,27 +128,23 @@ void DrawLine(int x1, int y1, int x2, int y2, SDL_Color color) {
 void DrawCircle(int cx, int cy, int radius, SDL_Color color) {
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
+    
     int x = radius;
     int y = 0;
     int err = 0;
 
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
     while (x >= y) {
-        int px = (int)(cx * scale_x);
-        int py = (int)(cy * scale_y);
-        int sx = (int)(x * scale_x);
-        int sy = (int)(y * scale_y);
-
-        SDL_RenderDrawPoint(renderer, viewport.x + px + sx, viewport.y + py + sy);
-        SDL_RenderDrawPoint(renderer, viewport.x + px + sy, viewport.y + py + sx);
-        SDL_RenderDrawPoint(renderer, viewport.x + px - sx, viewport.y + py + sy);
-        SDL_RenderDrawPoint(renderer, viewport.x + px - sy, viewport.y + py + sx);
-        SDL_RenderDrawPoint(renderer, viewport.x + px + sx, viewport.y + py - sy);
-        SDL_RenderDrawPoint(renderer, viewport.x + px + sy, viewport.y + py - sx);
-        SDL_RenderDrawPoint(renderer, viewport.x + px - sx, viewport.y + py - sy);
-        SDL_RenderDrawPoint(renderer, viewport.x + px - sy, viewport.y + py - sx);
+        SDL_RenderDrawPoint(renderer, (int)((cx + x) * scale_x), (int)((cy + y) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx + y) * scale_x), (int)((cy + x) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx - x) * scale_x), (int)((cy + y) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx - y) * scale_x), (int)((cy + x) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx + x) * scale_x), (int)((cy - y) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx + y) * scale_x), (int)((cy - x) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx - x) * scale_x), (int)((cy - y) * scale_y));
+        SDL_RenderDrawPoint(renderer, (int)((cx - y) * scale_x), (int)((cy - x) * scale_y));
 
         y += 1;
         err += 1 + 2*y;
@@ -156,54 +155,52 @@ void DrawCircle(int cx, int cy, int radius, SDL_Color color) {
     }
 }
 
-// Fill circle using modified Bresenham algorithm
+// Fill circle using scanlines
 void FillCircle(int cx, int cy, int radius, SDL_Color color) {
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
-
-    int scaled_cx = viewport.x + (int)(cx * scale_x);
-    int scaled_cy = viewport.y + (int)(cy * scale_y);
+    
+    int scaled_cx = (int)(cx * scale_x);
+    int scaled_cy = (int)(cy * scale_y);
     int scaled_radius = (int)(radius * std::max(scale_x, scale_y));
 
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
-    for (int w = 0; w < scaled_radius * 2; w++) {
-        for (int h = 0; h < scaled_radius * 2; h++) {
-            int dx = scaled_radius - w;
-            int dy = scaled_radius - h;
-            if ((dx*dx + dy*dy) <= (scaled_radius * scaled_radius)) {
+    
+    for (int dy = -scaled_radius; dy <= scaled_radius; dy++) {
+        for (int dx = -scaled_radius; dx <= scaled_radius; dx++) {
+            if (dx*dx + dy*dy <= scaled_radius*scaled_radius) {
                 SDL_RenderDrawPoint(renderer, scaled_cx + dx, scaled_cy + dy);
             }
         }
     }
 }
 
-// Fill polygon using SDL_RenderGeometry (requires SDL 2.0.18+)
+// Fill polygon using SDL_RenderGeometry
 void FillPolygon(const SDL_Point* points, int count, SDL_Color color) {
-    if (count < 3) return; // Not a valid polygon
+    if (count < 3) return;
 
-    // Convert logical to viewport coordinates
-    std::vector<SDL_Vertex> vertices;
     float scale_x = (float)viewport.w / LOGICAL_WIDTH;
     float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
 
+    std::vector<SDL_Vertex> vertices;
     for (int i = 0; i < count; i++) {
         vertices.push_back({
             {
-                viewport.x + (float)(points[i].x * scale_x),
-                viewport.y + (float)(points[i].y * scale_y)
+                (float)(points[i].x * scale_x),
+                (float)(points[i].y * scale_y)
             },
             {color.r, color.g, color.b, color.a},
-            {0, 0} // Texture coordinates (unused)
+            {0, 0}
         });
     }
 
-    // Create indices for triangle fan
     std::vector<int> indices;
     for (int i = 0; i < count; i++) {
         indices.push_back(i);
     }
 
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_RenderGeometry(renderer, nullptr, 
                       vertices.data(), vertices.size(),
                       indices.data(), indices.size());

@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "LambdaLogic.h"
+#include <iostream>
 
 void game_setup() {
     for (const auto& name : sprite_names) {
@@ -26,5 +27,7 @@ void RenderGame() {
     FillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT, { 20, 20, 20, 255 }); // Clear screen
     DrawSprite(player.spriteName, player.x, player.y, 16, 16);
     RenderMap();
-    RenderLambdaCircuit(GenerateReducibleLambda(3), 50, 50, 100, 100); // Example usage
+    auto lambda = GenerateReducibleLambda(4);
+    std::cout << "Generated Lambda: " << LambdaToString(lambda) << std::endl;
+    RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
 }

@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "GFX.h" // Assuming SDL drawing functions
+#include <optional>
+#include "GFX.h" // SDL drawing helpers assumed
 
 struct LambdaNode {
     enum Type { ABS, APP, VAR } type;
@@ -10,13 +11,12 @@ struct LambdaNode {
     std::shared_ptr<LambdaNode> left, right;
 };
 
-// Generation
-std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth = 3);
+std::string LambdaToString(const std::shared_ptr<LambdaNode>& node);
 
-// Reduction
+std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth = 3);
 std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node);
 
-// Circuit-style rendering
-void RenderLambdaCircuit(const std::shared_ptr<LambdaNode>& node, 
-                        int x, int y, 
-                        int width, int height);
+void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int startY, int cols, int rows, int cellW, int cellH);
+
+// Optional debug
+void DrawConnection(int x1, int y1, int x2, int y2, SDL_Color color);
