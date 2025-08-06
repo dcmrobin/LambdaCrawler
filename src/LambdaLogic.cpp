@@ -3,9 +3,11 @@
 #include <queue>
 #include <iostream>
 #include <functional>
+#include <algorithm>
+#include <cmath>
 
 // --- Colors ---
-const SDL_Color WIRE_COLOR      = {100, 255, 100, 255};   // Neon green
+const SDL_Color WIRE_COLOR      = {100, 255, 100, 255};   // Default: Neon green
 const SDL_Color GATE_COLOR      = {255, 50, 50, 255};     // Red (λ)
 const SDL_Color TERMINAL_COLOR  = {100, 100, 255, 255};   // Blue (var)
 const SDL_Color PORT_COLOR      = {255, 255, 100, 255};   // Yellow (application)
@@ -13,6 +15,7 @@ const SDL_Color GRID_COLOR      = {20, 40, 20, 255};      // Dark grid
 
 static const char vars[] = {'a', 'b', 'c', 'd'};
 
+// Node helpers
 std::shared_ptr<LambdaNode> MakeVar(char v) {
     auto node = std::make_shared<LambdaNode>();
     node->type = LambdaNode::VAR;
@@ -36,7 +39,18 @@ std::shared_ptr<LambdaNode> MakeApp(std::shared_ptr<LambdaNode> left, std::share
     return node;
 }
 
-// Always generates a reducible expression: an application where the left is an abstraction
+// Lambda string output
+std::string LambdaToString(const std::shared_ptr<LambdaNode>& node) {
+    if (!node) return "";
+    switch (node->type) {
+        case LambdaNode::VAR: return std::string(1, node->var);
+        case LambdaNode::ABS: return "(\\" + std::string(1, node->var) + "." + LambdaToString(node->left) + ")";
+        case LambdaNode::APP: return "(" + LambdaToString(node->left) + " " + LambdaToString(node->right) + ")";
+    }
+    return "";
+}
+
+// Reducible generator
 std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -45,47 +59,36 @@ std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth) {
         return vars[gen() % (sizeof(vars) / sizeof(vars[0]))];
     };
 
-    // Declare a std::function so we can call RandomNode recursively
     std::function<std::shared_ptr<LambdaNode>(int)> RandomNode;
 
     RandomNode = [&](int depth) -> std::shared_ptr<LambdaNode> {
-        if (depth <= 0) {
-            return MakeVar(RandVar());
-        }
+        if (depth <= 0) return MakeVar(RandVar());
 
         int choice = gen() % 3;
-        if (choice == 0) { // VAR
-            return MakeVar(RandVar());
-        } else if (choice == 1) { // ABS
-            return MakeAbs(RandVar(), RandomNode(depth - 1));
-        } else { // APP
-            return MakeApp(RandomNode(depth - 1), RandomNode(depth - 1));
-        }
+        if (choice == 0) return MakeVar(RandVar());
+        if (choice == 1) return MakeAbs(RandVar(), RandomNode(depth - 1));
+        return MakeApp(RandomNode(depth - 1), RandomNode(depth - 1));
     };
 
-    // Core reducible pattern: ( (\x. something) somethingElse )
     auto abstraction = MakeAbs(RandVar(), RandomNode(maxDepth - 1));
     auto argument = RandomNode(maxDepth - 1);
-
     std::shared_ptr<LambdaNode> root = MakeApp(abstraction, argument);
 
     int extraLayers = gen() % 3;
     for (int i = 0; i < extraLayers; ++i) {
-        int wrap = gen() % 2;
-        if (wrap == 0)
-            root = MakeAbs(RandVar(), root); // wrap in abstraction
+        if (gen() % 2)
+            root = MakeAbs(RandVar(), root);
         else
-            root = MakeApp(root, RandomNode(maxDepth - 1)); // add application
+            root = MakeApp(root, RandomNode(maxDepth - 1));
     }
 
+    std::cout << "Generated: " << LambdaToString(root) << std::endl;
     return root;
 }
 
-
-// --- Naive Beta Reduction ---
+// Trivial beta reducer
 std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) {
     if (!node) return nullptr;
-
     switch (node->type) {
         case LambdaNode::APP:
             if (node->left && node->left->type == LambdaNode::ABS)
@@ -98,7 +101,7 @@ std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) 
     return nullptr;
 }
 
-// --- Grid Logic ---
+// Grid cell
 struct GridCell {
     int gridX, gridY;
     bool occupied = false;
@@ -112,26 +115,49 @@ bool IsValid(int x, int y, int cols, int rows) {
 }
 
 std::optional<std::pair<int, int>> FindFreeNeighbor(Grid& grid, int x, int y, int cols, int rows) {
-    std::queue<std::pair<int, int>> q;
-    q.push({x, y});
+    std::vector<std::pair<int, int>> directions = {
+        {0, -1}, {0, 1}, {-1, 0}, {1, 0},
+        {-1, -1}, {1, -1}, {-1, 1}, {1, 1}
+    };
 
-    const int dx[4] = {-1, 1, 0, 0};
-    const int dy[4] = {0, 0, -1, 1};
+    auto centerX = cols / 2;
+    auto centerY = rows / 2;
 
-    while (!q.empty()) {
-        auto [cx, cy] = q.front();
-        q.pop();
-
-        for (int d = 0; d < 4; ++d) {
-            int nx = cx + dx[d], ny = cy + dy[d];
-            if (IsValid(nx, ny, cols, rows) && !grid[ny][nx].occupied) {
-                return {{nx, ny}};
-            }
+    std::vector<std::pair<int, int>> candidates;
+    for (auto [dx, dy] : directions) {
+        int nx = x + dx, ny = y + dy;
+        if (IsValid(nx, ny, cols, rows) && !grid[ny][nx].occupied) {
+            candidates.emplace_back(nx, ny);
         }
     }
-    return std::nullopt;
+
+    if (candidates.empty()) return std::nullopt;
+
+    std::sort(candidates.begin(), candidates.end(), [&](auto a, auto b) {
+        int da = std::abs(a.first - centerX) + std::abs(a.second - centerY);
+        int db = std::abs(b.first - centerX) + std::abs(b.second - centerY);
+        return da < db;
+    });
+
+    return candidates.front();
 }
 
+// ORTHOGONAL DRAW
+void DrawOrthogonalConnection(int x1, int y1, int x2, int y2, SDL_Color color) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    bool horizontalFirst = (gen() % 2 == 0);
+
+    if (horizontalFirst) {
+        DrawLine(x1, y1, x2, y1, color);
+        DrawLine(x2, y1, x2, y2, color);
+    } else {
+        DrawLine(x1, y1, x1, y2, color);
+        DrawLine(x1, y2, x2, y2, color);
+    }
+}
+
+// RENDER GRID-BASED
 void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int startY, int cols, int rows, int cellW, int cellH) {
     Grid grid(rows, std::vector<GridCell>(cols));
     for (int y = 0; y < rows; ++y)
@@ -139,7 +165,7 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
             grid[y][x] = {x, y};
 
     std::queue<std::tuple<std::shared_ptr<LambdaNode>, int, int>> q;
-    int cx = cols / 2, cy = 0;
+    int cx = cols / 2, cy = rows / 2;
 
     grid[cy][cx].occupied = true;
     grid[cy][cx].node = root;
@@ -152,10 +178,8 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
         int px = startX + gx * cellW;
         int py = startY + gy * cellH;
 
-        // Draw grid cell background
         DrawRect(px, py, cellW, cellH, GRID_COLOR);
 
-        // Render node
         switch (node->type) {
             case LambdaNode::ABS:
                 FillRect(px + 4, py + 4, cellW - 8, cellH - 8, GATE_COLOR);
@@ -175,8 +199,7 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
             }
         }
 
-        // Children
-        auto connect = [&](std::shared_ptr<LambdaNode> child) {
+        auto connect = [&](std::shared_ptr<LambdaNode> child, LambdaNode::Type type) {
             if (!child) return;
             auto pos = FindFreeNeighbor(grid, gx, gy, cols, rows);
             if (!pos) return;
@@ -190,28 +213,16 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
             int y1 = startY + gy * cellH + cellH / 2;
             int x2 = startX + nx * cellW + cellW / 2;
             int y2 = startY + ny * cellH + cellH / 2;
-            DrawLine(x1, y1, x2, y2, WIRE_COLOR);
+
+            SDL_Color wireColor = WIRE_COLOR;
+            if (type == LambdaNode::APP) wireColor = PORT_COLOR;
+            if (type == LambdaNode::ABS) wireColor = GATE_COLOR;
+            if (type == LambdaNode::VAR) wireColor = TERMINAL_COLOR;
+
+            DrawOrthogonalConnection(x1, y1, x2, y2, wireColor);
         };
 
-        connect(node->left);
-        connect(node->right);
+        connect(node->left, node->type);
+        connect(node->right, node->type);
     }
-}
-
-void DrawConnection(int x1, int y1, int x2, int y2, SDL_Color color) {
-    DrawLine(x1, y1, x2, y2, color);
-}
-
-std::string LambdaToString(const std::shared_ptr<LambdaNode>& node) {
-    if (!node) return "";
-
-    switch (node->type) {
-        case LambdaNode::VAR:
-            return std::string(1, node->var);
-        case LambdaNode::ABS:
-            return "(\\" + std::string(1, node->var) + "." + LambdaToString(node->left) + ")";
-        case LambdaNode::APP:
-            return "(" + LambdaToString(node->left) + " " + LambdaToString(node->right) + ")";
-    }
-    return "";
 }
