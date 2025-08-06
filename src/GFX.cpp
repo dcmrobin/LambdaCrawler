@@ -155,3 +155,56 @@ void DrawCircle(int cx, int cy, int radius, SDL_Color color) {
         }
     }
 }
+
+// Fill circle using modified Bresenham algorithm
+void FillCircle(int cx, int cy, int radius, SDL_Color color) {
+    float scale_x = (float)viewport.w / LOGICAL_WIDTH;
+    float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
+
+    int scaled_cx = viewport.x + (int)(cx * scale_x);
+    int scaled_cy = viewport.y + (int)(cy * scale_y);
+    int scaled_radius = (int)(radius * std::max(scale_x, scale_y));
+
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    for (int w = 0; w < scaled_radius * 2; w++) {
+        for (int h = 0; h < scaled_radius * 2; h++) {
+            int dx = scaled_radius - w;
+            int dy = scaled_radius - h;
+            if ((dx*dx + dy*dy) <= (scaled_radius * scaled_radius)) {
+                SDL_RenderDrawPoint(renderer, scaled_cx + dx, scaled_cy + dy);
+            }
+        }
+    }
+}
+
+// Fill polygon using SDL_RenderGeometry (requires SDL 2.0.18+)
+void FillPolygon(const SDL_Point* points, int count, SDL_Color color) {
+    if (count < 3) return; // Not a valid polygon
+
+    // Convert logical to viewport coordinates
+    std::vector<SDL_Vertex> vertices;
+    float scale_x = (float)viewport.w / LOGICAL_WIDTH;
+    float scale_y = (float)viewport.h / LOGICAL_HEIGHT;
+
+    for (int i = 0; i < count; i++) {
+        vertices.push_back({
+            {
+                viewport.x + (float)(points[i].x * scale_x),
+                viewport.y + (float)(points[i].y * scale_y)
+            },
+            {color.r, color.g, color.b, color.a},
+            {0, 0} // Texture coordinates (unused)
+        });
+    }
+
+    // Create indices for triangle fan
+    std::vector<int> indices;
+    for (int i = 0; i < count; i++) {
+        indices.push_back(i);
+    }
+
+    SDL_RenderGeometry(renderer, nullptr, 
+                      vertices.data(), vertices.size(),
+                      indices.data(), indices.size());
+}

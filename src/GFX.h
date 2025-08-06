@@ -28,3 +28,5 @@ void DrawRect(int x, int y, int w, int h, SDL_Color color);
 void FillRect(int x, int y, int w, int h, SDL_Color color);
 void DrawLine(int x1, int y1, int x2, int y2, SDL_Color color);
 void DrawCircle(int cx, int cy, int radius, SDL_Color color);
+void FillCircle(int cx, int cy, int radius, SDL_Color color);
+void FillPolygon(const SDL_Point* points, int count, SDL_Color color);

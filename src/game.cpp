@@ -3,6 +3,7 @@
 #include "HelperFunctions.h"
 #include "Player.h"
 #include "Map.h"
+#include "LambdaLogic.h"
 
 void game_setup() {
     for (const auto& name : sprite_names) {
@@ -25,4 +26,5 @@ void RenderGame() {
     FillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT, { 20, 20, 20, 255 }); // Clear screen
     DrawSprite(player.spriteName, player.x, player.y, 16, 16);
     RenderMap();
+    RenderLambdaCircuit(GenerateReducibleLambda(3), 50, 50, 100, 100); // Example usage
 }
