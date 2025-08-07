@@ -21,6 +21,8 @@ std::vector<std::string> sprite_names = {
     "tile_ground",
     "tile_wall",
     "tile_wall_top",
+    "tile_chute_closed",
+    "tile_chute_open",
 };
 
 void Init(SDL_Renderer* ren) {

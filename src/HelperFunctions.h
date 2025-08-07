@@ -36,6 +36,23 @@ struct Hitbox {
     int height = 0;
 };
 
+enum TileType {
+    ERR,
+    GROUND,
+    WALL,
+    WALL_TOP,
+    CHUTE_CLOSED,
+    CHUTE_OPEN
+};
+
+struct Tile {
+    TileType type;
+    Hitbox hitbox;
+    bool solid;
+    int x;
+    int y;
+};
+
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();
 bool IsKeyPressed(InputKey key, bool held);
