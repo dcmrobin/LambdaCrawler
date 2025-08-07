@@ -6,8 +6,8 @@
 
 extern SDL_Renderer* renderer;
 extern SDL_Rect viewport;
-extern const int LOGICAL_WIDTH;
-extern const int LOGICAL_HEIGHT;
+extern int LOGICAL_WIDTH;
+extern int LOGICAL_HEIGHT;
 
 // Sprite map
 extern std::unordered_map<std::string, SDL_Texture*> sprites;

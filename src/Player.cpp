@@ -27,7 +27,8 @@ void RenderPlayer() {
         hopTimer = 0;
     }
 
-    DrawSprite(player.spriteName, player.x, player.y, 16, 16);
+    extern int cameraX, cameraY;
+    DrawSprite(player.spriteName, player.x - cameraX, player.y - cameraY, 16, 16);
 }
 
 void HandlePlayerInput() {

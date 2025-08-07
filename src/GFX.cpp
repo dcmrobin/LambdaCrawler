@@ -8,8 +8,8 @@ extern SDL_Renderer* renderer;
 std::unordered_map<std::string, SDL_Texture*> sprites;
 
 // Logical resolution defined elsewhere
-extern const int LOGICAL_WIDTH;
-extern const int LOGICAL_HEIGHT;
+extern int LOGICAL_WIDTH;
+extern int LOGICAL_HEIGHT;
 extern SDL_Rect viewport;
 
 std::vector<std::string> sprite_names = {

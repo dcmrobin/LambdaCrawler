@@ -5,8 +5,8 @@
 #include "game.h"
 #include "GFX.h"
 
-const int LOGICAL_WIDTH = 320;
-const int LOGICAL_HEIGHT = 240;
+int LOGICAL_WIDTH = 320;
+int LOGICAL_HEIGHT = 240;
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 bool is_fullscreen = false;
