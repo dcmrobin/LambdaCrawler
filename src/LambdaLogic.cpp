@@ -143,10 +143,24 @@ std::optional<std::pair<int, int>> FindFreeNeighbor(Grid& grid, int x, int y, in
 }
 
 // ORTHOGONAL DRAW
-void DrawOrthogonalConnection(int x1, int y1, int x2, int y2, SDL_Color color) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    bool horizontalFirst = (gen() % 2 == 0);
+void DrawOrthogonalConnection(int x1, int y1, int x2, int y2, SDL_Color color,  const std::shared_ptr<LambdaNode>& node1, const std::shared_ptr<LambdaNode>& node2) {
+    // Create a hash based on the nodes' structure
+    size_t hash = 0;
+    auto hash_combine = [](size_t& seed, size_t value) {
+        seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    };
+    
+    if (node1) {
+        hash_combine(hash, std::hash<int>{}(static_cast<int>(node1->type)));
+        if (node1->type == LambdaNode::VAR) hash_combine(hash, std::hash<char>{}(node1->var));
+    }
+    if (node2) {
+        hash_combine(hash, std::hash<int>{}(static_cast<int>(node2->type)));
+        if (node2->type == LambdaNode::VAR) hash_combine(hash, std::hash<char>{}(node2->var));
+    }
+    
+    // Use the hash to determine direction (even/odd)
+    bool horizontalFirst = (hash % 2 == 0);
 
     if (horizontalFirst) {
         DrawLine(x1, y1, x2, y1, color);
@@ -219,7 +233,7 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
             if (type == LambdaNode::ABS) wireColor = GATE_COLOR;
             if (type == LambdaNode::VAR) wireColor = TERMINAL_COLOR;
 
-            DrawOrthogonalConnection(x1, y1, x2, y2, wireColor);
+            DrawOrthogonalConnection(x1, y1, x2, y2, wireColor, grid[gy][gx].node, grid[ny][nx].node);
         };
 
         connect(node->left, node->type);
