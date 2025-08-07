@@ -3,6 +3,15 @@
 
 Player player = {};
 
+void RenderPlayer() {
+    if (player.dy == -1) {
+        player.spriteName = "player_idle_back";
+    } else if (player.dy == 1) {
+        player.spriteName = "player_idle";
+    }
+    DrawSprite(player.spriteName, player.x, player.y, 16, 16);
+}
+
 void HandlePlayerInput() {
     // Handle movement
     auto canMove = [](int newX, int newY) {
@@ -19,23 +28,27 @@ void HandlePlayerInput() {
 
     if (IsKeyPressed(KEY_UP, true)) {
         int newY = player.y - player.speed;
+        player.dy = -1;
         if (canMove(player.x, newY)) {
             player.y = newY;
         }
     }
     if (IsKeyPressed(KEY_DOWN, true)) {
+        player.dy = 1;
         int newY = player.y + player.speed;
         if (canMove(player.x, newY)) {
             player.y = newY;
         }
     }
     if (IsKeyPressed(KEY_LEFT, true)) {
+        player.dx = -1;
         int newX = player.x - player.speed;
         if (canMove(newX, player.y)) {
             player.x = newX;
         }
     }
     if (IsKeyPressed(KEY_RIGHT, true)) {
+        player.dx = 1;
         int newX = player.x + player.speed;
         if (canMove(newX, player.y)) {
             player.x = newX;

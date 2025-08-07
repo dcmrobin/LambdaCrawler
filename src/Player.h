@@ -6,6 +6,8 @@
 struct Player {
     int x = 40;
     int y = 40;
+    int dx = 1;
+    int dy = 1;
     std::string spriteName = "player_idle";
     int speed = 1;
     int maxHealth = 100;
@@ -19,4 +21,5 @@ struct Player {
 
 extern Player player;
 
+void RenderPlayer();
 void HandlePlayerInput();
