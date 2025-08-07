@@ -6,21 +6,21 @@
 // Define the mapTiles vector
 std::vector<Tile> mapTiles;
 
-// Example function to initialize tiles (customize as needed)
-void InitializeMapTiles() {
-    // Example: create a 10x10 grid of tiles, each 16x16 pixels
+void InitializeRoom() {
     int tileSize = 16;
-    for (int y = 4; y < 10; ++y) {
-        for (int x = 4; x < 10; ++x) {
-            Tile tile;
-            tile.x = x * tileSize;
-            tile.y = y * tileSize;
-            tile.hitbox.x = tile.x;
-            tile.hitbox.y = tile.y;
-            tile.hitbox.width = tileSize;
-            tile.hitbox.height = tileSize;
-            tile.type = WALL;
-            mapTiles.push_back(tile);
+    for (int y = 0; y < 15; ++y) {
+        for (int x = 0; x < 20; ++x) {
+            if (x == 0 || x == 19 || y == 0 || y == 14) {
+                Tile tile;
+                tile.x = x * tileSize;
+                tile.y = y * tileSize;
+                tile.hitbox.x = tile.x;
+                tile.hitbox.y = tile.y;
+                tile.hitbox.width = tileSize;
+                tile.hitbox.height = tileSize;
+                tile.type = WALL;
+                mapTiles.push_back(tile);
+            }
         }
     }
 }

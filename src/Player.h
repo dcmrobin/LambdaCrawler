@@ -4,8 +4,8 @@
 #include "GFX.h"
 
 struct Player {
-    int x = 0;
-    int y = 0;
+    int x = 40;
+    int y = 40;
     std::string spriteName = "player_idle";
     int speed = 1;
     int maxHealth = 100;

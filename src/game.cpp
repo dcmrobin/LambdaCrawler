@@ -10,7 +10,7 @@ void game_setup() {
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/" + name + ".png").c_str());
     }
-    InitializeMapTiles();
+    InitializeRoom();
 }
 
 void game_loop() {

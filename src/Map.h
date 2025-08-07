@@ -21,5 +21,5 @@ struct Tile {
 // The map is a collection of tiles
 extern std::vector<Tile> mapTiles;
 
-void InitializeMapTiles();
+void InitializeRoom();
 void RenderMap();
