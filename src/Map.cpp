@@ -18,7 +18,7 @@ void InitializeRoom() {
                 tile.hitbox.y = tile.y;
                 tile.hitbox.width = tileSize;
                 tile.hitbox.height = tileSize;
-                tile.type = WALL;
+                tile.type = x > 0 && y == 0 && x != 19 ? WALL : WALL_TOP;
                 mapTiles.push_back(tile);
             }
         }
@@ -29,13 +29,17 @@ void RenderMap() {
     for (const auto& tile : mapTiles) {
         switch (tile.type)
         {
-        case EMPTY:
-            // nothing for now, implement a floor sprite later
+        case GROUND:
+            DrawSprite("tile_ground", tile.x, tile.y, tile.hitbox.width, tile.hitbox.height);
             break;
         case WALL:
-            DrawSprite("tile", tile.x, tile.y, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_wall", tile.x, tile.y, tile.hitbox.width, tile.hitbox.height);
+            break;
+        case WALL_TOP:
+            DrawSprite("tile_wall_top", tile.x, tile.y, tile.hitbox.width, tile.hitbox.height);
             break;
         default:
+            DrawSprite("tile", tile.x, tile.y, tile.hitbox.width, tile.hitbox.height);
             break;
         }
     }

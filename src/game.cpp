@@ -25,9 +25,10 @@ void UpdateGame() {
 
 void RenderGame() {
     FillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT, { 20, 20, 20, 255 }); // Clear screen
-    DrawSprite(player.spriteName, player.x, player.y, 16, 16);
     RenderMap();
-    auto lambda = GenerateReducibleLambda(4);
+    DrawSprite(player.spriteName, player.x, player.y, 16, 16);
+
+    auto lambda = GenerateReducibleLambda(3);
     std::cout << "Generated Lambda: " << LambdaToString(lambda) << std::endl;
     RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
 }

@@ -3,9 +3,10 @@
 #include "HelperFunctions.h"
 
 enum TileType {
-    EMPTY,
+    ERR,
+    GROUND,
     WALL,
-    // Add more tile types as needed
+    WALL_TOP,
 };
 
 // Represents a single tile in the map

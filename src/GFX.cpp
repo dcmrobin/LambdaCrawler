@@ -18,6 +18,9 @@ std::vector<std::string> sprite_names = {
     "player_idle_hop",
     "player_idle_back_hop",
     "tile",
+    "tile_ground",
+    "tile_wall",
+    "tile_wall_top",
 };
 
 void Init(SDL_Renderer* ren) {
