@@ -42,6 +42,7 @@ void game_loop() {
 void UpdateGame() {
     UpdateKeyStates();
     HandlePlayerInput();
+    UpdateMap();
     // Camera follows player smoothly if currentLevel > 0
     if (currentLevel > 0) {
         int targetX = player.x + player.hitbox.width / 2 - LOGICAL_WIDTH / 2;

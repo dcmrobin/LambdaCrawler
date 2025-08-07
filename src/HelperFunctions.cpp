@@ -1,5 +1,6 @@
 #include "HelperFunctions.h"
 #include "GFX.h"
+#include "Map.h"
 
 KeyStates keystates;
 
@@ -58,4 +59,22 @@ bool Intersects(Hitbox& current, Hitbox other){
             current.x + current.width > other.x &&
             current.y < other.y + other.height &&
             current.y + current.height > other.y);
+}
+
+void ChangeTile(int x, int y, bool solid, TileType type) {
+    for (auto& tile : mapTiles) {
+        if (tile.x == x && tile.y == y) {
+            tile.solid = solid;
+            tile.type = type;
+            return;
+        }
+    }
+    // If not found, create a new tile
+    Tile newTile;
+    newTile.x = x;
+    newTile.y = y;
+    newTile.hitbox = {x, y, tileSize, tileSize};
+    newTile.solid = solid;
+    newTile.type = type;
+    mapTiles.push_back(newTile);
 }

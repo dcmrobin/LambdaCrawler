@@ -12,4 +12,5 @@ extern std::vector<Tile> mapTiles;
 extern int currentLevel;
 
 void InitializeRoom();
+void UpdateMap();
 void RenderMap();

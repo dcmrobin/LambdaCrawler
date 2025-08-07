@@ -49,6 +49,8 @@ struct Tile {
     TileType type;
     Hitbox hitbox;
     bool solid;
+    int width;
+    int height;
     int x;
     int y;
 };
@@ -56,3 +58,4 @@ struct Tile {
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();
 bool IsKeyPressed(InputKey key, bool held);
+void ChangeTile(int x, int y, bool solid, TileType type);

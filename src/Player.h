@@ -22,5 +22,7 @@ struct Player {
 
 extern Player player;
 
+extern Tile currentIntersectingTile;
+
 void RenderPlayer();
 void HandlePlayerInput();

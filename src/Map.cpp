@@ -20,8 +20,10 @@ void InitializeRoom() {
             tile.y = y * tileSize;
             tile.hitbox.x = tile.x;
             tile.hitbox.y = tile.y;
-            tile.hitbox.width = tileSize;
-            tile.hitbox.height = tileSize;
+            tile.width = tileSize;
+            tile.height = tileSize;
+            tile.hitbox.width = tile.width;
+            tile.hitbox.height = tile.height;
             tile.solid = false;
 
             if (x == 0 || x == 19 || y == 0 || y == 14) {
@@ -29,16 +31,22 @@ void InitializeRoom() {
                 tile.solid = true;
             } else if (x == 10 && y == 5) {
                 tile.type = CHUTE_CLOSED;
-                tile.solid = true;
             } else {
                 tile.type = GROUND;
             }
 
-            if (!tile.solid) {
-                tile.hitbox = {0, 0, 0, 0};
-            }
-
             mapTiles.push_back(tile);
+        }
+    }
+}
+
+void UpdateMap() {
+    for (auto& tile : mapTiles) {
+        // Update the hitbox based on the tile's position and solid state
+        if (tile.solid) {
+            tile.hitbox = {tile.x, tile.y, tile.width, tile.height};
+        } else {
+            tile.hitbox = {0, 0, 0, 0}; // Non-solid tiles have no hitbox
         }
     }
 }
@@ -51,22 +59,22 @@ void RenderMap() {
         switch (tile.type)
         {
         case GROUND:
-            DrawSprite("tile_ground", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_ground", drawX, drawY, tile.width, tile.height);
             break;
         case WALL:
-            DrawSprite("tile_wall", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_wall", drawX, drawY, tile.width, tile.height);
             break;
         case WALL_TOP:
-            DrawSprite("tile_wall_top", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_wall_top", drawX, drawY, tile.width, tile.height);
             break;
         case CHUTE_CLOSED:
-            DrawSprite("tile_chute_closed", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_chute_closed", drawX, drawY, tile.width, tile.height);
             break;
         case CHUTE_OPEN:
-            DrawSprite("tile_chute_open", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile_chute_open", drawX, drawY, tile.width, tile.height);
             break;
         default:
-            DrawSprite("tile", drawX, drawY, tile.hitbox.width, tile.hitbox.height);
+            DrawSprite("tile", drawX, drawY, tile.width, tile.height);
             break;
         }
     }

@@ -3,6 +3,8 @@
 
 Player player = {};
 
+Tile currentIntersectingTile = {ERR, {0, 0, 0, 0}, false, 0, 0};
+
 int hopTimer = 0;
 void RenderPlayer() {
     if (player.dy == -1 && player.spriteName != "player_idle_back_hop") {
@@ -39,12 +41,14 @@ void HandlePlayerInput() {
         newHitbox.y = newY + player.hitbox.y;
         for (const auto& tile : mapTiles) {
             if (Intersects(newHitbox, tile.hitbox)) {
+                currentIntersectingTile = tile;
                 return false;
             }
         }
         return true;
     };
 
+    // Handle player movement
     if (IsKeyPressed(KEY_UP, true)) {
         int newY = player.y - player.speed;
         player.dy = -1;
@@ -77,7 +81,6 @@ void HandlePlayerInput() {
             player.x = newX;
         }
     }
-
     if (!IsKeyPressed(KEY_UP, true) && !IsKeyPressed(KEY_DOWN, true) && !IsKeyPressed(KEY_LEFT, true) && !IsKeyPressed(KEY_RIGHT, true)) {
         player.moving = false;
         player.dx = 0;
@@ -85,10 +88,26 @@ void HandlePlayerInput() {
     }
 
     // Handle actions
+    if (IsKeyPressed(KEY_X, false)) {
+        // Check all tiles in proximity to player
+        const int interactionRange = 24; // pixels
+        for (auto& tile : mapTiles) {
+            // Calculate distance between player and tile
+            int dx = (tile.x + tile.hitbox.x/2) - (player.x + player.hitbox.x/2);
+            int dy = (tile.y + tile.hitbox.y/2) - (player.y + player.hitbox.y/2);
+            int distanceSq = dx*dx + dy*dy;
+            
+            if (distanceSq <= interactionRange*interactionRange && 
+                (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN)) {
+                
+                // Toggle the chute state
+                TileType newType = (tile.type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
+                ChangeTile(tile.x, tile.y, false, newType);
+                break; // Only interact with one chute at a time
+            }
+        }
+    }
     if (IsKeyPressed(KEY_Z, false)) {
         // Perform action Z
-    }
-    if (IsKeyPressed(KEY_X, false)) {
-        // Perform action X
     }
 }
