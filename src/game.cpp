@@ -29,6 +29,5 @@ void RenderGame() {
     RenderPlayer();
 
     auto lambda = GenerateReducibleLambda(3);
-    std::cout << "Generated Lambda: " << LambdaToString(lambda) << std::endl;
     RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
 }

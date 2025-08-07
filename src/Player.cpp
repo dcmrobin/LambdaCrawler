@@ -3,12 +3,30 @@
 
 Player player = {};
 
+int hopTimer = 0;
 void RenderPlayer() {
-    if (player.dy == -1) {
+    if (player.dy == -1 && player.spriteName != "player_idle_back_hop") {
         player.spriteName = "player_idle_back";
-    } else if (player.dy == 1) {
+    } else if (player.dy == 1 && player.spriteName != "player_idle_hop") {
         player.spriteName = "player_idle";
     }
+
+    if (player.moving) {
+        hopTimer++;
+        if (hopTimer == 2) {
+            player.spriteName = player.spriteName == "player_idle_back" ? "player_idle_back_hop" : player.spriteName == "player_idle" ? "player_idle_hop" : player.spriteName;
+        }
+        if (hopTimer > 12) {
+            player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName;
+        }
+        if (hopTimer > 22) {
+            hopTimer = 0;
+        }
+    } else {
+        player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName;
+        hopTimer = 0;
+    }
+
     DrawSprite(player.spriteName, player.x, player.y, 16, 16);
 }
 
@@ -29,30 +47,40 @@ void HandlePlayerInput() {
     if (IsKeyPressed(KEY_UP, true)) {
         int newY = player.y - player.speed;
         player.dy = -1;
+        player.moving = true;
         if (canMove(player.x, newY)) {
             player.y = newY;
         }
     }
     if (IsKeyPressed(KEY_DOWN, true)) {
-        player.dy = 1;
         int newY = player.y + player.speed;
+        player.dy = 1;
+        player.moving = true;
         if (canMove(player.x, newY)) {
             player.y = newY;
         }
     }
     if (IsKeyPressed(KEY_LEFT, true)) {
-        player.dx = -1;
         int newX = player.x - player.speed;
+        player.dx = -1;
+        player.moving = true;
         if (canMove(newX, player.y)) {
             player.x = newX;
         }
     }
     if (IsKeyPressed(KEY_RIGHT, true)) {
-        player.dx = 1;
         int newX = player.x + player.speed;
+        player.dx = 1;
+        player.moving = true;
         if (canMove(newX, player.y)) {
             player.x = newX;
         }
+    }
+
+    if (!IsKeyPressed(KEY_UP, true) && !IsKeyPressed(KEY_DOWN, true) && !IsKeyPressed(KEY_LEFT, true) && !IsKeyPressed(KEY_RIGHT, true)) {
+        player.moving = false;
+        player.dx = 0;
+        player.dy = 0;
     }
 
     // Handle actions

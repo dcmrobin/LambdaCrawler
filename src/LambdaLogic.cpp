@@ -82,7 +82,7 @@ std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth) {
             root = MakeApp(root, RandomNode(maxDepth - 1));
     }
 
-    std::cout << "Generated: " << LambdaToString(root) << std::endl;
+    //std::cout << "Generated: " << LambdaToString(root) << std::endl;
     return root;
 }
 

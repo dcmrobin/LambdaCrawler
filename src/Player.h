@@ -6,8 +6,9 @@
 struct Player {
     int x = 40;
     int y = 40;
-    int dx = 1;
+    int dx = 0;
     int dy = 1;
+    bool moving = false;
     std::string spriteName = "player_idle";
     int speed = 1;
     int maxHealth = 100;

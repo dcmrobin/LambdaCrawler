@@ -11,3 +11,6 @@ Small lambda expression, power cells, maybe upgrades to player?
 
 #PLAYER#
 Player can fire projectiles which might be plus signs, multiply signs, divide by signs, minus signs, etc. depending on the weapon used.
+
+#MAP LAYOUT#
+Each level will be look exactly like its lambda diagram.
