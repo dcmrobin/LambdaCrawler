@@ -87,19 +87,16 @@ void HandlePlayerInput() {
         player.dy = 0;
     }
 
-    // Handle actions
-    if (IsKeyPressed(KEY_X, false)) {
-        // Check all tiles in proximity to player
-        const int interactionRange = 24; // pixels
-        for (auto& tile : mapTiles) {
-            // Calculate distance between player and tile
-            int dx = (tile.x + tile.hitbox.x/2) - (player.x + player.hitbox.x/2);
-            int dy = (tile.y + tile.hitbox.y/2) - (player.y + player.hitbox.y/2);
-            int distanceSq = dx*dx + dy*dy;
-            
-            if (distanceSq <= interactionRange*interactionRange && 
-                (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN)) {
-                
+    const int interactionRange = 24; // pixels
+    for (auto& tile : mapTiles) {
+        // Calculate distance between player and tile
+        int dx = (tile.x + tile.hitbox.x/2) - (player.x + player.hitbox.x/2);
+        int dy = (tile.y + tile.hitbox.y/2) - (player.y + player.hitbox.y/2);
+        int distanceSq = dx*dx + dy*dy;
+        
+        if (distanceSq <= interactionRange*interactionRange && (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN)) {
+            DrawText("8bitMageFont", tile.type == CHUTE_CLOSED ? "[X] Open chute" : "[X] Close chute", player.x - 12, player.y - 6, {255, 255, 255, 255}, 0.2f);
+            if (IsKeyPressed(KEY_X, false)) {
                 // Toggle the chute state
                 TileType newType = (tile.type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
                 ChangeTile(tile.x, tile.y, false, newType);
@@ -107,6 +104,7 @@ void HandlePlayerInput() {
             }
         }
     }
+
     if (IsKeyPressed(KEY_Z, false)) {
         // Perform action Z
     }

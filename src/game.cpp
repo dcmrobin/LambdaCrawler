@@ -36,8 +36,8 @@ void game_setup() {
 }
 
 void game_loop() {
-    UpdateGame();
     RenderGame();
+    UpdateGame();
 }
 
 void UpdateGame() {
@@ -65,8 +65,6 @@ void UpdateGame() {
 void RenderGame() {
     RenderMap();
     RenderPlayer();
-
-    DrawText("8bitMageFont", "Hello World!", 70, 130, {255, 255, 255, 255}, 0.2f);
 
     auto lambda = GenerateReducibleLambda(3);
     RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
