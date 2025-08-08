@@ -19,8 +19,9 @@ extern int LOGICAL_HEIGHT;
 
 void game_setup() {
     for (const auto& name : sprite_names) {
-        LoadSprite(name, ("assets/" + name + ".png").c_str());
+        LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
     }
+    LoadFont("8bitMageFont", "assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
     InitializeRoom();
     // Center camera at start if needed
     if (currentLevel > 0) {
@@ -64,6 +65,8 @@ void UpdateGame() {
 void RenderGame() {
     RenderMap();
     RenderPlayer();
+
+    DrawText("8bitMageFont", "Hello World!", 70, 130, {255, 255, 255, 255}, 0.2f);
 
     auto lambda = GenerateReducibleLambda(3);
     RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);

@@ -6,6 +6,7 @@
 // Globals
 extern SDL_Renderer* renderer;
 std::unordered_map<std::string, SDL_Texture*> sprites;
+std::unordered_map<std::string, TTF_Font*> fonts;
 
 // Logical resolution defined elsewhere
 extern int LOGICAL_WIDTH;
@@ -28,6 +29,7 @@ std::vector<std::string> sprite_names = {
 void Init(SDL_Renderer* ren) {
     renderer = ren;
     IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
 }
 
 void Cleanup() {
@@ -36,6 +38,12 @@ void Cleanup() {
     }
     sprites.clear();
     IMG_Quit();
+
+    for (auto& pair : fonts) {
+        TTF_CloseFont(pair.second);
+    }
+    fonts.clear();
+    TTF_Quit();
 }
 
 void LoadSprite(const std::string& name, const char* path) {
@@ -209,4 +217,66 @@ void FillPolygon(const SDL_Point* points, int count, SDL_Color color) {
     SDL_RenderGeometry(renderer, nullptr, 
                       vertices.data(), vertices.size(),
                       indices.data(), indices.size());
+}
+
+void LoadFont(const std::string& name, const char* path, int size) {
+    TTF_Font* font = TTF_OpenFont(path, size);
+    if (!font) {
+        std::cerr << "TTF_OpenFont Error: " << TTF_GetError() << std::endl;
+        return;
+    }
+    fonts[name] = font;
+}
+
+void DrawText(const std::string& font_name, const std::string& text, 
+             int x, int y, SDL_Color color, float scale) {
+    auto it = fonts.find(font_name);
+    if (it == fonts.end()) {
+        std::cerr << "Font not found: " << font_name << std::endl;
+        return;
+    }
+
+    // Render text to surface
+    SDL_Surface* surface = TTF_RenderText_Solid(it->second, text.c_str(), color);
+    if (!surface) {
+        std::cerr << "TTF_RenderText Error: " << TTF_GetError() << std::endl;
+        return;
+    }
+
+    // Create texture from surface
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!texture) {
+        std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    // Get original text dimensions
+    int w, h;
+    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+
+    // Apply THREE scaling factors:
+    // 1. Logical viewport scaling (existing)
+    // 2. Custom scale parameter (new)
+    // 3. Integer scaling for crisp text (recommended)
+    float scale_x = (float)viewport.w / LOGICAL_WIDTH * scale;
+    float scale_y = (float)viewport.h / LOGICAL_HEIGHT * scale;
+
+    // For crisp text, use integer scaling if scale is close to 1.0
+    if (scale >= 0.9f && scale <= 1.1f) {
+        scale_x = 1.0f;
+        scale_y = 1.0f;
+    }
+
+    SDL_Rect dest = {
+        (int)(x * (float)viewport.w / LOGICAL_WIDTH),  // Viewport-scaled position
+        (int)(y * (float)viewport.h / LOGICAL_HEIGHT),
+        (int)(w * scale_x),  // Custom-scaled dimensions
+        (int)(h * scale_y)
+    };
+
+    // Render the text
+    SDL_RenderSetViewport(renderer, &viewport);
+    SDL_RenderCopy(renderer, texture, nullptr, &dest);
+    SDL_DestroyTexture(texture);
 }

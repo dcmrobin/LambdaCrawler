@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -12,6 +13,9 @@ extern int LOGICAL_HEIGHT;
 // Sprite map
 extern std::unordered_map<std::string, SDL_Texture*> sprites;
 
+// Font map
+extern std::unordered_map<std::string, TTF_Font*> fonts;
+
 // Sprite names
 extern std::vector<std::string> sprite_names;
 
@@ -22,6 +26,10 @@ void Cleanup();
 // Sprite loading & drawing
 void LoadSprite(const std::string& name, const char* path);
 void DrawSprite(const std::string& name, int x, int y, int w = 16, int h = 16);
+
+// Font loading & text drawing
+void LoadFont(const std::string& name, const char* path, int size);
+void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale);
 
 // Shapes
 void DrawRect(int x, int y, int w, int h, SDL_Color color);
