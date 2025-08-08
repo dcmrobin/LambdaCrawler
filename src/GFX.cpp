@@ -8,12 +8,18 @@ extern SDL_Renderer* renderer;
 std::unordered_map<std::string, SDL_Texture*> sprites;
 std::unordered_map<std::string, TTF_Font*> fonts;
 
+// Cursor
+static std::string current_cursor_sprite;
+static SDL_Point cursor_hotspot = {0, 0};
+static bool system_cursor_visible = false;
+
 // Logical resolution defined elsewhere
 extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 extern SDL_Rect viewport;
 
 std::vector<std::string> sprite_names = {
+    "cursor_normal",
     "player_idle",
     "player_idle_back",
     "player_idle_hop",
@@ -30,6 +36,37 @@ void Init(SDL_Renderer* ren) {
     renderer = ren;
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
+}
+
+void SetCustomCursor(const std::string& sprite_name, int hot_x, int hot_y) {
+    current_cursor_sprite = sprite_name;
+    cursor_hotspot = {hot_x, hot_y};
+}
+
+void ShowSystemCursor(bool show) {
+    system_cursor_visible = show;
+    SDL_ShowCursor(show ? SDL_ENABLE : SDL_DISABLE);
+}
+
+// Modify your game_loop() rendering (or wherever you handle drawing)
+void DrawCustomCursor() {
+    if (system_cursor_visible || current_cursor_sprite.empty()) return;
+    
+    int mouse_x, mouse_y;
+    SDL_GetMouseState(&mouse_x, &mouse_y);
+    
+    // Convert screen coordinates to viewport coordinates
+    mouse_x -= viewport.x;
+    mouse_y -= viewport.y;
+    
+    // Only draw if mouse is within viewport
+    if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < viewport.w && mouse_y < viewport.h) {
+        // Convert to logical coordinates for proper scaling
+        float logical_x = (mouse_x - cursor_hotspot.x) * (LOGICAL_WIDTH / (float)viewport.w);
+        float logical_y = (mouse_y - cursor_hotspot.y) * (LOGICAL_HEIGHT / (float)viewport.h);
+        
+        DrawSprite(current_cursor_sprite, (int)logical_x, (int)logical_y);
+    }
 }
 
 void Cleanup() {

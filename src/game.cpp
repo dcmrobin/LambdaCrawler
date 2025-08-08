@@ -21,6 +21,8 @@ void game_setup() {
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
     }
+    SetCustomCursor("cursor_normal", 0, 0); // Set hotspot (top-left corner)
+    ShowSystemCursor(false);
     LoadFont("8bitMageFont", "assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
     InitializeRoom();
     // Center camera at start if needed
@@ -68,4 +70,6 @@ void RenderGame() {
 
     auto lambda = GenerateReducibleLambda(3);
     RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
+
+    DrawCustomCursor();
 }

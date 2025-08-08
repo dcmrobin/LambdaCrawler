@@ -27,6 +27,11 @@ void Cleanup();
 void LoadSprite(const std::string& name, const char* path);
 void DrawSprite(const std::string& name, int x, int y, int w = 16, int h = 16);
 
+// Mouse pointer
+void SetCustomCursor(const std::string& sprite_name, int hot_x = 0, int hot_y = 0);
+void ShowSystemCursor(bool show);
+void DrawCustomCursor();
+
 // Font loading & text drawing
 void LoadFont(const std::string& name, const char* path, int size);
 void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale);
