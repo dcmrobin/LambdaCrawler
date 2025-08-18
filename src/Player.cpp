@@ -94,13 +94,15 @@ void HandlePlayerInput() {
         int dy = (tile.y + tile.hitbox.y/2) - (player.y + player.hitbox.y/2);
         int distanceSq = dx*dx + dy*dy;
         
-        if (distanceSq <= interactionRange*interactionRange && (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN)) {
-            DrawText("8bitMageFont", tile.type == CHUTE_CLOSED ? "[X] Open chute" : "[X] Close chute", player.x - 12, player.y - 6, {255, 255, 255, 255}, 0.2f);
-            if (IsKeyPressed(KEY_X, false)) {
-                // Toggle the chute state
-                TileType newType = (tile.type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
-                ChangeTile(tile.x, tile.y, false, newType);
-                break; // Only interact with one chute at a time
+        if (distanceSq <= interactionRange*interactionRange) {
+            if (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN) {
+                DrawText("8bitMageFont", tile.type == CHUTE_CLOSED ? "[X] Open chute" : "[X] Close chute", player.x - 12, player.y - 6, {255, 255, 255, 255}, 0.2f);
+                if (IsKeyPressed(KEY_X, false)) {
+                    // Toggle the chute state
+                    TileType newType = (tile.type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
+                    ChangeTile(tile.x, tile.y, false, newType);
+                    break; // Only interact with one chute at a time
+                }
             }
         }
     }

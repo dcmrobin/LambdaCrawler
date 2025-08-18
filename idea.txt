@@ -4,7 +4,7 @@ This will be a roguelike, where the player is a calculator. The player starts in
 Another idea is that the player could find little lambda expressions around the level, and then when at the exit, would be able to add that lambda expression chunk to the current lambda expression, potentially completely changing it. Some lambda expressions can be infinitely reduced, so that'll be interesting- maybe there could be a special item that could predict a certain amount of beta reductions into the future?
 
 #ENEMIES#
-These could be irrational numbers.
+These could be irrational numbers and the like.
 
 #ITEMS#
 Small lambda expression, power cells, maybe upgrades to player?
@@ -12,5 +12,8 @@ Small lambda expression, power cells, maybe upgrades to player?
 #PLAYER#
 Player can fire projectiles which might be plus signs, multiply signs, divide by signs, minus signs, etc. depending on the weapon used.
 
-#MAP LAYOUT#
+#MAP#
 Each level will be look exactly like its lambda diagram, with different nodes and variables of the diagram corrosponding to a different map tile. The map will have one or more beta-reduction stations, which act as exits to the next expression.
+
+#WEAPON#
+The player's weapon will be defined by a UI similar to Noita's wand building system. When editing the weapon, a UI will pop up which is a closeup of the player character- a calculator, and the player will be able to press the calculator's buttons to build up a function "f(x)=____" using the available buttons. The length of the function could be confined to the player's "processor" which could be upgraded or swapped out for better ones with faster tick speed (fire rate) and capacity etc. Also, the player could collect "memory" which would be the "spells" which would be the 123%*/+-xy etc. Maybe xy etc could be like the greek letters in Noita- they have their own special powers?
