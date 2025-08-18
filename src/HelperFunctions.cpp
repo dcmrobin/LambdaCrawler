@@ -13,6 +13,7 @@ void UpdateKeyStates() {
   keystates.leftPressedPrev = keystates.leftPressed;
   keystates.rightPressedPrev = keystates.rightPressed;
   keystates.startPressedPrev = keystates.startPressed;
+  keystates.enterPressedPrev = keystates.enterPressed;
 
   // Read current states
   const Uint8* keystate = SDL_GetKeyboardState(NULL);
@@ -23,6 +24,7 @@ void UpdateKeyStates() {
   keystates.zPressed = keystate[SDL_SCANCODE_Z];
   keystates.xPressed = keystate[SDL_SCANCODE_X];
   keystates.startPressed = keystate[SDL_SCANCODE_ESCAPE];
+  keystates.enterPressed = keystate[SDL_SCANCODE_RETURN];
 }
 
 bool IsKeyPressed(InputKey key, bool held) {
@@ -36,6 +38,7 @@ bool IsKeyPressed(InputKey key, bool held) {
             case KEY_Z:     return keystates.zPressed && !keystates.zPressedPrev;
             case KEY_X:     return keystates.xPressed && !keystates.xPressedPrev;
             case KEY_START: return keystates.startPressed && !keystates.startPressedPrev;
+            case KEY_ENTER: return keystates.enterPressed && !keystates.enterPressedPrev;
             default:        return false;
         }
     }
@@ -49,6 +52,7 @@ bool IsKeyPressed(InputKey key, bool held) {
             case KEY_Z:     return keystates.zPressed;
             case KEY_X:     return keystates.xPressed;
             case KEY_START: return keystates.startPressed;
+            case KEY_ENTER: return keystates.enterPressed;
             default:        return false;
         }
     }

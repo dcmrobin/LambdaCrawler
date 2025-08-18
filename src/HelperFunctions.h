@@ -15,6 +15,8 @@ struct KeyStates {
   bool rightPressedPrev;
   bool startPressed;
   bool startPressedPrev;
+  bool enterPressed;
+  bool enterPressedPrev;
 };
 
 extern KeyStates keystates;
@@ -26,7 +28,8 @@ enum InputKey {
     KEY_RIGHT,
     KEY_Z,
     KEY_X,
-    KEY_START
+    KEY_START,
+    KEY_ENTER
 };
 
 struct Hitbox {
