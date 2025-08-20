@@ -1,5 +1,7 @@
 #pragma once
 
+#include "LambdaLogic.h"
+
 struct KeyStates {
   bool upPressed;
   bool upPressedPrev;
@@ -57,6 +59,8 @@ struct Tile {
     int x;
     int y;
 };
+
+extern std::shared_ptr<LambdaNode> currentLambda;
 
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();

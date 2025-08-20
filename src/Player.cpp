@@ -102,6 +102,7 @@ void HandlePlayerInput() {
                     if (IsKeyPressed(KEY_ENTER, false)) {
                         currentLevel += 1;
                         //generate a level from a lambda statement
+                        GenerateDungeonFromLambdaGrid(currentLambda, 12, 12, 16);
                     }
                 }
                 if (IsKeyPressed(KEY_X, false)) {

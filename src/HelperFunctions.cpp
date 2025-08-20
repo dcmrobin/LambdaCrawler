@@ -4,6 +4,8 @@
 
 KeyStates keystates;
 
+std::shared_ptr<LambdaNode> currentLambda;
+
 void UpdateKeyStates() {
   // Save previous states
   keystates.upPressedPrev = keystates.upPressed;

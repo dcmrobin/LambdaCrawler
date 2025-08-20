@@ -101,15 +101,6 @@ std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) 
     return nullptr;
 }
 
-// Grid cell
-struct GridCell {
-    int gridX, gridY;
-    bool occupied = false;
-    std::shared_ptr<LambdaNode> node = nullptr;
-};
-
-using Grid = std::vector<std::vector<GridCell>>;
-
 bool IsValid(int x, int y, int cols, int rows) {
     return x >= 0 && y >= 0 && x < cols && y < rows;
 }

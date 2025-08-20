@@ -18,6 +18,7 @@ extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 
 void game_setup() {
+    currentLambda = GenerateReducibleLambda(5);
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
     }
@@ -68,8 +69,9 @@ void RenderGame() {
     RenderMap();
     RenderPlayer();
 
-    auto lambda = GenerateReducibleLambda(3);
-    RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
+    //auto lambda = GenerateReducibleLambda(3);
+    //RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
+    RenderLambdaGrid(currentLambda, 10, 20, 12, 12, 10, 10);
 
     DrawCustomCursor();
 }

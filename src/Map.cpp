@@ -1,6 +1,9 @@
 #include "Map.h"
 #include "GFX.h"
-
+#include "Player.h"
+#include <queue>
+#include <unordered_map>
+#include <functional>
 #include <vector>
 
 int mapWidth = 20; // tiles wide
@@ -11,6 +14,187 @@ int tileSize = 16;  // pixels per tile
 std::vector<Tile> mapTiles;
 
 int currentLevel = 0;
+
+using Grid = std::vector<std::vector<GridCell>>;
+
+Grid GetLambdaGrid(const std::shared_ptr<LambdaNode>& root, int cols, int rows) {
+    Grid grid(rows, std::vector<GridCell>(cols));
+    for (int y = 0; y < rows; ++y)
+        for (int x = 0; x < cols; ++x)
+            grid[y][x] = {x, y, false, nullptr};
+
+    std::queue<std::tuple<std::shared_ptr<LambdaNode>, int, int>> q;
+    int cx = cols / 2, cy = rows / 2;
+
+    grid[cy][cx].occupied = true;
+    grid[cy][cx].node = root;
+    q.push({root, cx, cy});
+
+    while (!q.empty()) {
+        auto [node, gx, gy] = q.front();
+        q.pop();
+
+        auto connect = [&](std::shared_ptr<LambdaNode> child) {
+            if (!child) return;
+            auto pos = FindFreeNeighbor(grid, gx, gy, cols, rows);
+            if (!pos) return;
+
+            int nx = pos->first, ny = pos->second;
+            grid[ny][nx].occupied = true;
+            grid[ny][nx].node = child;
+            q.push({child, nx, ny});
+        };
+
+        connect(node->left);
+        connect(node->right);
+    }
+
+    return grid;
+}
+
+bool playerTile = true;
+void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int gridCols, int gridRows, int roomSize) {
+    if (!root) return;
+
+    mapWidth = roomSize * gridCols;
+    mapHeight = roomSize * gridRows;
+    
+    mapTiles.clear();
+    
+    // Get the grid layout from the lambda expression
+    Grid lambdaGrid = GetLambdaGrid(root, gridCols, gridRows);
+    
+    // Create rooms at occupied grid positions
+    for (int gridY = 0; gridY < gridRows; gridY++) {
+        for (int gridX = 0; gridX < gridCols; gridX++) {
+            if (lambdaGrid[gridY][gridX].occupied) {
+                // Create a room
+                int roomX = gridX * roomSize;
+                int roomY = gridY * roomSize;
+                
+                for (int y = 0; y < roomSize; y++) {
+                    for (int x = 0; x < roomSize; x++) {
+                        Tile tile;
+                        tile.x = (roomX + x) * tileSize;
+                        tile.y = (roomY + y) * tileSize;
+                        tile.width = tileSize;
+                        tile.height = tileSize;
+                        tile.hitbox = {tile.x, tile.y, tileSize, tileSize};
+                        
+                        // Create walls on the perimeter, ground inside
+                        if (x == 0 || x == roomSize-1 || y == 0 || y == roomSize-1) {
+                            tile.type = WALL;
+                            tile.solid = true;
+                        } else {
+                            if (playerTile) {
+                                player.x = tile.x;
+                                player.y = tile.y;
+                                playerTile = false;
+                            }
+                            tile.type = GROUND;
+                            tile.solid = false;
+                        }
+                        
+                        mapTiles.push_back(tile);
+                    }
+                }
+            }
+        }
+    }
+    
+    // Create corridors between connected nodes (using the same logic as the diagram)
+    for (int gridY = 0; gridY < gridRows; gridY++) {
+        for (int gridX = 0; gridX < gridCols; gridX++) {
+            if (lambdaGrid[gridY][gridX].occupied) {
+                auto node = lambdaGrid[gridY][gridX].node;
+                
+                // Check connections to children
+                if (node->left) {
+                    // Find the child's position in the grid
+                    for (int y = 0; y < gridRows; y++) {
+                        for (int x = 0; x < gridCols; x++) {
+                            if (lambdaGrid[y][x].node == node->left) {
+                                CreateCorridor(gridX * roomSize, gridY * roomSize, x * roomSize, y * roomSize, roomSize);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if (node->right) {
+                    // Find the child's position in the grid
+                    for (int y = 0; y < gridRows; y++) {
+                        for (int x = 0; x < gridCols; x++) {
+                            if (lambdaGrid[y][x].node == node->right) {
+                                CreateCorridor(gridX * roomSize, gridY * roomSize, x * roomSize, y * roomSize, roomSize);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void CreateCorridor(int startGridX, int startGridY, int endGridX, int endGridY, int roomSize) {
+    int startX = startGridX + roomSize / 2;
+    int startY = startGridY + roomSize / 2;
+    int endX = endGridX + roomSize / 2;
+    int endY = endGridY + roomSize / 2;
+    
+    // Create a hash to determine connection style (matching the diagram)
+    size_t hash = std::hash<std::string>{}(std::to_string(startGridX) + std::to_string(startGridY) + 
+                                           std::to_string(endGridX) + std::to_string(endGridY));
+    bool horizontalFirst = (hash % 2 == 0);
+    
+    if (horizontalFirst) {
+        // Horizontal then vertical
+        for (int x = std::min(startX, endX); x <= std::max(startX, endX); x++) {
+            AddCorridorTile(x, startY, roomSize);
+        }
+        for (int y = std::min(startY, endY); y <= std::max(startY, endY); y++) {
+            AddCorridorTile(endX, y, roomSize);
+        }
+    } else {
+        // Vertical then horizontal
+        for (int y = std::min(startY, endY); y <= std::max(startY, endY); y++) {
+            AddCorridorTile(startX, y, roomSize);
+        }
+        for (int x = std::min(startX, endX); x <= std::max(startX, endX); x++) {
+            AddCorridorTile(x, endY, roomSize);
+        }
+    }
+}
+
+void AddCorridorTile(int gridX, int gridY, int roomSize) {
+    int tileX = gridX * tileSize;
+    int tileY = gridY * tileSize;
+    
+    // Check if a tile already exists at this position
+    for (auto& tile : mapTiles) {
+        if (tile.x == tileX && tile.y == tileY) {
+            // Convert wall to ground if it's a wall
+            if (tile.type == WALL) {
+                tile.type = GROUND;
+                tile.solid = false;
+                tile.hitbox = {0, 0, 0, 0};
+            }
+            return;
+        }
+    }
+    
+    // Add a new corridor tile
+    Tile tile;
+    tile.x = tileX;
+    tile.y = tileY;
+    tile.width = tileSize;
+    tile.height = tileSize;
+    tile.type = GROUND;
+    tile.solid = false;
+    tile.hitbox = {0, 0, 0, 0};
+    mapTiles.push_back(tile);
+}
 
 void InitializeRoom() {
     for (int y = 0; y < 15; ++y) {
