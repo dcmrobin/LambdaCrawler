@@ -52,7 +52,25 @@ Grid GetLambdaGrid(const std::shared_ptr<LambdaNode>& root, int cols, int rows) 
     return grid;
 }
 
-bool playerTile = true;
+// Helper function to determine connection style based on lambda nodes (same as DrawOrthogonalConnection)
+bool ShouldConnectHorizontallyFirst(const std::shared_ptr<LambdaNode>& node1, const std::shared_ptr<LambdaNode>& node2) {
+    size_t hash = 0;
+    auto hash_combine = [](size_t& seed, size_t value) {
+        seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    };
+    
+    if (node1) {
+        hash_combine(hash, std::hash<int>{}(static_cast<int>(node1->type)));
+        if (node1->type == LambdaNode::VAR) hash_combine(hash, std::hash<char>{}(node1->var));
+    }
+    if (node2) {
+        hash_combine(hash, std::hash<int>{}(static_cast<int>(node2->type)));
+        if (node2->type == LambdaNode::VAR) hash_combine(hash, std::hash<char>{}(node2->var));
+    }
+    
+    return (hash % 2 == 0);
+}
+
 void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int gridCols, int gridRows, int roomSize) {
     if (!root) return;
 
@@ -86,11 +104,6 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
                             tile.type = WALL;
                             tile.solid = true;
                         } else {
-                            if (playerTile) {
-                                player.x = tile.x;
-                                player.y = tile.y;
-                                playerTile = false;
-                            }
                             tile.type = GROUND;
                             tile.solid = false;
                         }
@@ -102,7 +115,7 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
         }
     }
     
-    // Create corridors between connected nodes (using the same logic as the diagram)
+    // Create corridors between connected nodes using the same logic as the diagram
     for (int gridY = 0; gridY < gridRows; gridY++) {
         for (int gridX = 0; gridX < gridCols; gridX++) {
             if (lambdaGrid[gridY][gridX].occupied) {
@@ -114,7 +127,12 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
                     for (int y = 0; y < gridRows; y++) {
                         for (int x = 0; x < gridCols; x++) {
                             if (lambdaGrid[y][x].node == node->left) {
-                                CreateCorridor(gridX * roomSize, gridY * roomSize, x * roomSize, y * roomSize, roomSize);
+                                CreateOrthogonalCorridor(
+                                    gridX * roomSize, gridY * roomSize, 
+                                    x * roomSize, y * roomSize, 
+                                    roomSize, 
+                                    node, node->left
+                                );
                                 break;
                             }
                         }
@@ -126,7 +144,12 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
                     for (int y = 0; y < gridRows; y++) {
                         for (int x = 0; x < gridCols; x++) {
                             if (lambdaGrid[y][x].node == node->right) {
-                                CreateCorridor(gridX * roomSize, gridY * roomSize, x * roomSize, y * roomSize, roomSize);
+                                CreateOrthogonalCorridor(
+                                    gridX * roomSize, gridY * roomSize, 
+                                    x * roomSize, y * roomSize, 
+                                    roomSize, 
+                                    node, node->right
+                                );
                                 break;
                             }
                         }
@@ -137,16 +160,15 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
     }
 }
 
-void CreateCorridor(int startGridX, int startGridY, int endGridX, int endGridY, int roomSize) {
+void CreateOrthogonalCorridor(int startGridX, int startGridY, int endGridX, int endGridY, int roomSize, const std::shared_ptr<LambdaNode>& node1, const std::shared_ptr<LambdaNode>& node2) {
+    // Convert room grid coordinates to tile coordinates
     int startX = startGridX + roomSize / 2;
     int startY = startGridY + roomSize / 2;
     int endX = endGridX + roomSize / 2;
     int endY = endGridY + roomSize / 2;
     
-    // Create a hash to determine connection style (matching the diagram)
-    size_t hash = std::hash<std::string>{}(std::to_string(startGridX) + std::to_string(startGridY) + 
-                                           std::to_string(endGridX) + std::to_string(endGridY));
-    bool horizontalFirst = (hash % 2 == 0);
+    // Use the same logic as DrawOrthogonalConnection to determine connection style
+    bool horizontalFirst = ShouldConnectHorizontallyFirst(node1, node2);
     
     if (horizontalFirst) {
         // Horizontal then vertical
