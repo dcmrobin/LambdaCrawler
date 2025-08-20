@@ -306,16 +306,15 @@ void CleanUpMapTiles() {
             if (grid[y][x] == nullptr) continue;
             
             Tile& tile = *grid[y][x];
-            
+
+            if (tile.type == WALL_TOP) {
+                if (y < mapHeight-1 && grid[y+1][x] != nullptr && grid[y+1][x]->type == GROUND) {
+                    tile.type = WALL;
+                }
+            }
             if (tile.type == WALL) {
                 if (y < mapHeight-1 && grid[y+1][x] != nullptr && (grid[y+1][x]->type == WALL || grid[y+1][x]->type == WALL_TOP)) {
                     tile.type = WALL_TOP;
-                }
-            }
-
-            if (tile.type == WALL_TOP) {
-                if (y < mapHeight-1 && (grid[y+1][x] == nullptr || grid[y+1][x]->type == GROUND)) {
-                    tile.type = WALL;
                 }
             }
         }
