@@ -72,6 +72,7 @@ bool ShouldConnectHorizontallyFirst(const std::shared_ptr<LambdaNode>& node1, co
 }
 
 void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int gridCols, int gridRows, int roomSize) {
+    bool spawnedPlayer = false;
     if (!root) return;
 
     mapWidth = roomSize * gridCols;
@@ -104,6 +105,11 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
                             tile.type = WALL;
                             tile.solid = true;
                         } else {
+                            if (!spawnedPlayer) {
+                                player.x = tile.x + tileSize / 2 - player.hitbox.width / 2;
+                                player.y = tile.y + tileSize / 2 - player.hitbox.height / 2;
+                                spawnedPlayer = true;
+                            }
                             tile.type = GROUND;
                             tile.solid = false;
                         }
