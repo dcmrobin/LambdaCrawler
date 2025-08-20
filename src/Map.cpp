@@ -158,6 +158,162 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
             }
         }
     }
+
+    CleanUpMapTiles();
+}
+
+void CleanUpMapTiles() {
+    // Create a 2D grid representation for easier neighbor checking
+    std::vector<std::vector<Tile*>> grid(mapHeight, std::vector<Tile*>(mapWidth, nullptr));
+    
+    // Populate the grid
+    for (auto& tile : mapTiles) {
+        int gridX = tile.x / tileSize;
+        int gridY = tile.y / tileSize;
+        if (gridX >= 0 && gridX < mapWidth && gridY >= 0 && gridY < mapHeight) {
+            grid[gridY][gridX] = &tile;
+        }
+    }
+    
+    // First pass: Add missing tiles around ground tiles
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            if (grid[y][x] == nullptr) continue;
+            
+            Tile& tile = *grid[y][x];
+            
+            if (tile.type == GROUND) {
+                // Check above
+                if (y > 0 && grid[y-1][x] == nullptr) {
+                    Tile newTile;
+                    newTile.type = WALL;
+                    newTile.solid = true;
+                    newTile.x = x * tileSize;
+                    newTile.y = (y-1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y-1][x] = &mapTiles.back();
+                }
+                
+                // Check left and right
+                if (x > 0 && (grid[y][x-1] == nullptr || (grid[y][x-1] != nullptr && grid[y][x-1]->type != WALL_TOP && grid[y][x-1]->type != GROUND))) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x-1) * tileSize;
+                    newTile.y = y * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y][x-1] = &mapTiles.back();
+                }
+                
+                if (x < mapWidth-1 && (grid[y][x+1] == nullptr || (grid[y][x+1] != nullptr && grid[y][x+1]->type != WALL_TOP && grid[y][x+1]->type != GROUND))) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x+1) * tileSize;
+                    newTile.y = y * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y][x+1] = &mapTiles.back();
+                }
+                
+                // Check below
+                if (y < mapHeight-1 && (grid[y+1][x] == nullptr || (grid[y+1][x] != nullptr && grid[y+1][x]->type != WALL && grid[y+1][x]->type != WALL_TOP && grid[y+1][x]->type != GROUND))) {
+                    Tile newTile;
+                    newTile.type = WALL;
+                    newTile.solid = true;
+                    newTile.x = x * tileSize;
+                    newTile.y = (y+1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y+1][x] = &mapTiles.back();
+                }
+
+                // Check corners
+                if (x > 0 && y > 0 && grid[y-1][x-1] == nullptr) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x-1) * tileSize;
+                    newTile.y = (y-1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y-1][x-1] = &mapTiles.back();
+                }
+
+                if (x < mapWidth-1 && y > 0 && grid[y-1][x+1] == nullptr) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x+1) * tileSize;
+                    newTile.y = (y-1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y-1][x+1] = &mapTiles.back();
+                }
+
+                if (x > 0 && y < mapHeight-1 && grid[y+1][x-1] == nullptr) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x-1) * tileSize;
+                    newTile.y = (y+1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y+1][x-1] = &mapTiles.back();
+                }
+
+                if (x < mapWidth-1 && y < mapHeight-1 && grid[y+1][x+1] == nullptr) {
+                    Tile newTile;
+                    newTile.type = WALL_TOP;
+                    newTile.solid = true;
+                    newTile.x = (x+1) * tileSize;
+                    newTile.y = (y+1) * tileSize;
+                    newTile.width = tileSize;
+                    newTile.height = tileSize;
+                    newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
+                    mapTiles.push_back(newTile);
+                    grid[y+1][x+1] = &mapTiles.back();
+                }
+            }
+        }
+    }
+    
+    // Second pass: Adjust wall types based on neighboring tiles
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            if (grid[y][x] == nullptr) continue;
+            
+            Tile& tile = *grid[y][x];
+            
+            if (tile.type == WALL) {
+                if (y < mapHeight-1 && grid[y+1][x] != nullptr && (grid[y+1][x]->type == WALL || grid[y+1][x]->type == WALL_TOP)) {
+                    tile.type = WALL_TOP;
+                }
+            }
+
+            if (tile.type == WALL_TOP) {
+                if (y < mapHeight-1 && (grid[y+1][x] == nullptr || grid[y+1][x]->type == GROUND)) {
+                    tile.type = WALL;
+                }
+            }
+        }
+    }
 }
 
 void CreateOrthogonalCorridor(int startGridX, int startGridY, int endGridX, int endGridY, int roomSize, const std::shared_ptr<LambdaNode>& node1, const std::shared_ptr<LambdaNode>& node2) {
