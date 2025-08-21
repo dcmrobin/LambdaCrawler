@@ -39,6 +39,179 @@ std::shared_ptr<LambdaNode> MakeApp(std::shared_ptr<LambdaNode> left, std::share
     return node;
 }
 
+std::set<char> GetFreeVariables(const std::shared_ptr<LambdaNode>& node) {
+    std::set<char> freeVars;
+    if (!node) return freeVars;
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            freeVars.insert(node->var);
+            break;
+        case LambdaNode::ABS: {
+            auto bodyFree = GetFreeVariables(node->left);
+            bodyFree.erase(node->var); // Remove the bound variable
+            freeVars.insert(bodyFree.begin(), bodyFree.end());
+            break;
+        }
+        case LambdaNode::APP: {
+            auto leftFree = GetFreeVariables(node->left);
+            auto rightFree = GetFreeVariables(node->right);
+            freeVars.insert(leftFree.begin(), leftFree.end());
+            freeVars.insert(rightFree.begin(), rightFree.end());
+            break;
+        }
+    }
+    return freeVars;
+}
+
+std::set<char> GetBoundVariables(const std::shared_ptr<LambdaNode>& node) {
+    std::set<char> boundVars;
+    if (!node) return boundVars;
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            break;
+        case LambdaNode::ABS:
+            boundVars.insert(node->var);
+            {
+                auto bodyBound = GetBoundVariables(node->left);
+                boundVars.insert(bodyBound.begin(), bodyBound.end());
+            }
+            break;
+        case LambdaNode::APP: {
+            auto leftBound = GetBoundVariables(node->left);
+            auto rightBound = GetBoundVariables(node->right);
+            boundVars.insert(leftBound.begin(), leftBound.end());
+            boundVars.insert(rightBound.begin(), rightBound.end());
+            break;
+        }
+    }
+    return boundVars;
+}
+
+char GenerateFreshVariable(const std::set<char>& usedVariables) {
+    // Try a-z
+    for (char c = 'a'; c <= 'z'; c++) {
+        if (usedVariables.find(c) == usedVariables.end()) {
+            return c;
+        }
+    }
+    
+    // If all a-z are used, try A-Z
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (usedVariables.find(c) == usedVariables.end()) {
+            return c;
+        }
+    }
+    
+    // As a fallback, return 'x' (this shouldn't happen in normal cases)
+    return 'x';
+}
+
+std::shared_ptr<LambdaNode> AlphaRename(const std::shared_ptr<LambdaNode>& node, char oldVar, char newVar) {
+    if (!node) return nullptr;
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            if (node->var == oldVar) {
+                return MakeVar(newVar);
+            }
+            return node;
+        case LambdaNode::ABS:
+            if (node->var == oldVar) {
+                // This abstraction binds the variable we're renaming, so we stop here
+                return node;
+            }
+            return MakeAbs(node->var, AlphaRename(node->left, oldVar, newVar));
+        case LambdaNode::APP:
+            return MakeApp(
+                AlphaRename(node->left, oldVar, newVar),
+                AlphaRename(node->right, oldVar, newVar)
+            );
+    }
+    return node;
+}
+
+std::shared_ptr<LambdaNode> Substitute(const std::shared_ptr<LambdaNode>& node, char var, const std::shared_ptr<LambdaNode>& replacement) {
+    if (!node) return nullptr;
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            if (node->var == var) {
+                return replacement;
+            }
+            return node;
+        case LambdaNode::ABS:
+            if (node->var == var) {
+                // The variable is bound in this abstraction, so we don't substitute
+                return node;
+            }
+            
+            {
+                // Check if the replacement has free variables that would be captured
+                auto freeInReplacement = GetFreeVariables(replacement);
+                if (freeInReplacement.find(node->var) != freeInReplacement.end()) {
+                    // We need to alpha-rename the bound variable to avoid capture
+                    char freshVar = GenerateFreshVariable(GetFreeVariables(node));
+                    auto renamedBody = AlphaRename(node->left, node->var, freshVar);
+                    return MakeAbs(freshVar, Substitute(renamedBody, var, replacement));
+                }
+            }
+            
+            // Safe to substitute in the body
+            return MakeAbs(node->var, Substitute(node->left, var, replacement));
+        case LambdaNode::APP:
+            return MakeApp(
+                Substitute(node->left, var, replacement),
+                Substitute(node->right, var, replacement)
+            );
+    }
+    return node;
+}
+
+// Replace the existing BetaReduce function with this complete implementation
+std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) {
+    if (!node) return nullptr;
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            return node;
+        case LambdaNode::ABS:
+            return MakeAbs(node->var, BetaReduce(node->left));
+        case LambdaNode::APP:
+            if (node->left && node->left->type == LambdaNode::ABS) {
+                // Beta reduction: (λx.M) N → M[x := N]
+                return Substitute(node->left->left, node->left->var, node->right);
+            }
+            
+            // Reduce the left and right sides
+            auto reducedLeft = BetaReduce(node->left);
+            auto reducedRight = BetaReduce(node->right);
+            
+            // If the left side changed, return a new application
+            if (reducedLeft != node->left || reducedRight != node->right) {
+                return MakeApp(reducedLeft, reducedRight);
+            }
+            
+            return node;
+    }
+    return node;
+}
+
+// Add a function to perform full normalization (repeated beta reduction until no more reductions are possible)
+std::shared_ptr<LambdaNode> Normalize(const std::shared_ptr<LambdaNode>& node, int maxSteps = 1000) {
+    auto current = node;
+    for (int i = 0; i < maxSteps; i++) {
+        auto next = BetaReduce(current);
+        if (next == current) {
+            // No more reductions possible
+            return next;
+        }
+        current = next;
+    }
+    return current; // Return after max steps to avoid infinite loops
+}
+
 // Lambda string output
 std::string LambdaToString(const std::shared_ptr<LambdaNode>& node) {
     if (!node) return "";
@@ -84,21 +257,6 @@ std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth) {
 
     //std::cout << "Generated: " << LambdaToString(root) << std::endl;
     return root;
-}
-
-// Trivial beta reducer
-std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) {
-    if (!node) return nullptr;
-    switch (node->type) {
-        case LambdaNode::APP:
-            if (node->left && node->left->type == LambdaNode::ABS)
-                return node->left->left;
-            return std::make_shared<LambdaNode>(*node);
-        case LambdaNode::ABS:
-        case LambdaNode::VAR:
-            return std::make_shared<LambdaNode>(*node);
-    }
-    return nullptr;
 }
 
 bool IsValid(int x, int y, int cols, int rows) {

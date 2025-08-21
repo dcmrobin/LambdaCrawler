@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <optional>
+#include <set>
 #include "GFX.h"
 
 struct LambdaNode {
@@ -20,6 +21,11 @@ struct GridCell {
 
 using Grid = std::vector<std::vector<GridCell>>;
 
+std::set<char> GetFreeVariables(const std::shared_ptr<LambdaNode>& node);
+std::set<char> GetBoundVariables(const std::shared_ptr<LambdaNode>& node);
+char GenerateFreshVariable(const std::set<char>& usedVariables);
+std::shared_ptr<LambdaNode> AlphaRename(const std::shared_ptr<LambdaNode>& node, char oldVar, char newVar);
+std::shared_ptr<LambdaNode> Substitute(const std::shared_ptr<LambdaNode>& node, char var, const std::shared_ptr<LambdaNode>& replacement);
 std::string LambdaToString(const std::shared_ptr<LambdaNode>& node);
 std::shared_ptr<LambdaNode> GenerateReducibleLambda(int maxDepth = 3);
 std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node);
