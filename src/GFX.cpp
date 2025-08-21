@@ -4,6 +4,8 @@
 #include <cmath>
 
 // Globals
+int cameraX = 0;
+int cameraY = 0;
 extern SDL_Renderer* renderer;
 std::unordered_map<std::string, SDL_Texture*> sprites;
 std::unordered_map<std::string, TTF_Font*> fonts;
@@ -265,8 +267,11 @@ void LoadFont(const std::string& name, const char* path, int size) {
     fonts[name] = font;
 }
 
-void DrawText(const std::string& font_name, const std::string& text, 
-             int x, int y, SDL_Color color, float scale) {
+void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale) {
+    // Account for scrolling
+    x -= cameraX;
+    y -= cameraY;
+
     auto it = fonts.find(font_name);
     if (it == fonts.end()) {
         std::cerr << "Font not found: " << font_name << std::endl;

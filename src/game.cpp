@@ -8,8 +8,6 @@
 #include <algorithm>
 
 // Camera state
-int cameraX = 0;
-int cameraY = 0;
 float cameraXF = 0.0f;
 float cameraYF = 0.0f;
 const float CAMERA_LERP = 0.15f;

@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+extern int cameraX;
+extern int cameraY;
 extern SDL_Renderer* renderer;
 extern SDL_Rect viewport;
 extern int LOGICAL_WIDTH;
