@@ -311,10 +311,24 @@ void CleanUpMapTiles() {
                 if (y < mapHeight-1 && grid[y+1][x] != nullptr && grid[y+1][x]->type == GROUND) {
                     tile.type = WALL;
                 }
-            }
-            if (tile.type == WALL) {
+            } else if (tile.type == WALL) {
                 if (y < mapHeight-1 && grid[y+1][x] != nullptr && (grid[y+1][x]->type == WALL || grid[y+1][x]->type == WALL_TOP)) {
                     tile.type = WALL_TOP;
+                }
+            }
+        }
+    }
+
+    // Final pass: Turn walltop tiles that are above empty tiles into walls
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            if (grid[y][x] == nullptr) continue;
+            
+            Tile& tile = *grid[y][x];
+
+            if (tile.type == WALL_TOP) {
+                if (grid[y+1][x] == nullptr) {
+                    tile.type = WALL;
                 }
             }
         }
