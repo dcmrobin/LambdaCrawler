@@ -113,6 +113,12 @@ void GenerateDungeonFromLambdaGrid(const std::shared_ptr<LambdaNode>& root, int 
                             tile.type = GROUND;
                             tile.solid = false;
                         }
+
+                        // If the current tile in the lambda statement is a variable, we spawn a chute tile:
+                        if (lambdaGrid[gridY][gridX].node->type == LambdaNode::VAR && x == roomSize / 2 && y == roomSize / 2) {
+                            tile.type = CHUTE_CLOSED; // Spawn a chute in the center
+                            tile.solid = false;
+                        }
                         
                         mapTiles.push_back(tile);
                     }
@@ -190,7 +196,10 @@ void CleanUpMapTiles() {
             
             if (tile.type == GROUND) {
                 // Check above
-                if (y > 0 && grid[y-1][x] == nullptr) {
+                if (y > 0 && (grid[y-1][x] == nullptr || 
+                    (grid[y-1][x] != nullptr && grid[y-1][x]->type != WALL_TOP && 
+                     grid[y-1][x]->type != GROUND && grid[y-1][x]->type != CHUTE_CLOSED && 
+                     grid[y-1][x]->type != CHUTE_OPEN))) {
                     Tile newTile;
                     newTile.type = WALL;
                     newTile.solid = true;
@@ -200,11 +209,22 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y-1][x] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y-1 >= 0 && y-1 < mapHeight && x >= 0 && x < mapWidth) {
+                        grid[y-1][x] = &mapTiles.back();
+                    }
                 }
                 
-                // Check left and right
-                if (x > 0 && (grid[y][x-1] == nullptr || (grid[y][x-1] != nullptr && grid[y][x-1]->type != WALL_TOP && grid[y][x-1]->type != GROUND))) {
+                // Helper function to check if we should add a side tile
+                auto shouldAddSideTile = [](Tile* tile) {
+                    return tile == nullptr || 
+                           (tile != nullptr && tile->type != WALL_TOP && 
+                            tile->type != GROUND && tile->type != CHUTE_CLOSED && 
+                            tile->type != CHUTE_OPEN);
+                };
+                
+                // Check left
+                if (x > 0 && shouldAddSideTile(grid[y][x-1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -214,10 +234,14 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y][x-1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y >= 0 && y < mapHeight && x-1 >= 0 && x-1 < mapWidth) {
+                        grid[y][x-1] = &mapTiles.back();
+                    }
                 }
                 
-                if (x < mapWidth-1 && (grid[y][x+1] == nullptr || (grid[y][x+1] != nullptr && grid[y][x+1]->type != WALL_TOP && grid[y][x+1]->type != GROUND))) {
+                // Check right
+                if (x < mapWidth-1 && shouldAddSideTile(grid[y][x+1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -227,11 +251,17 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y][x+1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y >= 0 && y < mapHeight && x+1 >= 0 && x+1 < mapWidth) {
+                        grid[y][x+1] = &mapTiles.back();
+                    }
                 }
                 
                 // Check below
-                if (y < mapHeight-1 && (grid[y+1][x] == nullptr || (grid[y+1][x] != nullptr && grid[y+1][x]->type != WALL && grid[y+1][x]->type != WALL_TOP && grid[y+1][x]->type != GROUND))) {
+                if (y < mapHeight-1 && (grid[y+1][x] == nullptr || 
+                    (grid[y+1][x] != nullptr && grid[y+1][x]->type != WALL && 
+                     grid[y+1][x]->type != WALL_TOP && grid[y+1][x]->type != GROUND &&
+                     grid[y+1][x]->type != CHUTE_CLOSED && grid[y+1][x]->type != CHUTE_OPEN))) {
                     Tile newTile;
                     newTile.type = WALL;
                     newTile.solid = true;
@@ -241,11 +271,22 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y+1][x] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y+1 >= 0 && y+1 < mapHeight && x >= 0 && x < mapWidth) {
+                        grid[y+1][x] = &mapTiles.back();
+                    }
                 }
-
-                // Check corners
-                if (x > 0 && y > 0 && grid[y-1][x-1] == nullptr) {
+                
+                // Check corners with bounds checking
+                auto shouldAddCornerTile = [](Tile* tile) {
+                    return tile == nullptr || 
+                           (tile != nullptr && tile->type != WALL_TOP && 
+                            tile->type != GROUND && tile->type != CHUTE_CLOSED && 
+                            tile->type != CHUTE_OPEN);
+                };
+                
+                // Top-left corner
+                if (x > 0 && y > 0 && shouldAddCornerTile(grid[y-1][x-1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -255,10 +296,14 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y-1][x-1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y-1 >= 0 && y-1 < mapHeight && x-1 >= 0 && x-1 < mapWidth) {
+                        grid[y-1][x-1] = &mapTiles.back();
+                    }
                 }
-
-                if (x < mapWidth-1 && y > 0 && grid[y-1][x+1] == nullptr) {
+                
+                // Top-right corner
+                if (x < mapWidth-1 && y > 0 && shouldAddCornerTile(grid[y-1][x+1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -268,10 +313,14 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y-1][x+1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y-1 >= 0 && y-1 < mapHeight && x+1 >= 0 && x+1 < mapWidth) {
+                        grid[y-1][x+1] = &mapTiles.back();
+                    }
                 }
-
-                if (x > 0 && y < mapHeight-1 && grid[y+1][x-1] == nullptr) {
+                
+                // Bottom-left corner
+                if (x > 0 && y < mapHeight-1 && shouldAddCornerTile(grid[y+1][x-1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -281,10 +330,14 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y+1][x-1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y+1 >= 0 && y+1 < mapHeight && x-1 >= 0 && x-1 < mapWidth) {
+                        grid[y+1][x-1] = &mapTiles.back();
+                    }
                 }
-
-                if (x < mapWidth-1 && y < mapHeight-1 && grid[y+1][x+1] == nullptr) {
+                
+                // Bottom-right corner
+                if (x < mapWidth-1 && y < mapHeight-1 && shouldAddCornerTile(grid[y+1][x+1])) {
                     Tile newTile;
                     newTile.type = WALL_TOP;
                     newTile.solid = true;
@@ -294,7 +347,10 @@ void CleanUpMapTiles() {
                     newTile.height = tileSize;
                     newTile.hitbox = {newTile.x, newTile.y, tileSize, tileSize};
                     mapTiles.push_back(newTile);
-                    grid[y+1][x+1] = &mapTiles.back();
+                    // Update grid only if within bounds
+                    if (y+1 >= 0 && y+1 < mapHeight && x+1 >= 0 && x+1 < mapWidth) {
+                        grid[y+1][x+1] = &mapTiles.back();
+                    }
                 }
             }
         }
@@ -312,7 +368,8 @@ void CleanUpMapTiles() {
                     tile.type = WALL;
                 }
             } else if (tile.type == WALL) {
-                if (y < mapHeight-1 && grid[y+1][x] != nullptr && (grid[y+1][x]->type == WALL || grid[y+1][x]->type == WALL_TOP)) {
+                if (y < mapHeight-1 && grid[y+1][x] != nullptr && 
+                    (grid[y+1][x]->type == WALL || grid[y+1][x]->type == WALL_TOP)) {
                     tile.type = WALL_TOP;
                 }
             }
@@ -326,7 +383,7 @@ void CleanUpMapTiles() {
             
             Tile& tile = *grid[y][x];
 
-            if (tile.type == WALL_TOP) {
+            if (tile.type == WALL_TOP && y < mapHeight-1) {
                 if (grid[y+1][x] == nullptr) {
                     tile.type = WALL;
                 }
