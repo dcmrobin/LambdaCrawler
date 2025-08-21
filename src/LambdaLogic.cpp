@@ -193,7 +193,7 @@ void RenderLambdaGrid(const std::shared_ptr<LambdaNode>& root, int startX, int s
                 FillCircle(px + cellW / 2, py + cellH / 2, cellW / 4, PORT_COLOR);
                 break;
             case LambdaNode::VAR: {
-                SDL_Point pts[4] = {
+                SDL_Point pts[4] = {// increase the 4s, smaller diamond. decrease the 4s, bigger diamond.
                     {px + cellW/2, py + 4},
                     {px + cellW - 4, py + cellH/2},
                     {px + cellW/2, py + cellH - 4},

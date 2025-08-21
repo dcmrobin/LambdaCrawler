@@ -247,9 +247,22 @@ void FillPolygon(const SDL_Point* points, int count, SDL_Color color) {
         });
     }
 
+    // For quadrilaterals (4 points), we need to create two triangles
     std::vector<int> indices;
-    for (int i = 0; i < count; i++) {
-        indices.push_back(i);
+    if (count == 4) {
+        // First triangle: points 0, 1, 2
+        indices.push_back(0);
+        indices.push_back(1);
+        indices.push_back(2);
+        // Second triangle: points 0, 2, 3
+        indices.push_back(0);
+        indices.push_back(2);
+        indices.push_back(3);
+    } else {
+        // For other polygon types, use triangle fan
+        for (int i = 0; i < count; i++) {
+            indices.push_back(i);
+        }
     }
 
     SDL_RenderSetViewport(renderer, &viewport);
