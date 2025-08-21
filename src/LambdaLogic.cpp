@@ -170,46 +170,142 @@ std::shared_ptr<LambdaNode> Substitute(const std::shared_ptr<LambdaNode>& node, 
 }
 
 // Replace the existing BetaReduce function with this complete implementation
-std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node) {
+std::shared_ptr<LambdaNode> BetaReduce(const std::shared_ptr<LambdaNode>& node, ReductionStrategy strategy) {
+    if (!node) return nullptr;
+    
+    switch (strategy) {
+        case ReductionStrategy::NORMAL_ORDER:
+            return NormalOrderReduce(node);
+        case ReductionStrategy::APPLICATIVE_ORDER:
+            return ApplicativeOrderReduce(node);
+        case ReductionStrategy::CALL_BY_NAME:
+            return CallByNameReduce(node);
+        case ReductionStrategy::CALL_BY_NEED:
+            // For simplicity, we'll use call-by-name for now
+            // True call-by-need requires memoization which is more complex
+            return CallByNameReduce(node);
+    }
+    return node;
+}
+
+// Normal order: leftmost, outermost redex first
+std::shared_ptr<LambdaNode> NormalOrderReduce(const std::shared_ptr<LambdaNode>& node) {
+    if (!node) return nullptr;
+    
+    // If this is a redex, reduce it (outermost)
+    if (node->type == LambdaNode::APP && 
+        node->left && node->left->type == LambdaNode::ABS) {
+        return Substitute(node->left->left, node->left->var, node->right);
+    }
+    
+    // Otherwise, traverse left to right
+    switch (node->type) {
+        case LambdaNode::VAR:
+            return node;
+        case LambdaNode::ABS:
+            return MakeAbs(node->var, NormalOrderReduce(node->left));
+        case LambdaNode::APP: {
+            // Try reducing left subtree first
+            auto reducedLeft = NormalOrderReduce(node->left);
+            if (reducedLeft != node->left) {
+                return MakeApp(reducedLeft, node->right);
+            }
+            // If left didn't change, try right subtree
+            auto reducedRight = NormalOrderReduce(node->right);
+            if (reducedRight != node->right) {
+                return MakeApp(node->left, reducedRight);
+            }
+            return node;
+        }
+    }
+    return node;
+}
+
+// Applicative order: leftmost, innermost redex first  
+std::shared_ptr<LambdaNode> ApplicativeOrderReduce(const std::shared_ptr<LambdaNode>& node) {
     if (!node) return nullptr;
     
     switch (node->type) {
         case LambdaNode::VAR:
             return node;
         case LambdaNode::ABS:
-            return MakeAbs(node->var, BetaReduce(node->left));
-        case LambdaNode::APP:
-            if (node->left && node->left->type == LambdaNode::ABS) {
-                // Beta reduction: (λx.M) N → M[x := N]
-                return Substitute(node->left->left, node->left->var, node->right);
+            return MakeAbs(node->var, ApplicativeOrderReduce(node->left));
+        case LambdaNode::APP: {
+            // First reduce both sides completely (innermost)
+            auto reducedLeft = ApplicativeOrderReduce(node->left);
+            auto reducedRight = ApplicativeOrderReduce(node->right);
+            
+            // If we have (λx.M) N after reduction, do beta reduction
+            if (reducedLeft->type == LambdaNode::ABS) {
+                return Substitute(reducedLeft->left, reducedLeft->var, reducedRight);
             }
             
-            // Reduce the left and right sides
-            auto reducedLeft = BetaReduce(node->left);
-            auto reducedRight = BetaReduce(node->right);
-            
-            // If the left side changed, return a new application
             if (reducedLeft != node->left || reducedRight != node->right) {
                 return MakeApp(reducedLeft, reducedRight);
             }
-            
             return node;
+        }
     }
     return node;
 }
 
-// Add a function to perform full normalization (repeated beta reduction until no more reductions are possible)
-std::shared_ptr<LambdaNode> Normalize(const std::shared_ptr<LambdaNode>& node, int maxSteps = 1000) {
+// Call-by-name: like normal order but don't reduce inside abstractions
+std::shared_ptr<LambdaNode> CallByNameReduce(const std::shared_ptr<LambdaNode>& node) {
+    if (!node) return nullptr;
+    
+    // Only reduce at application nodes, not inside abstractions
+    if (node->type == LambdaNode::APP && 
+        node->left && node->left->type == LambdaNode::ABS) {
+        return Substitute(node->left->left, node->left->var, node->right);
+    }
+    
+    // For applications, only reduce the left side (the function)
+    if (node->type == LambdaNode::APP) {
+        auto reducedLeft = CallByNameReduce(node->left);
+        if (reducedLeft != node->left) {
+            return MakeApp(reducedLeft, node->right);
+        }
+    }
+    
+    return node;
+}
+
+// Helper to check if a node contains a redex
+bool HasRedex(const std::shared_ptr<LambdaNode>& node) {
+    if (!node) return false;
+    
+    if (node->type == LambdaNode::APP && 
+        node->left && node->left->type == LambdaNode::ABS) {
+        return true;
+    }
+    
+    switch (node->type) {
+        case LambdaNode::VAR:
+            return false;
+        case LambdaNode::ABS:
+            return HasRedex(node->left);
+        case LambdaNode::APP:
+            return HasRedex(node->left) || HasRedex(node->right);
+    }
+    return false;
+}
+
+// Enhanced Normalize function with strategy
+std::shared_ptr<LambdaNode> Normalize(const std::shared_ptr<LambdaNode>& node, 
+                                     ReductionStrategy strategy = ReductionStrategy::NORMAL_ORDER,
+                                     int maxSteps = 1000) {
     auto current = node;
     for (int i = 0; i < maxSteps; i++) {
-        auto next = BetaReduce(current);
+        auto next = BetaReduce(current, strategy);
         if (next == current) {
-            // No more reductions possible
-            return next;
+            return next; // No more reductions possible
         }
         current = next;
+        
+        // Optional: add debug output to see reduction steps
+        // std::cout << "Step " << i << ": " << LambdaToString(current) << std::endl;
     }
-    return current; // Return after max steps to avoid infinite loops
+    return current;
 }
 
 // Lambda string output
