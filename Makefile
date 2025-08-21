@@ -9,56 +9,30 @@ EXEC := build/LambdaCrawler.exe
 ASSETS_SRC := assets
 ASSETS_DEST := build/assets
 
-# DLLs
-SDL_DLL_SOURCE := SDL2/bin/SDL2.dll
-SDL_IMAGE_DLL_SOURCE := SDL2/bin/SDL2_image.dll
-SDL_TTF_SOURCE := SDL2/bin/SDL2_ttf.dll
-GCC_DLL_SOURCE := /mingw64/bin/libgcc_s_seh-1.dll
-STDCPP_DLL_SOURCE := /mingw64/bin/libstdc++-6.dll
-PTHREAD_DLL_SOURCE := /mingw64/bin/libwinpthread-1.dll
-GRAPHITE_DLL_SOURCE := /mingw64/bin/libgraphite2.dll
-HARFBUZZ_DLL_SOURCE := /mingw64/bin/libharfbuzz-0.dll
-GLIB_DLL_SOURCE := /mingw64/bin/libglib-2.0-0.dll
-FREETYPE_DLL_SOURCE := /mingw64/bin/libfreetype-6.dll
-BZ2_DLL_SOURCE := /mingw64/bin/libbz2-1.dll
-BROTLI_DEC_DLL_SOURCE := /mingw64/bin/libbrotlidec.dll
-BROTLI_COMMON_DLL_SOURCE := /mingw64/bin/libbrotlicommon.dll
-PNG_DLL_SOURCE := /mingw64/bin/libpng16-16.dll
-ZLIB_DLL_SOURCE := /mingw64/bin/zlib1.dll
-INTL_DLL_SOURCE := /mingw64/bin/libintl-8.dll
-PCRE2_DLL_SOURCE := /mingw64/bin/libpcre2-8-0.dll
-ICONV_DLL_SOURCE := /mingw64/bin/libiconv-2.dll
-
 # Source files
 SRCS := $(shell find src -name '*.cpp')
 
 # Default target
-all: $(EXEC) copy_dll copy_assets
+all: $(EXEC) copy_dll copy_dll_auto copy_assets
 
 $(EXEC): $(SRCS)
 	@mkdir -p build
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
-copy_dll:
-	@echo "Copying DLLs..."
-	@cp "$(SDL_DLL_SOURCE)" "build/" || echo "WARNING: SDL2.dll not found"
-	@cp "$(SDL_IMAGE_DLL_SOURCE)" "build/" || echo "WARNING: SDL2_image.dll not found"
-	@cp "$(SDL_TTF_SOURCE)" "build/" || echo "WARNING: SDL2_ttf.dll not found"
-	@cp "$(GCC_DLL_SOURCE)" "build/" || echo "WARNING: libgcc_s_seh-1.dll not found"
-	@cp "$(STDCPP_DLL_SOURCE)" "build/" || echo "WARNING: libstdc++-6.dll not found"
-	@cp "$(PTHREAD_DLL_SOURCE)" "build/" || echo "WARNING: libwinpthread-1.dll not found"
-	@cp "$(GRAPHITE_DLL_SOURCE)" "build/" || echo "WARNING: libgraphite2.dll not found"
-	@cp "$(HARFBUZZ_DLL_SOURCE)" "build/" || echo "WARNING: libharfbuzz-0.dll not found"
-	@cp "$(GLIB_DLL_SOURCE)" "build/" || echo "WARNING: libglib-2.0-0.dll not found"
-	@cp "$(FREETYPE_DLL_SOURCE)" "build/" || echo "WARNING: libfreetype-6.dll not found"
-	@cp "$(BZ2_DLL_SOURCE)" "build/" || echo "WARNING: libbz2-1.dll not found"
-	@cp "$(BROTLI_DEC_DLL_SOURCE)" "build/" || echo "WARNING: libbrotlidec.dll not found"
-	@cp "$(BROTLI_COMMON_DLL_SOURCE)" "build/" || echo "WARNING: libbrotlicommon.dll not found"
-	@cp "$(PNG_DLL_SOURCE)" "build/" || echo "WARNING: libpng16-16.dll not found"
-	@cp "$(ZLIB_DLL_SOURCE)" "build/" || echo "WARNING: zlib1.dll not found"
-	@cp "$(INTL_DLL_SOURCE)" "build/" || echo "WARNING: libintl-8.dll not found"
-	@cp "$(PCRE2_DLL_SOURCE)" "build/" || echo "WARNING: libpcre2-8-0.dll not found"
-	@cp "$(ICONV_DLL_SOURCE)" "build/" || echo "WARNING: libiconv-2.dll not found"
+# Copy all SDL DLLs from local SDL2/bin
+copy_dll: $(EXEC)
+	@echo "Copying SDL2 DLLs..."
+	@cp SDL2/bin/*.dll build/ || echo "WARNING: No SDL2 DLLs found"
+
+# Auto-detect dependent DLLs using ldd
+copy_dll_auto: $(EXEC)
+	@echo "Scanning for dependent DLLs..."
+	@ldd $(EXEC) > build/ldd.log
+	@echo "Copying dependent MinGW DLLs..."
+	@grep -o '/[^ ]*\.dll' build/ldd.log | grep '/mingw64/bin/' | while read dll; do \
+		echo "  -> $$dll"; \
+		cp "$$dll" build/; \
+	done
 
 copy_assets:
 	@echo "Copying assets..."
@@ -72,4 +46,4 @@ run: all
 	@echo "Running LambdaCrawler..."
 	cd build && ./LambdaCrawler.exe
 
-.PHONY: all clean run copy_dll copy_assets
+.PHONY: all clean run copy_dll copy_dll_auto copy_assets
