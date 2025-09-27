@@ -4,7 +4,7 @@ This will be a roguelike, where the player is a calculator. The player starts in
 Another idea is that the player could find little lambda expressions around the level, and then when at the exit, would be able to add that lambda expression chunk to the current lambda expression, potentially completely changing it. Some lambda expressions can be infinitely reduced, so that'll be interesting- maybe there could be a special item that could predict a certain amount of beta reductions into the future?
 
 #ENEMIES#
-These could be irrational numbers and the like.
+These could be irrational numbers and the like. Add something to do with happy and sad numbers- look that up, its a maths thing.
 
 #ITEMS#
 Small lambda expression, power cells, maybe upgrades to player?

@@ -16,7 +16,7 @@ extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 
 void game_setup() {
-    currentLambda = GenerateReducibleLambda(5);
+    currentLambda = GenerateReducibleLambda(500);
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
     }
