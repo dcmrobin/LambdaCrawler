@@ -1,5 +1,4 @@
 #pragma once
-
 #include <SDL.h>
 #include <algorithm>
 #include <SDL_ttf.h>
@@ -13,6 +12,7 @@
 #include "GFX.h"
 #include "Player.h"
 #include "Map.h"
+#include "DisplayLogic.h"
 
 struct KeyStates {
   bool upPressed;
@@ -51,6 +51,8 @@ enum GameStates {
     STATE_RUN,
     STATE_PAUSE
 };
+
+extern GameStates gameState;
 
 struct Hitbox {
     int x = 0;

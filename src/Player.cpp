@@ -4,34 +4,6 @@ Player player = {};
 
 Tile currentIntersectingTile = {ERR, {0, 0, 0, 0}, false, 0, 0};
 
-int hopTimer = 0;
-void RenderPlayer() {
-    if (player.dy == -1 && player.spriteName != "player_idle_back_hop") {
-        player.spriteName = "player_idle_back";
-    } else if (player.dy == 1 && player.spriteName != "player_idle_hop") {
-        player.spriteName = "player_idle";
-    }
-
-    if (player.moving) {
-        hopTimer++;
-        if (hopTimer == 2) {
-            player.spriteName = player.spriteName == "player_idle_back" ? "player_idle_back_hop" : player.spriteName == "player_idle" ? "player_idle_hop" : player.spriteName;
-        }
-        if (hopTimer > 12) {
-            player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName;
-        }
-        if (hopTimer > 22) {
-            hopTimer = 0;
-        }
-    } else {
-        player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName;
-        hopTimer = 0;
-    }
-
-    extern int cameraX, cameraY;
-    DrawSprite(player.spriteName, player.x - cameraX, player.y - cameraY, 16, 16);
-}
-
 void HandlePlayerInput() {
     // Handle movement
     auto canMove = [](int newX, int newY) {

@@ -1,6 +1,7 @@
 #include "HelperFunctions.h"
 
 KeyStates keystates;
+GameStates gameState;
 
 void UpdateKeyStates() {
   // Save previous states
