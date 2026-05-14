@@ -1,6 +1,4 @@
 #include "Map.h"
-#include "GFX.h"
-#include "Player.h"
 #include <queue>
 #include <unordered_map>
 #include <functional>

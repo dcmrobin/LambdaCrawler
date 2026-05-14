@@ -1,5 +1,5 @@
 #pragma once
-#include "GFX.h"
+#include "HelperFunctions.h"
 
 extern int cameraX;
 extern int cameraY;

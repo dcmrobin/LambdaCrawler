@@ -1,9 +1,5 @@
 #pragma once
-#include <SDL.h>
-#include <SDL_ttf.h>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "HelperFunctions.h"
 
 extern int cameraX;
 extern int cameraY;

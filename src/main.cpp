@@ -1,9 +1,6 @@
 #define SDL_MAIN_HANDLED
 
-#include <SDL.h>
-#include <iostream>
-#include "game.h"
-#include "GFX.h"
+#include "HelperFunctions.h"
 
 int LOGICAL_WIDTH = 320;
 int LOGICAL_HEIGHT = 240;

@@ -1,10 +1,6 @@
 #include "HelperFunctions.h"
-#include "GFX.h"
-#include "Map.h"
 
 KeyStates keystates;
-
-std::shared_ptr<LambdaNode> currentLambda;
 
 void UpdateKeyStates() {
   // Save previous states

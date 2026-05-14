@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "Map.h"
 
 Player player = {};
 
@@ -100,12 +99,7 @@ void HandlePlayerInput() {
                 if (tile.type == CHUTE_OPEN) {
                     DrawText("8bitMageFont", "[Enter] Enter chute", player.x - 12, player.y - 3, {255, 255, 255, 255}, 0.2f);
                     if (IsKeyPressed(KEY_ENTER, false)) {
-                        if (currentLevel > 0) {
-                            currentLambda = BetaReduce(currentLambda);
-                        }
-                        currentLevel += 1;
-                        //generate a level from a lambda statement
-                        GenerateDungeonFromLambdaGrid(currentLambda, 8, 8, 8);
+                        // player has gone down the chute
                     }
                 }
                 if (IsKeyPressed(KEY_X, false)) {

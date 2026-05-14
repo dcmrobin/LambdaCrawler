@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include "HelperFunctions.h"
-#include "LambdaLogic.h"
 
 extern int mapWidth;
 extern int mapHeight;

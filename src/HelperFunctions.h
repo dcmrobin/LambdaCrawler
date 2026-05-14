@@ -1,6 +1,18 @@
 #pragma once
 
-#include "LambdaLogic.h"
+#include <SDL.h>
+#include <algorithm>
+#include <SDL_ttf.h>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <SDL_image.h>
+#include <cmath>
+#include <iostream>
+#include "game.h"
+#include "GFX.h"
+#include "Player.h"
+#include "Map.h"
 
 struct KeyStates {
   bool upPressed;
@@ -34,6 +46,12 @@ enum InputKey {
     KEY_ENTER
 };
 
+enum GameStates {
+    STATE_MENU,
+    STATE_RUN,
+    STATE_PAUSE
+};
+
 struct Hitbox {
     int x = 0;
     int y = 0;
@@ -59,8 +77,6 @@ struct Tile {
     int x;
     int y;
 };
-
-extern std::shared_ptr<LambdaNode> currentLambda;
 
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();

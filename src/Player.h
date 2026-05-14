@@ -1,7 +1,6 @@
 #pragma once
 
 #include "HelperFunctions.h"
-#include "GFX.h"
 
 struct Player {
     int x = 40;
