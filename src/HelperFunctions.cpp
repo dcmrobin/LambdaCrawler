@@ -1,7 +1,7 @@
 #include "HelperFunctions.h"
 
 KeyStates keystates;
-GameStates gameState;
+GameStates gameState = STATE_MENU;
 
 void UpdateKeyStates() {
   // Save previous states
