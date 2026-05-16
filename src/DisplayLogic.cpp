@@ -56,3 +56,8 @@ void RenderMap() {
         }
     }
 }
+
+void RenderMenu() {
+    DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    DrawSprite("title_sprite", LOGICAL_WIDTH / 2 - 64, 20, 200, 100);
+}

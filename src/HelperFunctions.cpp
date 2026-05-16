@@ -2,6 +2,10 @@
 
 KeyStates keystates;
 GameStates gameState = STATE_MENU;
+// Camera state
+float cameraXF = 0.0f;
+float cameraYF = 0.0f;
+const float CAMERA_LERP = 0.15f;
 
 void UpdateKeyStates() {
   // Save previous states
@@ -24,6 +28,25 @@ void UpdateKeyStates() {
   keystates.xPressed = keystate[SDL_SCANCODE_X];
   keystates.startPressed = keystate[SDL_SCANCODE_ESCAPE];
   keystates.enterPressed = keystate[SDL_SCANCODE_RETURN];
+}
+
+void UpdateCamera() {
+    // Camera follows player smoothly if currentLevel > 0
+    if (currentLevel > 0) {
+        int targetX = player.x + player.hitbox.width / 2 - LOGICAL_WIDTH / 2;
+        int targetY = player.y + player.hitbox.height / 2 - LOGICAL_HEIGHT / 2;
+        // Clamp target
+        targetX = std::max(0, std::min(targetX, (mapWidth * tileSize) - LOGICAL_WIDTH));
+        targetY = std::max(0, std::min(targetY, (mapHeight * tileSize) - LOGICAL_HEIGHT));
+        // Smoothly interpolate
+        cameraXF += (targetX - cameraXF) * CAMERA_LERP;
+        cameraYF += (targetY - cameraYF) * CAMERA_LERP;
+        cameraX = static_cast<int>(cameraXF);
+        cameraY = static_cast<int>(cameraYF);
+    } else {
+        cameraXF = cameraX = 0;
+        cameraYF = cameraY = 0;
+    }
 }
 
 bool IsKeyPressed(InputKey key, bool held) {
