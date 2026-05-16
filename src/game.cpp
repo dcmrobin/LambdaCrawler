@@ -1,11 +1,4 @@
 #include "game.h"
-#include "GFX.h"
-#include "HelperFunctions.h"
-#include "Player.h"
-#include "Map.h"
-#include "LambdaLogic.h"
-#include <iostream>
-#include <algorithm>
 
 // Camera state
 float cameraXF = 0.0f;
@@ -16,14 +9,12 @@ extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 
 void game_setup() {
-    currentLambda = GenerateReducibleLambda(500);
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
     }
     SetCustomCursor("cursor_normal", 0, 0); // Set hotspot (top-left corner)
     ShowSystemCursor(false);
     LoadFont("8bitMageFont", "assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
-    InitializeRoom();
     // Center camera at start if needed
     if (currentLevel > 0) {
         cameraXF = player.x + player.hitbox.width / 2 - LOGICAL_WIDTH / 2;
@@ -66,10 +57,5 @@ void UpdateGame() {
 void RenderGame() {
     RenderMap();
     RenderPlayer();
-
-    //auto lambda = GenerateReducibleLambda(3);
-    //RenderLambdaGrid(lambda, 10, 20, 12, 8, 10, 10);
-    RenderLambdaGrid(currentLambda, 10, 20, 8, 8, 10, 10);
-
     DrawCustomCursor();
 }

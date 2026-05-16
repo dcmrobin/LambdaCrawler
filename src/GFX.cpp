@@ -1,7 +1,4 @@
 #include "GFX.h"
-#include <SDL_image.h>
-#include <iostream>
-#include <cmath>
 
 // Globals
 int cameraX = 0;

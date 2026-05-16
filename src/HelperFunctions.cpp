@@ -1,10 +1,7 @@
 #include "HelperFunctions.h"
-#include "GFX.h"
-#include "Map.h"
 
 KeyStates keystates;
-
-std::shared_ptr<LambdaNode> currentLambda;
+GameStates gameState = STATE_MENU;
 
 void UpdateKeyStates() {
   // Save previous states

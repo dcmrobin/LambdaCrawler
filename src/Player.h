@@ -1,7 +1,5 @@
 #pragma once
-
 #include "HelperFunctions.h"
-#include "GFX.h"
 
 struct Player {
     int x = 40;
@@ -24,5 +22,4 @@ extern Player player;
 
 extern Tile currentIntersectingTile;
 
-void RenderPlayer();
 void HandlePlayerInput();
