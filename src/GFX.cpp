@@ -30,7 +30,10 @@ std::vector<std::string> sprite_names = {
     "tile_chute_closed",
     "tile_chute_open",
     "menu_splash",
-    "title_sprite"
+    "title_sprite",
+    "button",
+    "button_highlighted",
+    "button_pressed"
 };
 
 void Init(SDL_Renderer* ren) {

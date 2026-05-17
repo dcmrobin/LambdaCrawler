@@ -104,3 +104,30 @@ void ChangeTile(int x, int y, bool solid, TileType type) {
     newTile.type = type;
     mapTiles.push_back(newTile);
 }
+
+void UpdateButtons() {
+    for (auto& button : buttons) {
+        int mouseX, mouseY;
+        if (button.text == "null") continue; // Skip uninitialized buttons
+        SDL_GetMouseState(&mouseX, &mouseY);
+        button.hovered = (mouseX >= button.x && mouseX <= button.x + button.width &&
+                          mouseY >= button.y && mouseY <= button.y + button.height);
+        if (button.hovered && IsMouseButtonPressed(0)) {
+            button.pressed = true;
+        } else {
+            button.pressed = false;
+        }
+        if (!button.pressed && !button.hovered) {
+            button.spriteName = "button";
+        } else if (button.hovered && !button.pressed) {
+            button.spriteName = "button_highlighted";
+        } else if (button.pressed) {
+            button.spriteName = "button_pressed";
+        }
+    }
+}
+
+bool IsMouseButtonPressed(int button) {
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    return (mouseState & SDL_BUTTON(button)) != 0;
+}

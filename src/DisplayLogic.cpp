@@ -59,5 +59,15 @@ void RenderMap() {
 
 void RenderMenu() {
     DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-    DrawSprite("title_sprite", LOGICAL_WIDTH / 2 - 64, 20, 200, 100);
+    DrawSprite("title_sprite", 0, 0, 150, 70);
+    UpdateButtons();
+    RenderButtons();
+}
+
+void RenderButtons() {
+    for (auto& button : buttons) {
+        if (button.text == "null") continue; // Skip uninitialized buttons
+        DrawSprite(button.spriteName, LOGICAL_WIDTH / 2 - button.width / 2, button.y, button.width, button.height);
+        DrawText("8bitMageFont", button.text, LOGICAL_WIDTH / 2 - button.width / 2 + 25, button.y + 11, {255, 255, 255}, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
+    }
 }

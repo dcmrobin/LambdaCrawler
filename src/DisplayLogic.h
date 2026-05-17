@@ -4,3 +4,4 @@
 void RenderPlayer();
 void RenderMap();
 void RenderMenu();
+void RenderButtons();

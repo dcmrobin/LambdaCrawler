@@ -3,6 +3,8 @@
 extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 
+std::vector<Button> buttons = {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},};
+
 void game_setup() {
     for (const auto& name : sprite_names) {
         LoadSprite(name, ("assets/sprites/" + name + ".png").c_str());
@@ -50,5 +52,7 @@ void RenderGame() {
 }
 
 void UpdateMenu() {
-    //
+    buttons[0].text = "Start Game";
+    buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2);
+    buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2);
 }

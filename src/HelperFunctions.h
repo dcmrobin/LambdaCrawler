@@ -24,3 +24,5 @@ void UpdateKeyStates();
 void UpdateCamera();
 bool IsKeyPressed(InputKey key, bool held);
 void ChangeTile(int x, int y, bool solid, TileType type);
+void UpdateButtons();
+bool IsMouseButtonPressed(int button);

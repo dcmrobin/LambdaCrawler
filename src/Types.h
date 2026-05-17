@@ -47,6 +47,19 @@ struct Hitbox {
     int height = 0;
 };
 
+struct Button {
+    int x = 0;
+    int y = 0;
+    int width = 100;
+    int height = 30;
+    std::string text = "null";
+    std::string spriteName = "button";
+    bool hovered = false;
+    bool pressed = false;
+};
+
+extern std::vector<Button> buttons;
+
 enum TileType {
     ERR,
     GROUND,
