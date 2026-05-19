@@ -106,17 +106,30 @@ void ChangeTile(int x, int y, bool solid, TileType type) {
 }
 
 void UpdateButtons() {
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+
     for (auto& button : buttons) {
-        int mouseX, mouseY;
-        if (button.text == "null") continue; // Skip uninitialized buttons
-        SDL_GetMouseState(&mouseX, &mouseY);
-        button.hovered = (mouseX >= button.x && mouseX <= button.x + button.width &&
-                          mouseY >= button.y && mouseY <= button.y + button.height);
-        if (button.hovered && IsMouseButtonPressed(0)) {
+        if (button.text == "null") continue; 
+
+        // 1. Subtract viewport offset to get coordinates relative to the viewport top-left
+        float relativeMouseX = mouseX - viewport.x;
+        float relativeMouseY = mouseY - viewport.y;
+
+        // 2. Scale into your internal LOGICAL virtual dimensions
+        float logical_mousex = relativeMouseX * ((float)LOGICAL_WIDTH / viewport.w);
+        float logical_mousey = relativeMouseY * ((float)LOGICAL_HEIGHT / viewport.h);
+
+        // 3. Keep your standard bounding box checks
+        button.hovered = (logical_mousex >= button.x && logical_mousex <= button.x + button.width &&
+                          logical_mousey >= button.y && logical_mousey <= button.y + button.height);
+        
+        if (button.hovered && IsMouseButtonPressed(1)) {
             button.pressed = true;
         } else {
             button.pressed = false;
         }
+
         if (!button.pressed && !button.hovered) {
             button.spriteName = "button";
         } else if (button.hovered && !button.pressed) {
