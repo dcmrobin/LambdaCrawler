@@ -7,40 +7,17 @@ int LOGICAL_HEIGHT = 240;
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 bool is_fullscreen = false;
-SDL_Rect viewport = {0, 0, 0, 0};
 
-void update_viewport() {
-    int window_width, window_height;
-    SDL_GetWindowSize(window, &window_width, &window_height);
-    
-    // Calculate aspect ratio preserving viewport
-    float target_aspect = (float)LOGICAL_WIDTH / LOGICAL_HEIGHT;
-    float window_aspect = (float)window_width / window_height;
-    int w, h;
-    
-    if (window_aspect > target_aspect) {
-        // Window is wider - bars on sides
-        h = window_height;
-        w = (int)(h * target_aspect);
-    } else {
-        // Window is taller - bars on top/bottom
-        w = window_width;
-        h = (int)(w / target_aspect);
-    }
-    
-    // Center the viewport
-    viewport.x = (window_width - w) / 2;
-    viewport.y = (window_height - h) / 2;
-    viewport.w = w;
-    viewport.h = h;
-    
-    SDL_RenderSetViewport(renderer, &viewport);
+void setup_renderer() {
+    // This call handles scaling, letterboxing, aspect ratio
+    SDL_RenderSetLogicalSize(renderer, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    // Optional: choose how to handle aspect ratio
+    SDL_RenderSetIntegerScale(renderer, SDL_FALSE); // smooth scaling
 }
 
 void toggle_fullscreen() {
     is_fullscreen = !is_fullscreen;
     SDL_SetWindowFullscreen(window, is_fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    update_viewport();
 }
 
 int main(int argc, char* argv[]) {
@@ -69,11 +46,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Set blend mode for transparency support
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     
-    // Set initial viewport
-    update_viewport();
+    // Set logical size once
+    setup_renderer();
     
     Init(renderer);
     game_setup();
@@ -91,20 +67,14 @@ int main(int argc, char* argv[]) {
                         toggle_fullscreen();
                     }
                     break;
-                case SDL_WINDOWEVENT:
-                    if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
-                        event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                        update_viewport();
-                    }
-                    break;
             }
         }
 
-        // Clear the entire window to black
+        // Clear only the logical area
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         
-        // Draw game content within the viewport
+        // Draw game content
         game_loop();
         
         SDL_RenderPresent(renderer);

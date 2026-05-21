@@ -113,16 +113,12 @@ void UpdateButtons() {
         if (button.text == "null") continue; 
 
         // 1. Subtract viewport offset to get coordinates relative to the viewport top-left
-        float relativeMouseX = mouseX - viewport.x;
-        float relativeMouseY = mouseY - viewport.y;
-
-        // 2. Scale into your internal LOGICAL virtual dimensions
-        float logical_mousex = relativeMouseX * ((float)LOGICAL_WIDTH / viewport.w);
-        float logical_mousey = relativeMouseY * ((float)LOGICAL_HEIGHT / viewport.h);
+        float logical_x, logical_y;
+        SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
 
         // 3. Keep your standard bounding box checks
-        button.hovered = (logical_mousex >= button.x && logical_mousex <= button.x + button.width &&
-                          logical_mousey >= button.y && logical_mousey <= button.y + button.height);
+        button.hovered = ((int)(logical_x - cursor_hotspot.x) >= button.x && (int)(logical_x - cursor_hotspot.x) <= button.x + button.width &&
+                          (int)(logical_y - cursor_hotspot.y) >= button.y && (int)(logical_y - cursor_hotspot.y) <= button.y + button.height);
         
         if (button.hovered && IsMouseButtonPressed(1)) {
             button.pressed = true;
