@@ -67,7 +67,12 @@ void RenderMenu() {
 void RenderButtons() {
     for (auto& button : buttons) {
         if (button.text == "null") continue; // Skip uninitialized buttons
-        DrawSprite(button.spriteName, LOGICAL_WIDTH / 2 - button.width / 2, button.y, button.width, button.height);
-        DrawText("8bitMageFont", button.text, LOGICAL_WIDTH / 2 - button.width / 2 + 25, button.y + 11, {255, 255, 255}, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
+        DrawSprite(button.spriteName, button.x, button.y, button.width, button.height); // Draw the button sprite at the button's position
+
+        // Draw the button's text centered on the button
+        TTF_Font* font = TTF_OpenFont("assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
+        int textW, textH;
+        TTF_SizeText(font, button.text.c_str(), &textW, &textH);
+        DrawText("8bitMageFont", button.text, button.x + (button.width-textW), button.y + button.height / 3, {255, 255, 255}, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
     }
 }
