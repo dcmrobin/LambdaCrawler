@@ -111,6 +111,11 @@ void UpdateButtons() {
 
     for (auto& button : buttons) {
         if (button.text == "null") continue; 
+        
+        if (!button.active) {
+            button.spriteName = "button_pressed";
+            continue;
+        }
 
         // 1. Subtract viewport offset to get coordinates relative to the viewport top-left
         float logical_x, logical_y;

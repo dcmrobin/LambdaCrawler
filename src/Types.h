@@ -57,6 +57,7 @@ struct Button {
     std::string action = "none";
     bool hovered = false;
     bool pressed = false;
+    bool active = true;
 };
 
 extern std::vector<Button> buttons;
