@@ -54,6 +54,7 @@ struct Button {
     int height = 30;
     std::string text = "null";
     std::string spriteName = "button";
+    std::string action = "none";
     bool hovered = false;
     bool pressed = false;
 };

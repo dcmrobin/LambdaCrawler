@@ -12,10 +12,6 @@ static std::string current_cursor_sprite;
 SDL_Point cursor_hotspot = {0, 0};
 static bool system_cursor_visible = false;
 
-// Logical resolution defined elsewhere
-extern int LOGICAL_WIDTH;
-extern int LOGICAL_HEIGHT;
-
 std::vector<std::string> sprite_names = {
     "cursor_normal",
     "player_idle",

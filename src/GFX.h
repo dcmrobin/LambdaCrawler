@@ -4,8 +4,6 @@
 extern int cameraX;
 extern int cameraY;
 extern SDL_Renderer* renderer;
-extern int LOGICAL_WIDTH;
-extern int LOGICAL_HEIGHT;
 
 // Sprite map
 extern std::unordered_map<std::string, SDL_Texture*> sprites;
