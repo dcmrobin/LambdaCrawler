@@ -4,6 +4,7 @@
 int cameraX = 0;
 int cameraY = 0;
 extern SDL_Renderer* renderer;
+extern SDL_Window* window;
 std::unordered_map<std::string, SDL_Texture*> sprites;
 std::unordered_map<std::string, TTF_Font*> fonts;
 

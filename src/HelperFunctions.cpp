@@ -140,6 +140,9 @@ void UpdateButtons() {
         
         if (button.hovered && IsMouseButtonPressed(1)) {
             button.pressed = true;
+        } else if (button.pressed && !IsMouseButtonPressed(1)) {
+            button.pressed = false;
+            TriggerButtonAction(button.action);
         } else {
             button.pressed = false;
         }
@@ -157,4 +160,14 @@ void UpdateButtons() {
 bool IsMouseButtonPressed(int button) {
     Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
     return (mouseState & SDL_BUTTON(button)) != 0;
+}
+
+void TriggerButtonAction(ButtonAction action) {
+    switch (action) {
+        case QUIT_APPLICATION:
+            SDL_Quit();
+            break;
+        default:
+            return;
+    }
 }

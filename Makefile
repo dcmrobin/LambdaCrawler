@@ -1,8 +1,8 @@
 # Compiler
 CXX := g++
 CXXFLAGS := -Wall -std=c++17 -O2 -I./SDL2/include -Isrc
-LDFLAGS := -L./SDL2/lib
-LDLIBS := -lSDL2 -lSDL2_image -lSDL2_ttf
+LDFLAGS := -L./SDL2/lib -mwindows
+LDLIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # Executable and assets
 EXEC := build/LambdaCrawler.exe

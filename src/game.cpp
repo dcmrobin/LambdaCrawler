@@ -50,22 +50,22 @@ void RenderGame() {
 
 void UpdateMenu() {
     buttons[0].text = "Start Game";
-    buttons[0].action = "start_game";
+    buttons[0].action = START_GAME;
     buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2)-85;
     buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2)-20;
 
     buttons[1].text = "Load Game";
-    buttons[1].action = "load_game";
+    buttons[1].action = LOAD_GAME;
     buttons[1].x = (LOGICAL_WIDTH / 2 - buttons[1].width / 2)-85;
     buttons[1].y = (LOGICAL_HEIGHT / 2 - buttons[1].height / 2)+5;
 
     buttons[2].text = "Settings";
-    buttons[2].action = "show_settings";
+    buttons[2].action = SHOW_SETTINGS;
     buttons[2].x = (LOGICAL_WIDTH / 2 - buttons[2].width / 2)-85;
     buttons[2].y = (LOGICAL_HEIGHT / 2 - buttons[2].height / 2)+30;
 
     buttons[3].text = "Quit";
-    buttons[3].action = "quit_application";
+    buttons[3].action = QUIT_APPLICATION;
     buttons[3].x = (LOGICAL_WIDTH / 2 - buttons[3].width / 2)-85;
     buttons[3].y = (LOGICAL_HEIGHT / 2 - buttons[3].height / 2)+55;
 }

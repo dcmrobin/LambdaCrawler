@@ -47,15 +47,23 @@ struct Hitbox {
     int height = 0;
 };
 
+enum ButtonAction {
+    NOTHING,
+    START_GAME,
+    LOAD_GAME,
+    SHOW_SETTINGS,
+    QUIT_APPLICATION
+};
+
 struct Button {
     int x = 0;
     int y = 0;
     int width = 100;
     int height = 30;
+    SDL_Color textColor = {63, 63, 63};
     std::string text = "null";
     std::string spriteName = "button";
-    std::string action = "none";
-    SDL_Color textColor = {63, 63, 63};
+    ButtonAction action = NOTHING;
     bool hovered = false;
     bool pressed = false;
     bool active = true;
