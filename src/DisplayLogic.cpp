@@ -73,6 +73,6 @@ void RenderButtons() {
         TTF_Font* font = TTF_OpenFont("assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", button.textSize);
         int textW, textH;
         TTF_SizeText(font, button.text.c_str(), &textW, &textH);
-        DrawText("8bitMageFont", button.text, button.x + (button.width-textW/2), button.y + (button.height-textH/1.4), button.color, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
+        DrawText("8bitMageFont", button.text, button.x + (textW/5), button.y + (button.height-textH/1.4), button.textColor, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
     }
 }

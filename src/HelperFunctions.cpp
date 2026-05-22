@@ -122,8 +122,8 @@ void UpdateButtons() {
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
 
         // 3. Keep your standard bounding box checks
-        button.hovered = ((int)(logical_x - cursor_hotspot.x) >= button.x && (int)(logical_x - cursor_hotspot.x) <= button.x + button.width &&
-                          (int)(logical_y - cursor_hotspot.y) >= button.y && (int)(logical_y - cursor_hotspot.y) <= button.y + button.height);
+        button.hovered = ((int)(logical_x - cursor_hotspot.x-5) >= button.x && (int)(logical_x - cursor_hotspot.x+5) <= button.x + button.width &&
+                          (int)(logical_y - cursor_hotspot.y-5) >= button.y && (int)(logical_y - cursor_hotspot.y+5) <= button.y + button.height);
         
         if (button.hovered && IsMouseButtonPressed(1)) {
             button.pressed = true;

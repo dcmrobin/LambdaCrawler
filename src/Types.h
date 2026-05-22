@@ -56,7 +56,7 @@ struct Button {
     std::string text = "null";
     std::string spriteName = "button";
     std::string action = "none";
-    SDL_Color color = {63, 63, 63};
+    SDL_Color textColor = {63, 63, 63};
     bool hovered = false;
     bool pressed = false;
     bool active = true;
