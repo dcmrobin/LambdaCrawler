@@ -51,6 +51,6 @@ void RenderGame() {
 void UpdateMenu() {
     buttons[0].text = "Start Game";
     buttons[0].action = "start_game";
-    buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2);
-    buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2);
+    buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2)-85;
+    buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2)-20;
 }

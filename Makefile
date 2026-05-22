@@ -12,12 +12,26 @@ ASSETS_DEST := build/assets
 # Source files
 SRCS := $(shell find src -name '*.cpp')
 
+# Target icon files
+ICON_ICO := assets/sprites/icon.ico
+RC_FILE := build/icon.rc
+RES_OBJ := build/icon.o
+
 # Default target
 all: $(EXEC) copy_dll copy_dll_auto copy_assets
 
 $(EXEC): $(SRCS)
 	@mkdir -p build
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS)
+	@# Check if icon.ico exists, compile resource object if it does
+	@if [ -f "$(ICON_ICO)" ]; then \
+		echo "Building executable..."; \
+		echo "MAINICON ICON \"../$(ICON_ICO)\"" > $(RC_FILE); \
+		windres $(RC_FILE) -o $(RES_OBJ); \
+		$(CXX) $(CXXFLAGS) $^ $(RES_OBJ) -o $@ $(LDFLAGS) $(LDLIBS); \
+	else \
+		echo "Warning: $(ICON_ICO) not found. Building without embedded system icon..."; \
+		$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS); \
+	fi
 
 # Copy all SDL DLLs from local SDL2/bin
 copy_dll: $(EXEC)

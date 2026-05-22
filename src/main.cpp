@@ -38,6 +38,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Look for icon file and set it as the application icon
+    SDL_Surface* iconSurface = SDL_LoadBMP("assets/sprites/icon.bmp"); 
+    if (iconSurface) {
+        SDL_SetWindowIcon(window, iconSurface);
+        SDL_FreeSurface(iconSurface);
+    } else {
+        std::cerr << "Warning: Runtime window icon could not be loaded: " << SDL_GetError() << std::endl;
+    }
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
