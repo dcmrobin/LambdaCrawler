@@ -112,8 +112,20 @@ void UpdateButtons() {
     for (auto& button : buttons) {
         if (button.text == "null") continue; 
         
+        // Only update this button if it is active
         if (!button.active) {
             button.spriteName = "button_pressed";
+            continue;
+        }
+
+        // Check if another button is already pressed, and if so, don't update this one
+        bool aButtonIsAlreadyPressed = false;
+        for (auto& b : buttons) {
+            if (b.pressed) {
+                aButtonIsAlreadyPressed = true;
+            }
+        }
+        if (aButtonIsAlreadyPressed && IsMouseButtonPressed(1)) {
             continue;
         }
 
