@@ -52,7 +52,6 @@ struct Button {
     int y = 0;
     int width = 100;
     int height = 30;
-    int textSize = 24;
     std::string text = "null";
     std::string spriteName = "button";
     std::string action = "none";
@@ -63,6 +62,12 @@ struct Button {
 };
 
 extern std::vector<Button> buttons;
+
+enum TextAlignment {
+    ALIGN_LEFT,
+    ALIGN_CENTER,
+    ALIGN_RIGHT
+};
 
 enum TileType {
     ERR,

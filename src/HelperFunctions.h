@@ -20,6 +20,7 @@ extern float cameraYF;
 extern const float CAMERA_LERP;
 extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
+extern TTF_Font* font;
 
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();

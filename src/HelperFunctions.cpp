@@ -6,6 +6,7 @@ GameStates gameState = STATE_MENU;
 float cameraXF = 0.0f;
 float cameraYF = 0.0f;
 const float CAMERA_LERP = 0.15f;
+TTF_Font* font = TTF_OpenFont("assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
 
 void UpdateKeyStates() {
   // Save previous states

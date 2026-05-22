@@ -212,45 +212,37 @@ void LoadFont(const std::string& name, const char* path, int size) {
     fonts[name] = font;
 }
 
-void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale) {
-    // Account for scrolling
-    x -= cameraX;
-    y -= cameraY;
-
+void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale, TextAlignment alignment) {
     auto it = fonts.find(font_name);
-    if (it == fonts.end()) {
-        std::cerr << "Font not found: " << font_name << std::endl;
-        return;
-    }
+    if (it == fonts.end()) return;
 
-    // Render text to surface
     SDL_Surface* surface = TTF_RenderText_Solid(it->second, text.c_str(), color);
-    if (!surface) {
-        std::cerr << "TTF_RenderText Error: " << TTF_GetError() << std::endl;
-        return;
-    }
+    if (!surface) return;
 
-    // Create texture from surface
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
-    if (!texture) {
-        std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-        return;
-    }
+    if (!texture) return;
 
-    // Get original text dimensions
     int w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
 
-    // Apply custom scale
-    SDL_Rect dest = {
-        x,
-        y,
-        (int)(w * scale),
-        (int)(h * scale)
-    };
+    // Apply scaling to the dimensions
+    int scaledW = static_cast<int>(w * scale);
+    int scaledH = static_cast<int>(h * scale);
 
-    // Render the text
+    // Adjust X and Y based on alignment BEFORE camera offsets
+    if (alignment == ALIGN_CENTER) {
+        x = x - (scaledW / 2);
+        y = y - (scaledH / 2);
+    } else if (alignment == ALIGN_RIGHT) {
+        x = x - scaledW;
+    }
+
+    // Apply camera scrolling
+    x -= cameraX;
+    y -= cameraY;
+
+    SDL_Rect dest = { x, y, scaledW, scaledH };
     SDL_RenderCopy(renderer, texture, nullptr, &dest);
     SDL_DestroyTexture(texture);
 }

@@ -70,9 +70,9 @@ void RenderButtons() {
         DrawSprite(button.spriteName, button.x, button.y, button.width, button.height); // Draw the button sprite at the button's position
 
         // Draw the button's text centered on the button
-        TTF_Font* font = TTF_OpenFont("assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", button.textSize);
-        int textW, textH;
-        TTF_SizeText(font, button.text.c_str(), &textW, &textH);
-        DrawText("8bitMageFont", button.text, button.x + (textW/5), button.y + (button.height-textH/1.4), button.textColor, (LOGICAL_WIDTH*LOGICAL_HEIGHT/100000.0f)-0.4f);
+        int centerX = button.x + (button.width / 2);
+        int centerY = button.y + (button.height / 2);
+        float scale = (LOGICAL_WIDTH * LOGICAL_HEIGHT / 100000.0f) - 0.4f;
+        DrawText("8bitMageFont", button.text, centerX, centerY, button.textColor, scale, ALIGN_CENTER);
     }
 }
