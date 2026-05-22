@@ -73,6 +73,6 @@ void RenderButtons() {
         int centerX = button.x + (button.width / 2);
         int centerY = button.y + (button.height / 2);
         float scale = (LOGICAL_WIDTH * LOGICAL_HEIGHT / 100000.0f) - 0.4f;
-        DrawText("8bitMageFont", button.text, centerX, centerY, button.textColor, scale, ALIGN_CENTER);
+        DrawText("8bitMageFont", button.text, centerX, button.pressed ? centerY + 1 : centerY, button.textColor, scale, ALIGN_CENTER);
     }
 }
