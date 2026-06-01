@@ -109,13 +109,11 @@ void ChangeTile(int x, int y, bool solid, TileType type) {
 void UpdateButtons() {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
-
     for (auto& button : buttons) {
-        if (button.text == "null") continue; 
-        
-        // Only update this button if it is active
-        if (!button.active) {
-            button.spriteName = "button_pressed";
+        if (button.text == "null") continue; // Skip buttons that aren't initialized
+
+        if (!button.active) { // Only update this button if it is active
+            button.spriteName = "button_pressed"; // Change the buttons sprite to "greyed-out" (the pressed sprite) and skip it
             continue;
         }
 
@@ -129,24 +127,23 @@ void UpdateButtons() {
         if (aButtonIsAlreadyPressed && IsMouseButtonPressed(1)) {
             continue;
         }
-
-        // 1. Subtract viewport offset to get coordinates relative to the viewport top-left
+        // Convert global mouse position to viewport mouse position
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
-
-        // 3. Keep your standard bounding box checks
+        // Check if the mouse pointer position is inside the bounds of the button (this line was too long to fit on the screen all at once)
         button.hovered = ((int)(logical_x - cursor_hotspot.x-5) >= button.x && (int)(logical_x - cursor_hotspot.x+5) <= button.x + button.width &&
                           (int)(logical_y - cursor_hotspot.y-5) >= button.y && (int)(logical_y - cursor_hotspot.y+5) <= button.y + button.height);
         
+        // Change button pressed flags according to left mouse button presses depending on if the button is hovered over in the first place
         if (button.hovered && IsMouseButtonPressed(1)) {
             button.pressed = true;
         } else if (button.pressed && !IsMouseButtonPressed(1)) {
             button.pressed = false;
-            TriggerButtonAction(button.action);
+            TriggerButtonAction(button.action); // Trigger the button's action
         } else {
             button.pressed = false;
         }
-
+        // Change button sprites to hovered/pressed/idle according to its hovered/pressed flags
         if (!button.pressed && !button.hovered) {
             button.spriteName = "button";
         } else if (button.hovered && !button.pressed) {

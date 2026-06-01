@@ -35,6 +35,7 @@ void UpdateGame() {
         UpdateCamera();
     } else if (gameState == STATE_MENU) {
         UpdateMenu();
+        UpdateButtons();
     }
 }
 
@@ -44,13 +45,15 @@ void RenderGame() {
         RenderPlayer();
     } else if (gameState == STATE_MENU) {
         RenderMenu();
+        RenderButtons();
     }
     DrawCustomCursor();
 }
 
 void UpdateMenu() {
-    buttons[0].text = "Start Game";
-    buttons[0].action = START_GAME;
+    buttons[0].text = "Start Game"; // Assign what text should be drawn on the button
+    buttons[0].action = START_GAME;// Assign what action the button should trigger by picking a value in the ButtonAction enum
+    // Position the button (LOGICAL_WIDTH & LOGICAL_HEIGHT are the width and height of the application viewport)
     buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2)-85;
     buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2)-20;
 

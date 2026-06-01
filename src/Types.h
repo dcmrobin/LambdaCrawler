@@ -53,17 +53,28 @@ enum ButtonAction {
     LOAD_GAME,
     SHOW_SETTINGS,
     QUIT_APPLICATION
-};
+}; // Defining all possible button actions
 
 struct Button {
+    // Button position
     int x = 0;
     int y = 0;
+
+    // Button width and height
     int width = 100;
     int height = 30;
+
+    // Button text and text color
     SDL_Color textColor = {63, 63, 63};
     std::string text = "null";
+
+    // Set the sprite the button starts as. As a default, the normal button sprite is assigned
     std::string spriteName = "button";
+
+    // Set the default action that happens when the button is pressed to NOTHING
     ButtonAction action = NOTHING;
+
+    // Several booleans to track what state the button is in
     bool hovered = false;
     bool pressed = false;
     bool active = true;

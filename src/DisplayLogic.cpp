@@ -58,10 +58,8 @@ void RenderMap() {
 }
 
 void RenderMenu() {
-    DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-    DrawSprite("title_sprite", 0, 0, 150, 70);
-    UpdateButtons();
-    RenderButtons();
+    DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT); // Draw the menu splash screen background to the width and height of the viewport
+    DrawSprite("title_sprite", 0, 0, 150, 70); // Draw the "LAMBDA CRAWLER" title graphic at the top left of the viewport
 }
 
 void RenderButtons() {
