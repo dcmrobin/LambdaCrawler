@@ -163,9 +163,9 @@ bool IsMouseButtonPressed(int button) {
 }
 
 void TriggerButtonAction(ButtonAction action) {
-    switch (action) {
+    switch (action) { // Look through the ButtonAction enum to find the one that was referenced in the function call
         case QUIT_APPLICATION:
-            std::exit(0);
+            std::exit(0); // Cleanly exit the application
             break;
         default:
             return;
