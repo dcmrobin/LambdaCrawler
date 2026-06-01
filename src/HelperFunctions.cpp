@@ -165,7 +165,7 @@ bool IsMouseButtonPressed(int button) {
 void TriggerButtonAction(ButtonAction action) {
     switch (action) {
         case QUIT_APPLICATION:
-            SDL_Quit();
+            std::exit(0);
             break;
         default:
             return;
