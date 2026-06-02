@@ -36,7 +36,7 @@ enum GameStates {
     STATE_MENU,
     STATE_RUN,
     STATE_PAUSE
-};
+}; // Defining all possible game states
 
 extern GameStates gameState;
 

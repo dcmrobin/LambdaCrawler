@@ -164,6 +164,27 @@ void TriggerButtonAction(ButtonAction action) {
         case QUIT_APPLICATION:
             std::exit(0); // Cleanly exit the application
             break;
+        case START_GAME:
+            for (auto &button : buttons) {
+                button.text = "null"; // Loop through all of the buttons and disable them, as they are not present in the initial game view
+            }
+            gameState = STATE_RUN; // Change the gameState to playing the game so that rendering logic changes from rendering the menu to rendering the game
+            break;
+        case LOAD_GAME:
+            if (std::filesystem::exists("save.dat")) { // Check if the save file exists
+                buttons[1].text = "Game Loaded"; // Show confirmation that the save file has been loaded
+                // Placeholder, would read the contents of the save file and load it into memory here
+            } else {
+                buttons[1].text = "No Save File"; // Show to the player that no save file exists
+            }
+            buttons[1].active = false; // Load game button disables no matter the outcome so that the player doesn't press it more than necessary
+            break;
+        case SHOW_SETTINGS:
+            showSettings = true; // Set the showSettings flag to true in order to tell RenderMenu() to draw the settings panel
+            for (auto &button : buttons) {
+                button.active = false; // Loop through all of the buttons and set them to inactive, as the player does not need to press them while in the settings panel
+            }
+            break;
         default:
             return;
     }

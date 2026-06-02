@@ -60,6 +60,10 @@ void RenderMap() {
 void RenderMenu() {
     DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT); // Draw the menu splash screen background to the width and height of the viewport
     DrawSprite("title_sprite", 0, 0, 150, 70); // Draw the "LAMBDA CRAWLER" title graphic at the top left of the viewport
+    RenderButtons(); // Moved from the main render loop so that the menu buttons will be drawn underneath the settings panel instead of on top of it
+    if (showSettings) {
+        DrawSprite("button", LOGICAL_WIDTH/2 - 50, LOGICAL_HEIGHT/2 - 130, 100, 240); // Draw the settings panel sprite if showSettings is true (button sprite used for now)
+    }
 }
 
 void RenderButtons() {
@@ -71,6 +75,6 @@ void RenderButtons() {
         int centerX = button.x + (button.width / 2);
         int centerY = button.y + (button.height / 2);
         float scale = (LOGICAL_WIDTH * LOGICAL_HEIGHT / 100000.0f) - 0.4f;
-        DrawText("8bitMageFont", button.text, centerX, button.pressed ? centerY + 1 : centerY, button.textColor, scale, ALIGN_CENTER);
+        DrawText("8bitMageFont", button.text, centerX, button.pressed || !button.active ? centerY + 1 : centerY, button.textColor, scale, ALIGN_CENTER);
     }
 }

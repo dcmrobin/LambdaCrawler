@@ -1,6 +1,7 @@
 #include "game.h"
 
 std::vector<Button> buttons = {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},};
+bool showSettings = false; // Flag to track whether the settings panel should show
 
 void game_setup() {
     for (const auto& name : sprite_names) {
@@ -24,6 +25,7 @@ void game_setup() {
 
 void game_loop() {
     RenderGame();
+    DrawCustomCursor();
     UpdateGame();
 }
 
@@ -41,13 +43,11 @@ void UpdateGame() {
 
 void RenderGame() {
     if (gameState == STATE_RUN) {
-        RenderMap();
+        RenderMap(); // Render map and player if the player has clicked play and therefore is in STATE_RUN
         RenderPlayer();
     } else if (gameState == STATE_MENU) {
-        RenderMenu();
-        RenderButtons();
+        RenderMenu(); // Render the title screen menu, as the value of gameState is STATE_MENU on bootup
     }
-    DrawCustomCursor();
 }
 
 void UpdateMenu() {
@@ -57,7 +57,8 @@ void UpdateMenu() {
     buttons[0].x = (LOGICAL_WIDTH / 2 - buttons[0].width / 2)-85;
     buttons[0].y = (LOGICAL_HEIGHT / 2 - buttons[0].height / 2)-20;
 
-    buttons[1].text = "Load Game";
+    // Only set the load game button's text to "Load Game" if it isn't already set to a feedback message
+    buttons[1].text = (buttons[1].text != "Game Loaded" && buttons[1].text != "No Save File") ? "Load Game" : buttons[1].text;
     buttons[1].action = LOAD_GAME;
     buttons[1].x = (LOGICAL_WIDTH / 2 - buttons[1].width / 2)-85;
     buttons[1].y = (LOGICAL_HEIGHT / 2 - buttons[1].height / 2)+5;

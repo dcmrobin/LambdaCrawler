@@ -7,6 +7,7 @@
 #include <vector>
 #include <SDL_image.h>
 #include <cmath>
+#include <filesystem>
 #include <iostream>
 #include "Types.h"
 #include "game.h"
