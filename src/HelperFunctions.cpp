@@ -137,7 +137,7 @@ void UpdateButtons() {
         // Change button pressed flags according to left mouse button presses depending on if the button is highlighted over in the first place
         if (button.highlighted && IsMouseButtonPressed(1)) {
             button.pressed = true;
-        } else if (button.pressed && !IsMouseButtonPressed(1)) {
+        } else if (button.pressed && !IsMouseButtonPressed(1) && button.highlighted) {
             button.pressed = false;
             TriggerButtonAction(button.action); // Trigger the button's action
         } else {
