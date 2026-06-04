@@ -48,11 +48,12 @@ struct Hitbox {
 };
 
 enum ButtonAction {
-    NOTHING,
-    START_GAME,
-    LOAD_GAME,
-    SHOW_SETTINGS,
-    QUIT_APPLICATION
+    BTN_NOTHING,
+    BTN_START_GAME,
+    BTN_LOAD_GAME,
+    BTN_QUIT_APPLICATION,
+    BTN_SHOW_SETTINGS,
+    BTN_HIDE_SETTINGS,
 }; // Defining all possible button actions
 
 struct Button {
@@ -71,11 +72,14 @@ struct Button {
     // Set the sprite the button starts as. As a default, the normal button sprite is assigned
     std::string spriteName = "button";
 
-    // Set the default action that happens when the button is pressed to NOTHING
-    ButtonAction action = NOTHING;
+    // Original sprite name that can be defaulted back to when the spriteName gets changed
+    std::string originalSpriteName = "button";
+
+    // Set the default action that happens when the button is pressed to BTN_NOTHING
+    ButtonAction action = BTN_NOTHING;
 
     // Several booleans to track what state the button is in
-    bool hovered = false;
+    bool highlighted = false;
     bool pressed = false;
     bool active = true;
 };

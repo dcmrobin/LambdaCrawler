@@ -29,7 +29,10 @@ std::vector<std::string> sprite_names = {
     "title_sprite",
     "button",
     "button_highlighted",
-    "button_pressed"
+    "button_pressed",
+    "exitButton",
+    "exitButton_highlighted",
+    "exitButton_pressed"
 };
 
 void Init(SDL_Renderer* ren) {

@@ -131,11 +131,11 @@ void UpdateButtons() {
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
         // Check if the mouse pointer position is inside the bounds of the button (this line was too long to fit on the screen all at once)
-        button.hovered = ((int)(logical_x - cursor_hotspot.x-5) >= button.x && (int)(logical_x - cursor_hotspot.x+5) <= button.x + button.width &&
+        button.highlighted = ((int)(logical_x - cursor_hotspot.x-5) >= button.x && (int)(logical_x - cursor_hotspot.x+5) <= button.x + button.width &&
                           (int)(logical_y - cursor_hotspot.y-5) >= button.y && (int)(logical_y - cursor_hotspot.y+5) <= button.y + button.height);
         
-        // Change button pressed flags according to left mouse button presses depending on if the button is hovered over in the first place
-        if (button.hovered && IsMouseButtonPressed(1)) {
+        // Change button pressed flags according to left mouse button presses depending on if the button is highlighted over in the first place
+        if (button.highlighted && IsMouseButtonPressed(1)) {
             button.pressed = true;
         } else if (button.pressed && !IsMouseButtonPressed(1)) {
             button.pressed = false;
@@ -143,13 +143,13 @@ void UpdateButtons() {
         } else {
             button.pressed = false;
         }
-        // Change button sprites to hovered/pressed/idle according to its hovered/pressed flags
-        if (!button.pressed && !button.hovered) {
-            button.spriteName = "button";
-        } else if (button.hovered && !button.pressed) {
-            button.spriteName = "button_highlighted";
+        // Change button sprites to highlighted/pressed/idle according to its highlighted/pressed flags
+        if (!button.pressed && !button.highlighted) {
+            button.spriteName = button.originalSpriteName;
+        } else if (button.highlighted && !button.pressed) {
+            button.spriteName = button.originalSpriteName + "_highlighted";
         } else if (button.pressed) {
-            button.spriteName = "button_pressed";
+            button.spriteName = button.originalSpriteName + "_pressed";
         }
     }
 }
@@ -161,16 +161,16 @@ bool IsMouseButtonPressed(int button) {
 
 void TriggerButtonAction(ButtonAction action) {
     switch (action) { // Look through the ButtonAction enum to find the one that was referenced in the function call
-        case QUIT_APPLICATION:
+        case BTN_QUIT_APPLICATION:
             std::exit(0); // Cleanly exit the application
             break;
-        case START_GAME:
+        case BTN_START_GAME:
             for (auto &button : buttons) {
                 button.text = "null"; // Loop through all of the buttons and disable them, as they are not present in the initial game view
             }
             gameState = STATE_RUN; // Change the gameState to playing the game so that rendering logic changes from rendering the menu to rendering the game
             break;
-        case LOAD_GAME:
+        case BTN_LOAD_GAME:
             if (std::filesystem::exists("save.dat")) { // Check if the save file exists
                 buttons[1].text = "Game Loaded"; // Show confirmation that the save file has been loaded
                 // Placeholder, would read the contents of the save file and load it into memory here
@@ -179,12 +179,23 @@ void TriggerButtonAction(ButtonAction action) {
             }
             buttons[1].active = false; // Load game button disables no matter the outcome so that the player doesn't press it more than necessary
             break;
-        case SHOW_SETTINGS:
+        case BTN_SHOW_SETTINGS:
             showSettings = true; // Set the showSettings flag to true in order to tell RenderMenu() to draw the settings panel
-            for (auto &button : buttons) {
-                button.active = false; // Loop through all of the buttons and set them to inactive, as the player does not need to press them while in the settings panel
+            for (int i = 0; i < 4; i++) {
+                buttons[i].active = false; // Loop through the four first buttons (the four on the title screen) and deactivate them - they are not part of the settings panel
             }
+            // Set the names of all the settings panel's buttons once
+            buttons[4].spriteName = "exitButton";
+            buttons[4].originalSpriteName = "exitButton";
             break;
+        case BTN_HIDE_SETTINGS:
+            showSettings = false; // Set the showSettings flag to false in order to tell RenderMenu() to stop drawing the settings panel
+            for (int i = 4; i < (int)buttons.size(); i++) {
+                buttons[i].text = "null"; // Loop through all of the buttons on the settings panel and set them to null so that they won't be drawn, as the panel has been closed
+            }
+            for (int i = 0; i < 4; i++) {
+                buttons[i].active = true; // Loop through the four first buttons (the four on the title screen) and reactivate them
+            }
         default:
             return;
     }

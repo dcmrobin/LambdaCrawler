@@ -60,9 +60,21 @@ void RenderMap() {
 void RenderMenu() {
     DrawSprite("menu_splash", 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT); // Draw the menu splash screen background to the width and height of the viewport
     DrawSprite("title_sprite", 0, 0, 150, 70); // Draw the "LAMBDA CRAWLER" title graphic at the top left of the viewport
-    RenderButtons(); // Moved from the main render loop so that the menu buttons will be drawn underneath the settings panel instead of on top of it
+    // Moved the RenderButtons call back to the main loop, as nothing will be drawn on top of buttons
     if (showSettings) {
-        DrawSprite("button", LOGICAL_WIDTH/2 - 50, LOGICAL_HEIGHT/2 - 130, 100, 240); // Draw the settings panel sprite if showSettings is true (button sprite used for now)
+        DrawSprite("button", LOGICAL_WIDTH/2 - 30, LOGICAL_HEIGHT/2 - 130, 100, 240); // Draw the settings panel sprite if showSettings is true (button sprite used for now)
+
+        // Set up exit settings button
+        buttons[4].text = ""; // Exit settings button has no text on it
+        // Set the action for the exit settings button to BTN_HIDE_SETTINGS, which sets the showSettings flag to false, hiding the settings panel
+        buttons[4].action = BTN_HIDE_SETTINGS;
+        // Position the exit settings button at the top right of the settings panel
+        buttons[4].x = LOGICAL_WIDTH/2 + 45;
+        buttons[4].y = LOGICAL_HEIGHT/2 - 57;
+        // Set the exit button's scale to square
+        buttons[4].width = 20;
+        buttons[4].height = 20;
+
     }
 }
 
