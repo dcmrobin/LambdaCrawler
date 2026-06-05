@@ -59,6 +59,9 @@ int main(int argc, char* argv[]) {
     
     // Set logical size once
     setup_renderer();
+
+    // Boot game up in full screen mode
+    toggle_fullscreen();
     
     Init(renderer);
     game_setup();
