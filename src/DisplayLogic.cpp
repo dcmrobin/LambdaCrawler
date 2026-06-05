@@ -66,6 +66,7 @@ void RenderMenu() {
     // Moved the RenderButtons call back to the main loop, as nothing will be drawn on top of buttons
     if (showSettings) {
         DrawSprite("button", LOGICAL_WIDTH/2 - 30, LOGICAL_HEIGHT/2 - 130, 100, 240); // Draw the settings panel sprite if showSettings is true (button sprite used for now)
+        DrawText("8bitMageFont", "Settings", LOGICAL_WIDTH/2, LOGICAL_HEIGHT/2 - 60, {63, 63, 63}, 1, ALIGN_CENTER); // Draw settings panel header
 
         // Set up exit settings button
         buttons[4].text = ""; // Exit settings button has no text on it

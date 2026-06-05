@@ -62,6 +62,9 @@ int main(int argc, char* argv[]) {
 
     // Boot game up in full screen mode
     toggle_fullscreen();
+
+    // Bring the game window into focus
+    SDL_RaiseWindow(window);
     
     Init(renderer);
     game_setup();
