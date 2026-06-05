@@ -69,8 +69,8 @@ void RenderMenu() {
         // Set the action for the exit settings button to BTN_HIDE_SETTINGS, which sets the showSettings flag to false, hiding the settings panel
         buttons[4].action = BTN_HIDE_SETTINGS;
         // Position the exit settings button at the top right of the settings panel
-        buttons[4].x = LOGICAL_WIDTH/2 + 45;
-        buttons[4].y = LOGICAL_HEIGHT/2 - 57;
+        buttons[4].x = LOGICAL_WIDTH/2 + 48;
+        buttons[4].y = LOGICAL_HEIGHT/2 - 60;
         // Set the exit button's scale to square
         buttons[4].width = 20;
         buttons[4].height = 20;
