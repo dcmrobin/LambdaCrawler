@@ -39,6 +39,7 @@ void HandlePlayerInput() {
     if (IsKeyPressed(KEY_LEFT, true)) {
         int newX = player.x - player.speed;
         player.dx = -1;
+        player.dy = 0;
         player.moving = true;
         if (canMove(newX, player.y)) {
             player.x = newX;
@@ -47,11 +48,16 @@ void HandlePlayerInput() {
     if (IsKeyPressed(KEY_RIGHT, true)) {
         int newX = player.x + player.speed;
         player.dx = 1;
+        player.dy = 0;
         player.moving = true;
         if (canMove(newX, player.y)) {
             player.x = newX;
         }
     }
+    if (IsKeyPressed(KEY_RIGHT, true) && IsKeyPressed(KEY_UP, true)) { player.dy = -1; player.dx = 1;}
+    if (IsKeyPressed(KEY_RIGHT, true) && IsKeyPressed(KEY_DOWN, true)) { player.dy = 1; player.dx = 1;}
+    if (IsKeyPressed(KEY_LEFT, true) && IsKeyPressed(KEY_UP, true)) { player.dy = -1; player.dx = -1;}
+    if (IsKeyPressed(KEY_LEFT, true) && IsKeyPressed(KEY_DOWN, true)) { player.dy = 1; player.dx = -1;}
     if (!IsKeyPressed(KEY_UP, true) && !IsKeyPressed(KEY_DOWN, true) && !IsKeyPressed(KEY_LEFT, true) && !IsKeyPressed(KEY_RIGHT, true)) {
         player.moving = false;
         player.dx = 0;

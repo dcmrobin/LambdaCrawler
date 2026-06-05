@@ -19,6 +19,8 @@ std::vector<std::string> sprite_names = {
     "player_idle_back",
     "player_idle_hop",
     "player_idle_back_hop",
+    "player_idle_side",
+    "player_idle_side_hop",
     "tile",
     "tile_ground",
     "tile_wall",
