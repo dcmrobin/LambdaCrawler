@@ -80,13 +80,15 @@ void RenderMenu() {
         buttons[4].height = 20;
 
         // Set up volume slider
-        sliders[0].text = "Volume"; // Set the label for the volume slider
-        // Position volume slider underneath the settings header
-        sliders[0].x = LOGICAL_WIDTH/2;
-        sliders[0].y = LOGICAL_HEIGHT/2;
+        sliders[0].text = "Volume: "; // Set the label for the volume slider
         // Set the volume slider's width and height
-        sliders[0].width = 100;
-        sliders[0].height = 20;
+        sliders[0].width = 70;
+        sliders[0].height = 10;
+        // Position volume slider underneath the settings header
+        sliders[0].x = LOGICAL_WIDTH/2 - sliders[0].width/2 + 20;
+        sliders[0].y = LOGICAL_HEIGHT/2 - 30;
+    } else {
+        sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
     }
 }
 
@@ -107,8 +109,13 @@ void RenderSliders() {
     for (auto& slider : sliders) {
         if (slider.text == "null") continue; // Skip uninitialized sliders
 
-        // Draw the slider's background
-        DrawRect(slider.x, slider.y, slider.width, slider.height, {0, 0, 0});
-        DrawSprite("button", slider.x, slider.y, slider.width, slider.height);
+        // Normalize slider's value for drawing the handle, as the width will not always be a clean 100
+        float normalizedSliderValue = (slider.value / slider.maxValue) * slider.width;
+
+        // Draw slider label with value printed as well- example: "Volume: 45"
+        DrawText("8bitMageFont", slider.text + std::to_string((int)slider.value), slider.x, slider.y - slider.height, slider.textColor, 0.3, ALIGN_LEFT);
+        
+        FillRect(slider.x, slider.y, slider.width, slider.height*0.8, {0, 0, 0, 255}); // Draw the slider's background with a height of slightly less than the sliders actual height
+        FillRect(slider.x + normalizedSliderValue, slider.y - (slider.height*0.2)/2, 5, slider.height, {89, 86, 82, 255}); // Draw the slider's handle centered on slider's y axis
     }
 }

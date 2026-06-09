@@ -202,5 +202,7 @@ void TriggerButtonAction(ButtonAction action) {
 }
 
 void UpdateSliders() {
-    //
+    for (auto& slider : sliders) {
+        //
+    }
 }

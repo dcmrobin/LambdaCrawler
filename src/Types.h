@@ -100,12 +100,9 @@ struct Slider {
     std::string text = "null";
 
     // Slider-specific properties
-    int minValue = 0;
-    int maxValue = 100;
-    int value = 50;
-
-    // The slider's handle that the player grabs and drags- represented by a button for easy interaction
-    Button handle = {x + width / 2, y + height / 2, 10, 10, textColor, "", "button", "button", BTN_NOTHING, false, false, true};
+    float minValue = 0;
+    float maxValue = 100;
+    float value = 45;
 };
 
 extern std::vector<Slider> sliders;
