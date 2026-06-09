@@ -103,6 +103,11 @@ struct Slider {
     float minValue = 0;
     float maxValue = 100;
     float value = 45;
+
+    // Handle-specific properties
+    bool handleHighlighted = false;
+    bool handleGrabbed = false;
+    bool handleActive = true;
 };
 
 extern std::vector<Slider> sliders;

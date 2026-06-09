@@ -202,7 +202,25 @@ void TriggerButtonAction(ButtonAction action) {
 }
 
 void UpdateSliders() {
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
     for (auto& slider : sliders) {
-        //
+        if (!slider.handleActive) {continue;} // Skip inactive sliders
+
+        // Normalize slider's value for drawing the handle, as the width will not always be a clean 100
+        float normalizedSliderValue = (slider.value / slider.maxValue) * slider.width;
+
+        // Convert global mouse position to viewport mouse position
+        float logical_x, logical_y;
+        SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
+
+        float handleX = (slider.x + normalizedSliderValue) + (6 * 0.2)/2;
+        float handleY = (slider.y - (slider.height*0.2)/2) + (slider.height * 0.2)/2;
+        float handleWidth = 6 * 0.8;
+        float handleHeight = slider.height * 0.8;
+
+        // Check if the mouse pointer position is inside the bounds of the handle (this line was too long to fit on the screen all at once)
+        slider.handleHighlighted = ((int)(logical_x - cursor_hotspot.x-5) >= handleX && (int)(logical_x - cursor_hotspot.x+5) <= handleX + handleWidth &&
+                          (int)(logical_y - cursor_hotspot.y-5) >= handleY && (int)(logical_y - cursor_hotspot.y+5) <= handleY + handleHeight);
     }
 }

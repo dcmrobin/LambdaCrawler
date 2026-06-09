@@ -116,6 +116,15 @@ void RenderSliders() {
         DrawText("8bitMageFont", slider.text + std::to_string((int)slider.value), slider.x, slider.y - slider.height, slider.textColor, 0.3, ALIGN_LEFT);
         
         FillRect(slider.x, slider.y, slider.width, slider.height*0.8, {0, 0, 0, 255}); // Draw the slider's background with a height of slightly less than the sliders actual height
-        FillRect(slider.x + normalizedSliderValue, slider.y - (slider.height*0.2)/2, 5, slider.height, {89, 86, 82, 255}); // Draw the slider's handle centered on slider's y axis
+        FillRect(slider.x + normalizedSliderValue, slider.y - (slider.height*0.2)/2, 6, slider.height, {89, 86, 82, 255}); // Draw the slider's handle's outline
+        // Draw the slider's handle in the appropriate colour depending on if it is active, grabbed, or highlighted
+        SDL_Color handleColour = {155, 173, 183, 255};
+        if (slider.handleHighlighted) {
+            handleColour = {203, 219, 252, 255};
+        }
+        if (slider.handleGrabbed || !slider.handleActive) {
+            handleColour = {89, 86, 82, 255};
+        }
+        FillRect((slider.x + normalizedSliderValue) + (6 * 0.2)/2, (slider.y - (slider.height*0.2)/2) + (slider.height * 0.2)/2, 6 * 0.8, slider.height * 0.8, handleColour);
     }
 }
