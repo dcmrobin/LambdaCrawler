@@ -1,6 +1,7 @@
 #include "game.h"
 
 std::vector<Button> buttons = {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},};
+std::vector<Slider> sliders = {{}, {}, {}, {}, {},};
 bool showSettings = false; // Flag to track whether the settings panel should show
 
 void game_setup() {
@@ -38,6 +39,7 @@ void UpdateGame() {
     } else if (gameState == STATE_MENU) {
         UpdateMenu();
         UpdateButtons();
+        UpdateSliders();
     }
 }
 
@@ -48,6 +50,7 @@ void RenderGame() {
     } else if (gameState == STATE_MENU) {
         RenderMenu(); // Render the title screen menu, as the value of gameState is STATE_MENU on bootup
         RenderButtons(); // Render buttons on top of everything, as they won't need to be hidden by anything and nothing will be on top of them
+        RenderSliders();
     }
 }
 

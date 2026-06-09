@@ -65,7 +65,7 @@ struct Button {
     int width = 100;
     int height = 30;
 
-    // Button text and text color
+    // Button text and text colour
     SDL_Color textColor = {63, 63, 63};
     std::string text = "null";
 
@@ -85,6 +85,30 @@ struct Button {
 };
 
 extern std::vector<Button> buttons;
+
+struct Slider {
+    // Slider position
+    int x = 0;
+    int y = 0;
+
+    // Slider width and height
+    int width = 100;
+    int height = 20;
+
+    // Slider text and text colour
+    SDL_Color textColor = {63, 63, 63};
+    std::string text = "null";
+
+    // Slider-specific properties
+    int minValue = 0;
+    int maxValue = 100;
+    int value = 50;
+
+    // The slider's handle that the player grabs and drags- represented by a button for easy interaction
+    Button handle = {x + width / 2, y + height / 2, 10, 10, textColor, "", "button", "button", BTN_NOTHING, false, false, true};
+};
+
+extern std::vector<Slider> sliders;
 
 enum TextAlignment {
     ALIGN_LEFT,

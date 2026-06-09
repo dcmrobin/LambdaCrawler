@@ -200,3 +200,7 @@ void TriggerButtonAction(ButtonAction action) {
             return;
     }
 }
+
+void UpdateSliders() {
+    //
+}

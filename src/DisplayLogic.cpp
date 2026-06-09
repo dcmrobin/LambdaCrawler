@@ -79,6 +79,14 @@ void RenderMenu() {
         buttons[4].width = 20;
         buttons[4].height = 20;
 
+        // Set up volume slider
+        sliders[0].text = "Volume"; // Set the label for the volume slider
+        // Position volume slider underneath the settings header
+        sliders[0].x = LOGICAL_WIDTH/2;
+        sliders[0].y = LOGICAL_HEIGHT/2;
+        // Set the volume slider's width and height
+        sliders[0].width = 100;
+        sliders[0].height = 20;
     }
 }
 
@@ -92,5 +100,15 @@ void RenderButtons() {
         int centerY = button.y + (button.height / 2);
         float scale = (LOGICAL_WIDTH * LOGICAL_HEIGHT / 100000.0f) - 0.4f;
         DrawText("8bitMageFont", button.text, centerX, button.pressed || !button.active ? centerY + 1 : centerY, button.textColor, scale, ALIGN_CENTER);
+    }
+}
+
+void RenderSliders() {
+    for (auto& slider : sliders) {
+        if (slider.text == "null") continue; // Skip uninitialized sliders
+
+        // Draw the slider's background
+        DrawRect(slider.x, slider.y, slider.width, slider.height, {0, 0, 0});
+        DrawSprite("button", slider.x, slider.y, slider.width, slider.height);
     }
 }
