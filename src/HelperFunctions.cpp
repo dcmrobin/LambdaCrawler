@@ -214,10 +214,10 @@ void UpdateSliders() {
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
 
-        float handleX = (slider.x + normalizedSliderValue) + (6 * 0.2)/2;
-        float handleY = (slider.y - (slider.height*0.2)/2) + (slider.height * 0.2)/2;
-        float handleWidth = 6 * 0.8;
-        float handleHeight = slider.height * 0.8;
+        float handleWidth = 14;
+        float handleHeight = slider.height*2;
+        float handleX = (slider.x + normalizedSliderValue) - handleWidth/2 + slider.width*0.7;
+        float handleY = (slider.y) - handleHeight/2 + slider.height*0.4;
 
         // Check if the mouse pointer position is inside the bounds of the handle (this line was too long to fit on the screen all at once)
         slider.handleHighlighted = ((int)(logical_x - cursor_hotspot.x-5) >= handleX && (int)(logical_x - cursor_hotspot.x+5) <= handleX + handleWidth &&
