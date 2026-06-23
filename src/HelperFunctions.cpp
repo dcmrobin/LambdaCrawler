@@ -222,5 +222,11 @@ void UpdateSliders() {
         // Check if the mouse pointer position is inside the bounds of the handle (this line was too long to fit on the screen all at once)
         slider.handleHighlighted = ((int)(logical_x - cursor_hotspot.x-5) >= handleX && (int)(logical_x - cursor_hotspot.x+5) <= handleX + handleWidth &&
                           (int)(logical_y - cursor_hotspot.y-5) >= handleY && (int)(logical_y - cursor_hotspot.y+5) <= handleY + handleHeight);
+
+        if (slider.handleHighlighted && IsMouseButtonPressed(1)) {
+            slider.handleGrabbed = true;
+        } else {
+            slider.handleGrabbed = false;
+        }
     }
 }
