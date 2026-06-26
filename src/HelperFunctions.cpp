@@ -214,7 +214,7 @@ void UpdateSliders() {
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
 
-        float handleWidth = 14;
+        float handleWidth = 20;
         float handleHeight = slider.height*2;
         float handleX = (slider.x + normalizedSliderValue) - handleWidth/2;
         float handleY = (slider.y) - handleHeight/2 + slider.height*0.4;
@@ -227,6 +227,11 @@ void UpdateSliders() {
             slider.handleGrabbed = true;
         } else {
             slider.handleGrabbed = false;
+        }
+
+        if (slider.handleGrabbed) {
+            normalizedSliderValue = logical_x - slider.x;
+            slider.value = (normalizedSliderValue / slider.width) * slider.maxValue;
         }
     }
 }
