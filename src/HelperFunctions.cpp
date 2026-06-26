@@ -216,7 +216,7 @@ void UpdateSliders() {
 
         float handleWidth = 14;
         float handleHeight = slider.height*2;
-        float handleX = (slider.x + normalizedSliderValue) - handleWidth/2 + slider.width*0.7;
+        float handleX = (slider.x + normalizedSliderValue) - handleWidth/2;
         float handleY = (slider.y) - handleHeight/2 + slider.height*0.4;
 
         // Check if the mouse pointer position is inside the bounds of the handle (this line was too long to fit on the screen all at once)
