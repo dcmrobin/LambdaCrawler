@@ -87,6 +87,25 @@ void RenderMenu() {
         // Position volume slider underneath the settings header
         sliders[0].x = LOGICAL_WIDTH/2 - sliders[0].width/2 + 20;
         sliders[0].y = LOGICAL_HEIGHT/2 - 30;
+
+        // Set up window mode options
+        DrawText("8bitMageFont", "Window mode:", LOGICAL_WIDTH/2 + 20, LOGICAL_HEIGHT/2 - 15, {63, 63, 63}, 0.3, ALIGN_CENTER); // Window options header
+        // Fullscreen button
+        buttons[5].text = "Fullscreen";
+        buttons[5].textSize = 0.2f;
+        buttons[5].action = BTN_FULLSCREEN;
+        buttons[5].x = LOGICAL_WIDTH/2 - 20;
+        buttons[5].y = LOGICAL_HEIGHT/2 - 15;
+        buttons[5].width = 40;
+        buttons[5].height = 20;
+        // Windowed button
+        buttons[6].text = "Windowed";
+        buttons[6].textSize = 0.2f;
+        buttons[6].action = BTN_WINDOWED;
+        buttons[6].x = LOGICAL_WIDTH/2 + 20;
+        buttons[6].y = LOGICAL_HEIGHT/2 - 15;
+        buttons[6].width = 40;
+        buttons[6].height = 20;
     } else {
         sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
     }
@@ -100,8 +119,7 @@ void RenderButtons() {
         // Draw the button's text centered on the button
         int centerX = button.x + (button.width / 2);
         int centerY = button.y + (button.height / 2);
-        float scale = (LOGICAL_WIDTH * LOGICAL_HEIGHT / 100000.0f) - 0.4f;
-        DrawText("8bitMageFont", button.text, centerX, button.pressed || !button.active ? centerY + 1 : centerY, button.textColor, scale, ALIGN_CENTER);
+        DrawText("8bitMageFont", button.text, centerX, button.pressed || !button.active ? centerY + 1 : centerY, button.textColor, button.textSize, ALIGN_CENTER);
     }
 }
 

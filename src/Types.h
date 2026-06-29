@@ -54,6 +54,8 @@ enum ButtonAction {
     BTN_QUIT_APPLICATION,
     BTN_SHOW_SETTINGS,
     BTN_HIDE_SETTINGS,
+    BTN_FULLSCREEN,
+    BTN_WINDOWED,
 }; // Defining all possible button actions
 
 struct Button {
@@ -65,8 +67,9 @@ struct Button {
     int width = 100;
     int height = 30;
 
-    // Button text and text colour
+    // Button text, text size, and text colour
     SDL_Color textColor = {63, 63, 63};
+    float textSize = 0.368f;
     std::string text = "null";
 
     // Set the sprite the button starts as. As a default, the normal button sprite is assigned
