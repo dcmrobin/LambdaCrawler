@@ -248,6 +248,7 @@ void UpdateSliders() {
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
 
+        // Declare handle attributes for easy access
         float handleWidth = 20;
         float handleHeight = slider.height*2;
         float handleX = (slider.x + normalizedSliderValue) - handleWidth/2;
@@ -257,15 +258,15 @@ void UpdateSliders() {
         slider.handleHighlighted = ((int)(logical_x - cursor_hotspot.x-5) >= handleX && (int)(logical_x - cursor_hotspot.x+5) <= handleX + handleWidth &&
                           (int)(logical_y - cursor_hotspot.y-5) >= handleY && (int)(logical_y - cursor_hotspot.y+5) <= handleY + handleHeight);
 
-        if (slider.handleHighlighted && IsMouseButtonPressed(1)) {
+        if (slider.handleHighlighted && IsMouseButtonPressed(1)) { // Clicking on the slider handle
             slider.handleGrabbed = true;
-        } else if (slider.handleGrabbed && IsMouseButtonPressed(1)) {
+        } else if (slider.handleGrabbed && IsMouseButtonPressed(1)) { // Stay grabbed if the mouse button is held down and dragged
             slider.handleGrabbed = true;
-        } else {
+        } else { // Release the handle, the slider is not in use anymore
             slider.handleGrabbed = false;
         }
 
-        if (slider.handleGrabbed) {
+        if (slider.handleGrabbed) { // If the slider handle is grabbed, update the slider handle to move with the mouse on its X axis, changing the slider's value
             normalizedSliderValue = logical_x - slider.x;
             slider.value = (normalizedSliderValue / slider.width) * slider.maxValue;
         }
