@@ -127,6 +127,18 @@ void UpdateButtons() {
         if (aButtonIsAlreadyPressed && IsMouseButtonPressed(1)) {
             continue;
         }
+
+        // Check if a slider is being cahnged, and if so, don't update this button
+        bool aSliderIsAlreadyBeingChanged = false;
+        for (auto& s : sliders) {
+            if (s.handleGrabbed) {
+                aSliderIsAlreadyBeingChanged = true;
+            }
+        }
+        if (aSliderIsAlreadyBeingChanged && IsMouseButtonPressed(1)) {
+            continue;
+        }
+
         // Convert global mouse position to viewport mouse position
         float logical_x, logical_y;
         SDL_RenderWindowToLogical(renderer, mouseX, mouseY, &logical_x, &logical_y);
@@ -207,6 +219,28 @@ void UpdateSliders() {
     for (auto& slider : sliders) {
         if (!slider.handleActive) {continue;} // Skip inactive sliders
 
+        // Check if a button is being pressed, and if so, don't update this slider
+        bool aButtonIsAlreadyPressed = false;
+        for (auto& b : buttons) {
+            if (b.pressed) {
+                aButtonIsAlreadyPressed = true;
+            }
+        }
+        if (aButtonIsAlreadyPressed && IsMouseButtonPressed(1)) {
+            continue;
+        }
+
+        // Check if a different slider is being cahnged, and if so, don't update this one
+        bool aSliderIsAlreadyBeingChanged = false;
+        for (auto& s : sliders) {
+            if (s.handleGrabbed && s.text != slider.text) { // Make sure to ignore this slider, otherwise this slider will not be updated as soon as the player grabs its handle
+                aSliderIsAlreadyBeingChanged = true;
+            }
+        }
+        if (aSliderIsAlreadyBeingChanged && IsMouseButtonPressed(1)) {
+            continue;
+        }
+
         // Normalize slider's value for drawing the handle, as the width will not always be a clean 100
         float normalizedSliderValue = (slider.value / slider.maxValue) * slider.width;
 
@@ -224,6 +258,8 @@ void UpdateSliders() {
                           (int)(logical_y - cursor_hotspot.y-5) >= handleY && (int)(logical_y - cursor_hotspot.y+5) <= handleY + handleHeight);
 
         if (slider.handleHighlighted && IsMouseButtonPressed(1)) {
+            slider.handleGrabbed = true;
+        } else if (slider.handleGrabbed && IsMouseButtonPressed(1)) {
             slider.handleGrabbed = true;
         } else {
             slider.handleGrabbed = false;
