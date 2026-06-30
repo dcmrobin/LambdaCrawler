@@ -2,6 +2,7 @@
 
 KeyStates keystates;
 GameStates gameState = STATE_MENU;
+bool is_fullscreen = false;
 // Camera state
 float cameraXF = 0.0f;
 float cameraYF = 0.0f;
@@ -208,6 +209,14 @@ void TriggerButtonAction(ButtonAction action) {
             for (int i = 0; i < 4; i++) {
                 buttons[i].active = true; // Loop through the four first buttons (the four on the title screen) and reactivate them
             }
+        case BTN_FULLSCREEN:
+            SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP); // Set the window to fullscreen mode
+            is_fullscreen = true;
+            break;
+        case BTN_WINDOWED:
+            SDL_SetWindowFullscreen(window, 0); // Set the window to windowed mode
+            is_fullscreen = false;
+            break;
         default:
             return;
     }
@@ -230,7 +239,7 @@ void UpdateSliders() {
             continue;
         }
 
-        // Check if a different slider is being cahnged, and if so, don't update this one
+        // Check if a different slider is being changed, and if so, don't update this one
         bool aSliderIsAlreadyBeingChanged = false;
         for (auto& s : sliders) {
             if (s.handleGrabbed && s.text != slider.text) { // Make sure to ignore this slider, otherwise this slider will not be updated as soon as the player grabs its handle

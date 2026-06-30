@@ -6,7 +6,6 @@ int LOGICAL_WIDTH = 320;
 int LOGICAL_HEIGHT = 240;
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
-bool is_fullscreen = false;
 
 void setup_renderer() {
     // This call handles scaling, letterboxing, aspect ratio

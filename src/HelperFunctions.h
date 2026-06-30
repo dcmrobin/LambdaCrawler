@@ -19,6 +19,7 @@
 extern float cameraXF;
 extern float cameraYF;
 extern const float CAMERA_LERP;
+extern bool is_fullscreen;
 extern int LOGICAL_WIDTH;
 extern int LOGICAL_HEIGHT;
 extern TTF_Font* font;
