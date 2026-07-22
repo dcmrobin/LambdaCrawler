@@ -209,6 +209,7 @@ void TriggerButtonAction(ButtonAction action) {
             for (int i = 0; i < 4; i++) {
                 buttons[i].active = true; // Loop through the four first buttons (the four on the title screen) and reactivate them
             }
+            break;
         case BTN_FULLSCREEN:
             SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP); // Set the window to fullscreen mode
             is_fullscreen = true;
