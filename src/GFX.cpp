@@ -1,4 +1,5 @@
 #include "GFX.h"
+#include <sstream>
 
 // Globals
 int cameraX = 0;
@@ -251,4 +252,48 @@ void DrawText(const std::string& font_name, const std::string& text, int x, int 
     SDL_Rect dest = { x, y, scaledW, scaledH };
     SDL_RenderCopy(renderer, texture, nullptr, &dest);
     SDL_DestroyTexture(texture);
+}
+
+// function to draw a text box with text wrapped inside it:
+void DrawTextBox(const std::string& font_name, const std::string& text, int x, int y, int box_width, int box_height, SDL_Color color, float scale, TextAlignment alignment) {
+    auto it = fonts.find(font_name);
+    if (it == fonts.end()) return;
+
+    TTF_Font* font = it->second;
+    int line_spacing = TTF_FontLineSkip(font);
+    int max_line_width = static_cast<int>(box_width / scale);
+
+    std::vector<std::string> lines;
+    std::string current_line;
+    std::istringstream words(text);
+    std::string word;
+
+    while (words >> word) {
+        std::string test_line = current_line.empty() ? word : current_line + " " + word;
+        int test_width;
+        TTF_SizeText(font, test_line.c_str(), &test_width, nullptr);
+
+        if (test_width > max_line_width) {
+            if (!current_line.empty()) {
+                lines.push_back(current_line);
+            }
+            current_line = word; // Start a new line with the current word
+        } else {
+            current_line = test_line; // Add the word to the current line
+        }
+    }
+
+    if (!current_line.empty()) {
+        lines.push_back(current_line); // Add the last line
+    }
+
+    // Get the boundaries of the text, and draw a rect around it
+    int text_height = static_cast<int>(lines.size() * line_spacing * scale);
+    DrawRect(x - (box_width / 2), y - (scale * 20), box_width, text_height + 4, {color.r, color.g, color.b, 255});
+
+    // Draw each line of text
+    for (size_t i = 0; i < lines.size(); ++i) {
+        int line_y = y + static_cast<int>(i * line_spacing * scale);
+        DrawText(font_name, lines[i], x, line_y, color, scale, alignment);
+    }
 }

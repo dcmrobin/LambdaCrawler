@@ -106,6 +106,8 @@ void RenderMenu() {
         buttons[6].y = LOGICAL_HEIGHT/2 - 15;
         buttons[6].width = 40;
         buttons[6].height = 20;
+        // Privacy agreement text box
+        DrawTextBox("8bitMageFont", "By playing this game as a student, you accept that your player data will be uploaded to a database for inspection.", LOGICAL_WIDTH/2 + 20, LOGICAL_HEIGHT/2 + 5, 70, 100, {63, 63, 63}, 0.15f, ALIGN_CENTER);
     } else {
         sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
     }

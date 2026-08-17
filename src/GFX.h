@@ -32,6 +32,7 @@ void DrawCustomCursor();
 // Font loading & text drawing
 void LoadFont(const std::string& name, const char* path, int size);
 void DrawText(const std::string& font_name, const std::string& text, int x, int y, SDL_Color color, float scale, TextAlignment alignment);
+void DrawTextBox(const std::string& font_name, const std::string& text, int x, int y, int box_width, int box_height, SDL_Color color, float scale, TextAlignment alignment);
 
 // Shapes
 void DrawRect(int x, int y, int w, int h, SDL_Color color);
