@@ -108,7 +108,7 @@ void RenderMenu() {
         buttons[6].height = 20;
         // Privacy agreement text box
         DrawTextBox("8bitMageFont", "By playing this game as a student, you accept that your player data will be uploaded to a database for inspection.",
-            LOGICAL_WIDTH/2 + 20, LOGICAL_HEIGHT/2 + 10, 70, 100, {63, 63, 63}, 0.15f, ALIGN_CENTER); // again, didn't fit the whole line on the screen so I split it
+            LOGICAL_WIDTH/2 + 20, LOGICAL_HEIGHT/2 + 10, 70, 100, {63, 63, 63}, 0.15f, ALIGN_CENTER); // Again, didn't fit the whole line on the screen so I split it
         // Load settings button
         buttons[7].text = "Load";
         buttons[7].textSize = 0.2f;
@@ -133,6 +133,9 @@ void RenderMenu() {
         buttons[9].y = LOGICAL_HEIGHT/2 + 25;
         buttons[9].width = 25;
         buttons[9].height = 20;
+        if (!aSettingHasChanged) { // If the player hasn't changed any settings yet...
+            buttons[9].active = false; // ...grey out the apply button, as there is nothing to apply yet
+        }
     } else {
         sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
     }

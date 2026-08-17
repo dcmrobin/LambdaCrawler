@@ -3,6 +3,10 @@
 std::vector<Button> buttons = {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},};
 std::vector<Slider> sliders = {{}, {}, {}, {}, {},};
 bool showSettings = false; // Flag to track whether the settings panel should show
+bool aSettingHasChanged = false; // Flag to track whether a setting has changed, so that the apply button can be activated when a setting is changed
+int originalVolumeSliderValue = 45; // Int to store the original volume slider value so that it can be reverted to if the player exits the settings panel without applying any changes
+int mainVolume = 45; // Int to store the actual volume of the game
+bool settingsApplied = false; // Flag to track whether the player has applied any settings changes, so that changes can revert if nothing has been applied in the settings panel
 
 void game_setup() {
     for (const auto& name : sprite_names) {

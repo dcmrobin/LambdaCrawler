@@ -194,6 +194,9 @@ void TriggerButtonAction(ButtonAction action) {
             break;
         case BTN_SHOW_SETTINGS:
             showSettings = true; // Set the showSettings flag to true in order to tell RenderMenu() to draw the settings panel
+            settingsApplied = false; // Reset the settingsApplied flag to false, as the player has just opened the settings panel and hasn't applied any changes yet
+            originalVolumeSliderValue = sliders[0].value; // Store the original volume slider value so that it can be reverted
+            buttons[9].active = false; // Grey out the apply button, as the player hasn't changed any settings yet
             for (int i = 0; i < 4; i++) {
                 buttons[i].active = false; // Loop through the four first buttons (the four on the title screen) and deactivate them - they are not part of the settings panel
             }
@@ -203,6 +206,9 @@ void TriggerButtonAction(ButtonAction action) {
             break;
         case BTN_HIDE_SETTINGS:
             showSettings = false; // Set the showSettings flag to false in order to tell RenderMenu() to stop drawing the settings panel
+            if (!settingsApplied) {
+                sliders[0].value = originalVolumeSliderValue; // Revert the volume slider to its original value if the player exits the settings panel without applying any changes
+            }
             for (int i = 4; i < (int)buttons.size(); i++) {
                 buttons[i].text = "null"; // Loop through all of the buttons on the settings panel and set them to null so that they won't be drawn, as the panel has been closed
             }
@@ -225,7 +231,10 @@ void TriggerButtonAction(ButtonAction action) {
             // Placeholder for saving settings to a file
             break;
         case BTN_APPLY_SETTINGS:
-            // Placeholder for applying settings changes
+            buttons[9].active = false; // Player has just applied settings, no need for apply button to be active anymore until a setting is changed again
+            settingsApplied = true; // Player has applied settings, so that if they exit the settings panel without applying any changes, the changes will not revert
+            originalVolumeSliderValue = sliders[0].value; // Prevent the volume slider from reverting, as it has been applied
+            mainVolume = originalVolumeSliderValue; // Set the main volume to the value of the volume slider
             break;
         default:
             return;
@@ -288,6 +297,11 @@ void UpdateSliders() {
         if (slider.handleGrabbed) { // If the slider handle is grabbed, update the slider handle to move with the mouse on its X axis, changing the slider's value
             normalizedSliderValue = logical_x - slider.x;
             slider.value = (normalizedSliderValue / slider.width) * slider.maxValue;
+            if (showSettings) { // If the settings panel is showing, the slider is the volume slider, so the apply button is active now that a setting has changed
+                settingsApplied = false;
+                aSettingHasChanged = true;
+                buttons[9].active = true;
+            }
         }
     }
 }
