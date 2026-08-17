@@ -56,6 +56,9 @@ enum ButtonAction {
     BTN_HIDE_SETTINGS,
     BTN_FULLSCREEN,
     BTN_WINDOWED,
+    BTN_LOAD_SETTINGS,
+    BTN_SAVE_SETTINGS,
+    BTN_APPLY_SETTINGS
 }; // Defining all possible button actions
 
 struct Button {

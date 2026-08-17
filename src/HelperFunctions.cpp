@@ -218,6 +218,15 @@ void TriggerButtonAction(ButtonAction action) {
             SDL_SetWindowFullscreen(window, 0); // Set the window to windowed mode
             is_fullscreen = false;
             break;
+        case BTN_LOAD_SETTINGS:
+            // Placeholder for loading settings from a file
+            break;
+        case BTN_SAVE_SETTINGS:
+            // Placeholder for saving settings to a file
+            break;
+        case BTN_APPLY_SETTINGS:
+            // Placeholder for applying settings changes
+            break;
         default:
             return;
     }
