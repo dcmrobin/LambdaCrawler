@@ -260,9 +260,21 @@ void TriggerButtonAction(ButtonAction action) {
                 }
             }
             break;
-        case BTN_SAVE_SETTINGS:
-            // Placeholder for saving settings to a file
+        case BTN_SAVE_SETTINGS: {
+            if (std::filesystem::exists("settings.dat"))
+                std::filesystem::remove("settings.dat"); // Delete the settings file if it already exists, so that it can be overwritten with new settings
+            SDL_RWops* file = SDL_RWFromFile("settings.dat", "wb");
+            if (file) {
+                std::string volumeString = std::to_string((int)sliders[0].value); // Convert the volume slider value to a string
+                SDL_RWwrite(file, volumeString.c_str(), sizeof(char), volumeString.size()); // Write the string to the file
+                SDL_RWclose(file);
+                buttons[8].text = "Saved"; // Show confirmation that the settings have been saved
+                buttons[8].active = false;
+            } else {
+                buttons[8].text = "Error"; // Show an error message if the file could not be opened for writing
+            }
             break;
+        }
         case BTN_APPLY_SETTINGS:
             buttons[9].active = false; // Player has just applied settings, no need for apply button to be active anymore until a setting is changed again
             settingsApplied = true; // Player has applied settings, so that if they exit the settings panel without applying any changes, the changes will not revert
@@ -336,6 +348,8 @@ void UpdateSliders() {
                 buttons[9].active = true; // Allow setting to be applied (apply button set to active)
                 buttons[7].active = true; // Settings have bene changed, they can be loaded again
                 buttons[7].text = "Load"; // Reset the load button text to "Load" as settings can be loaded again
+                buttons[8].active = true; // Same for save settings button
+                buttons[8].text = "Save";
             }
         }
     }

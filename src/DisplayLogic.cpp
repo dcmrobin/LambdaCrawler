@@ -118,7 +118,7 @@ void RenderMenu() {
         buttons[7].width = 25;
         buttons[7].height = 20;
         // Save settings button
-        buttons[8].text = buttons[8].text == "Saved" ? buttons[8].text : "Save";
+        buttons[8].text = buttons[8].text == "Saved" || buttons[8].text == "Error" ? buttons[8].text : "Save";
         buttons[8].textSize = 0.2f;
         buttons[8].action = BTN_SAVE_SETTINGS;
         buttons[8].x = LOGICAL_WIDTH/2 + 8;
@@ -139,6 +139,7 @@ void RenderMenu() {
     } else {
         sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
         buttons[7].active = true; // Reactivate the load settings button for if the player reopens the settings panel
+        buttons[8].active = true; // Same for save settings button
     }
 }
 
