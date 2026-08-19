@@ -200,7 +200,7 @@ void TriggerButtonAction(ButtonAction action) {
             for (int i = 0; i < 4; i++) {
                 buttons[i].active = false; // Loop through the four first buttons (the four on the title screen) and deactivate them - they are not part of the settings panel
             }
-            // Set the names of all the settings panel's buttons once
+            // Set the names of all the settings panel's buttons once (all the buttons that use sprites- in this case, just the exit button)
             buttons[4].spriteName = "exitButton";
             buttons[4].originalSpriteName = "exitButton";
             break;
@@ -213,6 +213,7 @@ void TriggerButtonAction(ButtonAction action) {
                 buttons[i].text = "null"; // Loop through all of the buttons on the settings panel and set them to null so that they won't be drawn, as the panel has been closed
             }
             for (int i = 0; i < 4; i++) {
+                if (buttons[i].text == "No Save File" || buttons[i].text == "Game Loaded") {continue;} // Don't reactivate load game button if it was already pressed
                 buttons[i].active = true; // Loop through the four first buttons (the four on the title screen) and reactivate them
             }
             break;
@@ -225,7 +226,39 @@ void TriggerButtonAction(ButtonAction action) {
             is_fullscreen = false;
             break;
         case BTN_LOAD_SETTINGS:
-            // Placeholder for loading settings from a file
+            if (buttons[7].text != "Corrupt") {
+                if (std::filesystem::exists("settings.dat")) {
+                    // Load settings from the file and set them in the settings panel
+                    SDL_RWops* file = SDL_RWFromFile("settings.dat", "rb");
+                    char buffer[32] = {0}; // Buffer to hold contents of settings.dat
+                    size_t bytesRead = SDL_RWread(file, buffer, sizeof(char), sizeof(buffer) - 1);
+                    SDL_RWclose(file);
+                    // Ensure file contains only numbers and first character is not a space or a 0:
+                    bool containsInvalidData = false;
+                    for (size_t i = 0; i < bytesRead; ++i) {
+                        if (!isdigit(buffer[i]) || (i == 0 && (buffer[i] == ' ' || buffer[i] == '0'))) {
+                            containsInvalidData = true;
+                            break;
+                        }
+                    }
+                    int newVol = SDL_atoi(buffer); // Convert the buffer to an integer and assign it to mainVolume
+                    if (bytesRead == 0 || newVol < 0 || newVol > 100 || containsInvalidData) { // Check if the read was successful and if the value is within the valid range
+                        buttons[7].text = "Corrupt"; // Show that the settings file is corrupt if the read fails
+                    } else {
+                        buttons[7].text = "Loaded"; // Show confirmation that the settings have been loaded
+                        settingsApplied = false;
+                        buttons[9].active = true;
+                        aSettingHasChanged = true; // Settings have been loaded, need to apply them to the game, so the apply button is active now
+                        buttons[9].active = true; // Settings have been loaded, time to apply them, so the apply button is active now
+                        buttons[7].active = false; // Don't need to load settings, already have
+                        mainVolume = newVol; // Set the main volume to the loaded value
+                        sliders[0].value = mainVolume; // Set the volume slider to mainVolume
+                    }
+                } else {
+                    buttons[7].text = "None"; // Show to the player that no settings file exists
+                    buttons[7].active = false; // Grey out the load button, as there is no settings file to load
+                }
+            }
             break;
         case BTN_SAVE_SETTINGS:
             // Placeholder for saving settings to a file
@@ -300,7 +333,9 @@ void UpdateSliders() {
             if (showSettings) { // If the settings panel is showing, the slider is the volume slider, so the apply button is active now that a setting has changed
                 settingsApplied = false;
                 aSettingHasChanged = true;
-                buttons[9].active = true;
+                buttons[9].active = true; // Allow setting to be applied (apply button set to active)
+                buttons[7].active = true; // Settings have bene changed, they can be loaded again
+                buttons[7].text = "Load"; // Reset the load button text to "Load" as settings can be loaded again
             }
         }
     }

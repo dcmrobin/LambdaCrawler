@@ -110,7 +110,7 @@ void RenderMenu() {
         DrawTextBox("8bitMageFont", "By playing this game as a student, you accept that your player data will be uploaded to a database for inspection.",
             LOGICAL_WIDTH/2 + 20, LOGICAL_HEIGHT/2 + 10, 70, 100, {63, 63, 63}, 0.15f, ALIGN_CENTER); // Again, didn't fit the whole line on the screen so I split it
         // Load settings button
-        buttons[7].text = "Load";
+        buttons[7].text = buttons[7].text == "Loaded" || buttons[7].text == "None" || buttons[7].text == "Corrupt" ? buttons[7].text : "Load";
         buttons[7].textSize = 0.2f;
         buttons[7].action = BTN_LOAD_SETTINGS;
         buttons[7].x = LOGICAL_WIDTH/2 - 22;
@@ -118,7 +118,7 @@ void RenderMenu() {
         buttons[7].width = 25;
         buttons[7].height = 20;
         // Save settings button
-        buttons[8].text = "Save";
+        buttons[8].text = buttons[8].text == "Saved" ? buttons[8].text : "Save";
         buttons[8].textSize = 0.2f;
         buttons[8].action = BTN_SAVE_SETTINGS;
         buttons[8].x = LOGICAL_WIDTH/2 + 8;
@@ -126,7 +126,7 @@ void RenderMenu() {
         buttons[8].width = 25;
         buttons[8].height = 20;
         // Apply settings button
-        buttons[9].text = "Apply";
+        buttons[9].text = settingsApplied ? "Applied" : "Apply";
         buttons[9].textSize = 0.2f;
         buttons[9].action = BTN_APPLY_SETTINGS;
         buttons[9].x = LOGICAL_WIDTH/2 + 38;
@@ -138,6 +138,7 @@ void RenderMenu() {
         }
     } else {
         sliders[0].text = "null"; // Hide the volume slider when the settings panel is not showing
+        buttons[7].active = true; // Reactivate the load settings button for if the player reopens the settings panel
     }
 }
 
