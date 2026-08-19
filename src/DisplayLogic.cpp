@@ -165,7 +165,8 @@ void RenderSliders() {
         // Draw slider label with value printed as well- example: "Volume: 45"
         DrawText("8bitMageFont", slider.text + std::to_string((int)slider.value), slider.x, slider.y - slider.height, slider.textColor, 0.3, ALIGN_LEFT);
         
-        FillRect(slider.x, slider.y, slider.width, slider.height*0.8, {0, 0, 0, 255}); // Draw the slider's background with a height of slightly less than the sliders actual height
+        // Draw the slider's background with a height of slightly less than the sliders actual height
+        FillRect(slider.x, slider.y, slider.width, slider.height*0.8, {0, 0, 0, 255});
         FillRect(slider.x + normalizedSliderValue, slider.y - (slider.height*0.2)/2, 6, slider.height, {89, 86, 82, 255}); // Draw the slider's handle's outline
         // Draw the slider's handle in the appropriate colour depending on if it is active, grabbed, or highlighted
         SDL_Color handleColour = {155, 173, 183, 255};
