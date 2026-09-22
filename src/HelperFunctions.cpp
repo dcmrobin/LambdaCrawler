@@ -341,7 +341,21 @@ void UpdateSliders() {
 
         if (slider.handleGrabbed) { // If the slider handle is grabbed, update the slider handle to move with the mouse on its X axis, changing the slider's value
             normalizedSliderValue = logical_x - slider.x;
+
+            if (normalizedSliderValue > slider.width) { // Make sure the slider handle does not go outside slider track bounds
+                normalizedSliderValue = slider.width;
+            } else if (normalizedSliderValue < slider.minValue) {
+                normalizedSliderValue = slider.minValue;
+            }
+            
             slider.value = (normalizedSliderValue / slider.width) * slider.maxValue;
+
+            if (slider.value < slider.minValue) { // Clamp slider value as well
+                slider.value = slider.minValue;
+            } else if (slider.value > slider.maxValue) {
+                slider.value = slider.maxValue;
+            }
+
             if (showSettings) { // If the settings panel is showing, the slider is the volume slider, so the apply button is active now that a setting has changed
                 settingsApplied = false;
                 aSettingHasChanged = true;
