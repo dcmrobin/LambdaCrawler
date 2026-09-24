@@ -1,11 +1,13 @@
 #include "Map.h"
 
-int mapWidth = 20; // tiles wide
-int mapHeight = 15; // tiles tall
-int tileSize = 16;  // pixels per tile
+int mapWidth = 100; // tiles wide
+int mapHeight = 100; // tiles tall
+int tileSize = 16;  // pixels per tile 
 
 // Define the mapTiles vector
 std::vector<Tile> mapTiles;
+Partition map = {mapWidth, mapHeight, 0, 0};
+std::vector<Partition> mapPartitions;
 
 int currentLevel = 0;
 
@@ -34,6 +36,33 @@ void InitializeRoom() {
 
             mapTiles.push_back(tile);
         }
+    }
+}
+
+void GenerateMap() {
+    // Fill the map with solid tiles to carve rooms and corridors out of
+    for (auto& tile : mapTiles) {
+        tile.solid = true;
+    }
+
+    // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
+    Split(map);
+}
+
+void Split(Partition region) {
+    // Initialize random utilities for map generation
+    std::random_device mapRandomDevice;
+    std::mt19937 gen(rd());
+    std::bernoulli_distribution coin_flip(0.5);
+
+    // Pick a random axis to split on
+    if (coin_flip(gen)) {
+        // Horizontal split line
+        region.height / 2;
+        mapPartitions.push_back()
+    } else {
+        // Vertical split line
+        region.width / 2;
     }
 }
 

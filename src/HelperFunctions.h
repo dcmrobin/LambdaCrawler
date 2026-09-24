@@ -9,6 +9,7 @@
 #include <cmath>
 #include <filesystem>
 #include <iostream>
+#include <random>
 #include "Types.h"
 #include "game.h"
 #include "GFX.h"

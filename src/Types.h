@@ -142,3 +142,10 @@ struct Tile {
     int x;
     int y;
 };
+
+struct Partition {
+    int width;
+    int height;
+    int x;
+    int y;
+}
