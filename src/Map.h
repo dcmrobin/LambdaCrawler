@@ -9,10 +9,11 @@ extern int tileSize;
 
 // The map is a collection of tiles
 extern std::vector<Tile> mapTiles;
+extern Partition map;
 
 extern int currentLevel;
 
 void InitializeRoom();
 void GenerateMap();
-void Split(std::vector<Tile> region);
+void Split(Partition region);
 void UpdateMap();

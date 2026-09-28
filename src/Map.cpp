@@ -52,17 +52,38 @@ void GenerateMap() {
 void Split(Partition region) {
     // Initialize random utilities for map generation
     std::random_device mapRandomDevice;
-    std::mt19937 gen(rd());
+    std::mt19937 gen(mapRandomDevice());
     std::bernoulli_distribution coin_flip(0.5);
 
     // Pick a random axis to split on
     if (coin_flip(gen)) {
         // Horizontal split line
-        region.height / 2;
-        mapPartitions.push_back()
+        Partition tp; // Top partition
+        Partition bp; // Bottom partition
+        tp.x = region.x;
+        tp.y = region.y; 
+        tp.width = region.width;//                                                      NEED TO ADD RANDOM OFFSET TO SPLIT POINT
+        tp.height = region.height / 2; // Half of the original partition
+        bp.x = region.x;
+        bp.y = region.y + region.height / 2;
+        bp.width = region.width;
+        bp.height = region.height / 2; // Half of the original partition
+        mapPartitions.push_back(tp);
+        mapPartitions.push_back(bp);
     } else {
         // Vertical split line
-        region.width / 2;
+        Partition lp; // Left partition
+        Partition rp; // Right partition
+        lp.x = region.x;
+        lp.y = region.y;
+        lp.width = region.width / 2;
+        lp.height = region.height; // Half of the original partition
+        rp.x = region.x + region.width / 2;
+        rp.y = region.y;
+        rp.width = region.width / 2;
+        rp.height = region.height; // Half of the original partition
+        mapPartitions.push_back(lp);
+        mapPartitions.push_back(rp);
     }
 }
 

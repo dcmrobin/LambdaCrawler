@@ -182,6 +182,7 @@ void TriggerButtonAction(ButtonAction action) {
                 button.text = "null"; // Loop through all of the buttons and disable them, as they are not present in the initial game view
             }
             gameState = STATE_RUN; // Change the gameState to playing the game so that rendering logic changes from rendering the menu to rendering the game
+            GenerateMap();
             break;
         case BTN_LOAD_GAME:
             if (std::filesystem::exists("save.dat")) { // Check if the save file exists
