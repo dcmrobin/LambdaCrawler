@@ -1,7 +1,7 @@
 # Compiler
 CXX := g++
 CXXFLAGS := -Wall -std=c++17 -O2 -I./SDL2/include -Isrc
-LDFLAGS := -L./SDL2/lib -mwindows
+LDFLAGS := -L./SDL2/lib -mconsole # change back to mwindows
 LDLIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # Executable and assets

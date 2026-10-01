@@ -51,6 +51,22 @@ void UpdateCamera() {
     }
 }
 
+int Random(int min, int max) {
+    std::random_device mapRandomDevice;
+    std::mt19937 gen(mapRandomDevice());
+    std::uniform_int_distribution<int> rand_int(min, max);
+    
+    return rand_int(gen);
+}
+
+bool CoinFlip() {
+    std::random_device mapRandomDevice;
+    std::mt19937 gen(mapRandomDevice());
+    std::bernoulli_distribution coin_flip(0.5);
+
+    return coin_flip(gen);
+}
+
 bool IsKeyPressed(InputKey key, bool held) {
     if (!held)
     {

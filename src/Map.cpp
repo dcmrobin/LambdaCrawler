@@ -2,7 +2,12 @@
 
 int mapWidth = 100; // tiles wide
 int mapHeight = 100; // tiles tall
-int tileSize = 16;  // pixels per tile 
+int tileSize = 16;  // pixels per tile
+
+// map generation constraints
+int maxSplits = 10;
+int currentSplitCount = 0;
+int maxRoomSize = 5;
 
 // Define the mapTiles vector
 std::vector<Tile> mapTiles;
@@ -47,43 +52,80 @@ void GenerateMap() {
 
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map);
+
+    for (auto& part :mapPartitions) {
+        SDL_Log("partition x: %d", part.x);
+        SDL_Log("partition y: %d", part.y);
+        SDL_Log("partition width: %d", part.width);
+        SDL_Log("partition height: %d", part.height);
+    }
 }
 
 void Split(Partition region) {
-    // Initialize random utilities for map generation
-    std::random_device mapRandomDevice;
-    std::mt19937 gen(mapRandomDevice());
-    std::bernoulli_distribution coin_flip(0.5);
+    // Make sure infinite splitting does not occur, but also make sure any partitions that are hoping to get split instantly get saved to the list if the max splits have been met
+    currentSplitCount++;
+    if (currentSplitCount >= maxSplits) {
+        mapPartitions.push_back(region);
+        return; 
+    }
 
     // Pick a random axis to split on
-    if (coin_flip(gen)) {
+    if (CoinFlip()) {
         // Horizontal split line
+        int randOffsetRaw = Random(-20, 20);
+        float normalizedT = (randOffsetRaw + 20) / 40.0f;
+        int randOffset = (int)(normalizedT * region.height) - (region.height / 2); // Normalize the random offset value to fit inside the room
+
         Partition tp; // Top partition
         Partition bp; // Bottom partition
         tp.x = region.x;
         tp.y = region.y; 
-        tp.width = region.width;//                                                      NEED TO ADD RANDOM OFFSET TO SPLIT POINT
-        tp.height = region.height / 2; // Half of the original partition
+        tp.width = region.width;
+        tp.height = (region.height / 2) + randOffset;
         bp.x = region.x;
-        bp.y = region.y + region.height / 2;
+        bp.y = region.y + tp.height;
         bp.width = region.width;
-        bp.height = region.height / 2; // Half of the original partition
-        mapPartitions.push_back(tp);
-        mapPartitions.push_back(bp);
+        bp.height = region.height - tp.height;
+
+        // Check if partition is small enough for a single room - if not, split some more
+        if (tp.width > maxRoomSize || tp.height > maxRoomSize) {
+            Split(tp);
+        } else if (tp.width <= maxRoomSize && tp.height <= maxRoomSize) {
+            mapPartitions.push_back(tp);
+        }
+        if (bp.width > maxRoomSize || bp.height > maxRoomSize) {
+            Split(bp);
+        } else if (bp.width <= maxRoomSize && bp.height <= maxRoomSize) {
+            mapPartitions.push_back(bp);
+        }
     } else {
         // Vertical split line
+        int randOffsetRaw = Random(-20, 20);
+        float normalizedT = (randOffsetRaw + 20) / 40.0f;
+        int randOffset = (int)(normalizedT * region.width) - (region.width / 2); // Normalize the random offset value to fit inside the room
+
         Partition lp; // Left partition
         Partition rp; // Right partition
         lp.x = region.x;
         lp.y = region.y;
-        lp.width = region.width / 2;
-        lp.height = region.height; // Half of the original partition
-        rp.x = region.x + region.width / 2;
+        lp.width = (region.width / 2) + randOffset;
+        lp.height = region.height;
+        rp.x = region.x + lp.width;
         rp.y = region.y;
-        rp.width = region.width / 2;
-        rp.height = region.height; // Half of the original partition
-        mapPartitions.push_back(lp);
-        mapPartitions.push_back(rp);
+        rp.width = region.width - lp.width;
+        rp.height = region.height;
+
+        // Check if partition is small enough for a single room - if not, split some more
+        if (lp.width > maxRoomSize || lp.height > maxRoomSize) {
+            Split(lp);
+        } else if (lp.width <= maxRoomSize && lp.height <= maxRoomSize) {
+            mapPartitions.push_back(lp);
+        }
+        if (rp.width > maxRoomSize || rp.height > maxRoomSize) {
+            Split(rp);
+        } else if (rp.width <= maxRoomSize && rp.height <= maxRoomSize) {
+            mapPartitions.push_back(rp);
+        }
     }
 }
 

@@ -28,6 +28,8 @@ extern TTF_Font* font;
 bool Intersects(Hitbox& current, Hitbox other);
 void UpdateKeyStates();
 void UpdateCamera();
+int Random(int min, int max);
+bool CoinFlip();
 bool IsKeyPressed(InputKey key, bool held);
 void ChangeTile(int x, int y, bool solid, TileType type);
 void UpdateButtons();
