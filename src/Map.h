@@ -15,5 +15,5 @@ extern int currentLevel;
 
 void InitializeRoom();
 void GenerateMap();
-void Split(Partition region);
+void Split(Partition region, int axis /*0=random 1=horizontal 2=vertical*/);
 void UpdateMap();

@@ -1,12 +1,16 @@
-# Compiler
-CXX := g++
+# Compiler and Flags
+CXX      := g++
 CXXFLAGS := -Wall -std=c++17 -O2 -I./SDL2/include -Isrc
-LDFLAGS := -L./SDL2/lib -mconsole # change back to mwindows
-LDLIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+
+# Linker Flags 
+# -> Use -mconsole to force the UCRT64 terminal output
+# -> Toggle to -mwindows when you want to hide the console for a final release
+LDFLAGS  := -L./SDL2/lib -mconsole
+LDLIBS   := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # Executable and assets
-EXEC := build/LambdaCrawler.exe
-ASSETS_SRC := assets
+EXEC        := build/LambdaCrawler.exe
+ASSETS_SRC  := assets
 ASSETS_DEST := build/assets
 
 # Source files
@@ -14,8 +18,8 @@ SRCS := $(shell find src -name '*.cpp')
 
 # Target icon files
 ICON_ICO := assets/sprites/icon.ico
-RC_FILE := build/icon.rc
-RES_OBJ := build/icon.o
+RC_FILE  := build/icon.rc
+RES_OBJ  := build/icon.o
 
 # Default target
 all: $(EXEC) copy_dll copy_dll_auto copy_assets

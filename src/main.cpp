@@ -1,5 +1,7 @@
 #define SDL_MAIN_HANDLED
 
+#include <iostream>
+#include <cstdio>
 #include "HelperFunctions.h"
 
 int LOGICAL_WIDTH = 320;
@@ -20,6 +22,20 @@ void toggle_fullscreen() {
 }
 
 int main(int argc, char* argv[]) {
+    // 1. FORCE THE UCRT64 CONSOLE TO INSTANTLY FLUSH OUTPUT
+    std::ios_base::sync_with_stdio(false);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    // 2. TELL SDL WE ARE HANDLING THE ENTRY POINT MANUALLY
+    SDL_SetMainReady();
+
+    // 3. SET THE LOG LEVEL TO VERBOSE TO GUARANTEE LOGS ARE NOT FILTERED
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+
+    // Initial log test to see if it prints immediately
+    SDL_Log("UCRT64 Console log connected successfully via SDL_Log!");
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         return 1;
