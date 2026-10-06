@@ -199,6 +199,7 @@ void TriggerButtonAction(ButtonAction action) {
             }
             gameState = STATE_RUN; // Change the gameState to playing the game so that rendering logic changes from rendering the menu to rendering the game
             GenerateMap();
+            currentLevel = 1;
             break;
         case BTN_LOAD_GAME:
             if (std::filesystem::exists("save.dat")) { // Check if the save file exists

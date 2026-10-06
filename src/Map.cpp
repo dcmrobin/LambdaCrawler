@@ -45,13 +45,39 @@ void InitializeRoom() {
 }
 
 void GenerateMap() {
+    mapTiles.clear();
+
     // Fill the map with solid tiles to carve rooms and corridors out of
-    for (auto& tile : mapTiles) {
-        tile.solid = true;
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            Tile tile;
+            tile.type = WALL;
+            tile.solid = true;
+            tile.x = x * tileSize;
+            tile.y = y * tileSize;
+            tile.hitbox.x = tile.x;
+            tile.hitbox.y = tile.y;
+            tile.width = tileSize;
+            tile.height = tileSize;
+            tile.hitbox.width = tile.width;
+            tile.hitbox.height = tile.height;
+            mapTiles.push_back(tile);
+        }
     }
 
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
+
+    /*for (auto& mapTile : mapTiles) {
+        for (auto& partition : mapPartitions) {
+            for (int x = 0; x < partition.width; x++) {
+                for (int y = 0; y < partition.height; y++) {
+                    mapTile.solid = false;
+                    mapTile.type = GROUND;
+                }
+            }
+        }
+    }*/ //                                              NEED A WAY OF CHECKING WHERE IT IS A PARTITION AND WHERE IT IS NOT- RN EVERYTHING IS BEING MADE GROUND
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
