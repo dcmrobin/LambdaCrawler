@@ -5,9 +5,9 @@ int mapHeight = 100; // tiles tall
 int tileSize = 16;  // pixels per tile
 
 // map generation constraints
-int maxSplits = 40;
+int maxSplits = 200;
 int currentSplitCount = 0;
-int maxRoomSize = 7;
+int maxPartitionSize = 20;
 
 // Define the mapTiles vector
 std::vector<Tile> mapTiles;
@@ -52,35 +52,6 @@ void GenerateMap() {
 
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
-
-    currentSplitCount = 0; // Reset for second round of splitting
-
-    std::vector<Partition> leftoverParts = mapPartitions;
-    mapPartitions.clear(); // Empty map partitions for the second round
-
-    for (auto& part : leftoverParts) { // Go through the rest of the map partitions, and split them up
-        if (part.height > maxRoomSize) {
-            Split(part, 1);
-        }
-        if (part.width > maxRoomSize) {
-            Split(part, 2);
-        }
-
-        if (part.width <= maxRoomSize && part.height <= maxRoomSize) {
-            mapPartitions.push_back(part);
-        }
-    }
-
-    if (mapPartitions.empty()) {
-        SDL_Log("mapPartitions is empty");
-    }
-    
-    for (auto& part : mapPartitions) {
-        SDL_Log("partition x: %d", part.x);
-        SDL_Log("partition y: %d", part.y);
-        SDL_Log("partition width: %d", part.width);
-        SDL_Log("partition height: %d", part.height);
-    }
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
@@ -96,10 +67,10 @@ void Split(Partition region, int axis) {
 
     // Pick a random axis to split on
     if ((randAxis && axis == 0) || axis == 1) {
-        if (region.height > maxRoomSize) { // Don't split if room is already small enough on that axis
+        if (region.height > maxPartitionSize) { // Don't split if room is already small enough on that axis
             // Horizontal split line
 
-            int randOffset = Random(-(int)(maxRoomSize/3), (int)(region.height/3));
+            int randOffset = Random(-(int)(maxPartitionSize/3), (int)(region.height/3));
 
             Partition tp; // Top partition
             Partition bp; // Bottom partition
@@ -113,27 +84,27 @@ void Split(Partition region, int axis) {
             bp.height = region.height - tp.height;
 
             // Check if partition is small enough for a single room - if not, split some more
-            if (tp.width > maxRoomSize || tp.height > maxRoomSize) {
+            if (tp.width > maxPartitionSize || tp.height > maxPartitionSize) {
                 Split(tp, 0);
-            } else if (tp.width <= maxRoomSize && tp.height <= maxRoomSize) {
+            } else if (tp.width <= maxPartitionSize && tp.height <= maxPartitionSize) {
                 mapPartitions.push_back(tp);
             }
-            if (bp.width > maxRoomSize || bp.height > maxRoomSize) {
+            if (bp.width > maxPartitionSize || bp.height > maxPartitionSize) {
                 Split(bp, 0);
-            } else if (bp.width <= maxRoomSize && bp.height <= maxRoomSize) {
+            } else if (bp.width <= maxPartitionSize && bp.height <= maxPartitionSize) {
                 mapPartitions.push_back(bp);
             }
-        } else if (region.height <= maxRoomSize && region.width > maxRoomSize) {
+        } else if (region.height <= maxPartitionSize && region.width > maxPartitionSize) {
             Split(region, 2); // Region cannot split horizontally due to being too small on that dimention already, so split vertically (but only if it can be split vertically)
         } else {
             mapPartitions.push_back(region);
             return; // Region cannot be split anymore, cache it
         }
     } else if ((!randAxis && axis == 0) || axis == 2) {
-        if (region.width > maxRoomSize) { // Don't split if room is already small enough on that axis
+        if (region.width > maxPartitionSize) { // Don't split if room is already small enough on that axis
             // Vertical split line
             
-            int randOffset = Random(-(int)(maxRoomSize/3), (int)(region.width/3));
+            int randOffset = Random(-(int)(maxPartitionSize/3), (int)(region.width/3));
 
             Partition lp; // Left partition
             Partition rp; // Right partition
@@ -147,17 +118,17 @@ void Split(Partition region, int axis) {
             rp.height = region.height;
 
             // Check if partition is small enough for a single room - if not, split some more
-            if (lp.width > maxRoomSize || lp.height > maxRoomSize) {
+            if (lp.width > maxPartitionSize || lp.height > maxPartitionSize) {
                 Split(lp, 0);
-            } else if (lp.width <= maxRoomSize && lp.height <= maxRoomSize) {
+            } else if (lp.width <= maxPartitionSize && lp.height <= maxPartitionSize) {
                 mapPartitions.push_back(lp);
             }
-            if (rp.width > maxRoomSize || rp.height > maxRoomSize) {
+            if (rp.width > maxPartitionSize || rp.height > maxPartitionSize) {
                 Split(rp, 0);
-            } else if (rp.width <= maxRoomSize && rp.height <= maxRoomSize) {
+            } else if (rp.width <= maxPartitionSize && rp.height <= maxPartitionSize) {
                 mapPartitions.push_back(rp);
             }
-        } else if (region.width <= maxRoomSize && region.height > maxRoomSize) {
+        } else if (region.width <= maxPartitionSize && region.height > maxPartitionSize) {
             Split(region, 1); // Region cannot split vertically due to being too small on that dimention already, so split horizontally (but only if it can be split horizontally)
         } else {
             mapPartitions.push_back(region);
