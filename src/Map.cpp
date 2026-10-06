@@ -65,6 +65,10 @@ void GenerateMap() {
         if (part.width > maxRoomSize) {
             Split(part, 2);
         }
+
+        if (part.width <= maxRoomSize && part.height <= maxRoomSize) {
+            mapPartitions.push_back(part);
+        }
     }
 
     if (mapPartitions.empty()) {
@@ -87,11 +91,11 @@ void Split(Partition region, int axis) {
         mapPartitions.push_back(region);
         return; 
     }
-                                                                                                            // DONT ROLL TWICE, ONLY COINFLIP ONCE
-                                                                                                            //SECOND PASS THROWS AWAY EVERY PARTITION???
+
+    bool randAxis = CoinFlip();
 
     // Pick a random axis to split on
-    if ((CoinFlip() && axis == 0) || axis == 1) {
+    if ((randAxis && axis == 0) || axis == 1) {
         if (region.height > maxRoomSize) { // Don't split if room is already small enough on that axis
             // Horizontal split line
 
@@ -125,7 +129,7 @@ void Split(Partition region, int axis) {
             mapPartitions.push_back(region);
             return; // Region cannot be split anymore, cache it
         }
-    } else if ((!CoinFlip() && axis == 0) || axis == 2) {
+    } else if ((!randAxis && axis == 0) || axis == 2) {
         if (region.width > maxRoomSize) { // Don't split if room is already small enough on that axis
             // Vertical split line
             
