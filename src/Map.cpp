@@ -68,6 +68,7 @@ void GenerateMap() {
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
 
+    // Carve out all partitions in the map of solid tiles
     for (auto& partition : mapPartitions) {
         for (auto& mapTile : mapTiles) {
             for (int x = 0; x < partition.width; x++) {
@@ -82,6 +83,8 @@ void GenerateMap() {
             }
         }
     }
+
+    // Carve corridors between each room
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
