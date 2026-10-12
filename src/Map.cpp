@@ -71,15 +71,11 @@ void GenerateMap() {
     // Carve out all partitions in the map of solid tiles
     for (auto& partition : mapPartitions) {
         for (auto& mapTile : mapTiles) {
-            for (int x = 0; x < partition.width; x++) {
-                for (int y = 0; y < partition.height; y++) {
-                    bool insidePartitionWidth = (int)(mapTile.x/tileSize) > partition.x && (int)(mapTile.x/tileSize) < partition.x + partition.width;
-                    bool insidePartitionHeight = (int)(mapTile.y/tileSize) > partition.y && (int)(mapTile.y/tileSize) < partition.y + partition.height;
-                    if (insidePartitionWidth && insidePartitionHeight) {
-                        mapTile.solid = false;
-                        mapTile.type = GROUND;
-                    }
-                }
+            bool insidePartitionWidth = (int)(mapTile.x/tileSize) > partition.x && (int)(mapTile.x/tileSize) < partition.x + partition.width;
+            bool insidePartitionHeight = (int)(mapTile.y/tileSize) > partition.y && (int)(mapTile.y/tileSize) < partition.y + partition.height;
+            if (insidePartitionWidth && insidePartitionHeight) {
+                mapTile.solid = false;
+                mapTile.type = GROUND;
             }
         }
     }
