@@ -10,7 +10,7 @@ int currentSplitCount = 0;
 int maxPartitionSize = 20;
 
 // Define the mapTiles vector
-std::vector<Tile> mapTiles;
+std::vector<std::vector<Tile>> mapTiles;
 Partition map = {mapWidth, mapHeight, 0, 0};
 std::vector<Partition> mapPartitions;
 
@@ -33,7 +33,7 @@ void GenerateMap() {
             tile.height = tileSize;
             tile.hitbox.width = tile.width;
             tile.hitbox.height = tile.height;
-            mapTiles.push_back(tile);
+            mapTiles[x][y] = tile;
         }
     }
 
@@ -42,12 +42,14 @@ void GenerateMap() {
 
     // Carve out all partitions in the map of solid tiles
     for (auto& partition : mapPartitions) {
-        for (auto& mapTile : mapTiles) {
-            bool insidePartitionWidth = (int)(mapTile.x/tileSize) > partition.x && (int)(mapTile.x/tileSize) < partition.x + partition.width;
-            bool insidePartitionHeight = (int)(mapTile.y/tileSize) > partition.y && (int)(mapTile.y/tileSize) < partition.y + partition.height;
-            if (insidePartitionWidth && insidePartitionHeight) {
-                mapTile.solid = false;
-                mapTile.type = GROUND;
+        for (int px = 1; px < partition.width; px++) {
+            for (int py = 1; py < partition.height; py++) {
+                bool insidePartitionWidth = (int)(mapTiles[px][py].x/tileSize) > partition.x && (int)(mapTiles[px][py].x/tileSize) < partition.x + partition.width;
+                bool insidePartitionHeight = (int)(mapTiles[px][py].y/tileSize) > partition.y && (int)(mapTiles[px][py].y/tileSize) < partition.y + partition.height;
+                if (insidePartitionWidth && insidePartitionHeight) {
+                    mapTiles[px][py].solid = false;
+                    mapTiles[px][py].type = GROUND;
+                }
             }
         }
     }
@@ -139,12 +141,14 @@ void Split(Partition region, int axis) {
 }
 
 void UpdateMap() {
-    for (auto& tile : mapTiles) {
-        // Update the hitbox based on the tile's position and solid state
-        if (tile.solid) {
-            tile.hitbox = {tile.x, tile.y, tile.width, tile.height};
-        } else {
-            tile.hitbox = {0, 0, 0, 0}; // Non-solid tiles have no hitbox
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            // Update the hitbox based on the tile's position and solid state
+            if (mapTiles[x][y].solid) {
+                mapTiles[x][y].hitbox = {mapTiles[x][y].x, mapTiles[x][y].y, mapTiles[x][y].width, mapTiles[x][y].height};
+            } else {
+                mapTiles[x][y].hitbox = {0, 0, 0, 0}; // Non-solid tiles have no hitbox
+            }
         }
     }
 }

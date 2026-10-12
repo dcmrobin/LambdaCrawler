@@ -10,10 +10,12 @@ void HandlePlayerInput() {
         Hitbox newHitbox = player.getWorldHitbox();
         newHitbox.x = newX + player.hitbox.x;
         newHitbox.y = newY + player.hitbox.y;
-        for (const auto& tile : mapTiles) {
-            if (Intersects(newHitbox, tile.hitbox)) {
-                currentIntersectingTile = tile;
-                return false;
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                if (Intersects(newHitbox, mapTiles[x][y].hitbox)) {
+                    currentIntersectingTile = mapTiles[x][y];
+                    return false;
+                }
             }
         }
         return true;
@@ -65,26 +67,28 @@ void HandlePlayerInput() {
     }
 
     const int interactionRange = 24; // pixels
-    for (auto& tile : mapTiles) {
-        // Calculate distance between player and tile
-        int dx = (tile.x + tile.hitbox.x/2) - (player.x + player.hitbox.x/2);
-        int dy = (tile.y + tile.hitbox.y/2) - (player.y + player.hitbox.y/2);
-        int distanceSq = dx*dx + dy*dy;
-        
-        if (distanceSq <= interactionRange*interactionRange) {
-            if (tile.type == CHUTE_CLOSED || tile.type == CHUTE_OPEN) {
-                DrawText("8bitMageFont", tile.type == CHUTE_CLOSED ? "[X] Open chute" : "[X] Close chute", player.x - 12, player.y - 8, {255, 255, 255, 255}, 0.2f, ALIGN_CENTER);
-                if (tile.type == CHUTE_OPEN) {
-                    DrawText("8bitMageFont", "[Enter] Enter chute", player.x - 12, player.y - 3, {255, 255, 255, 255}, 0.2f, ALIGN_CENTER);
-                    if (IsKeyPressed(KEY_ENTER, false)) {
-                        // player has gone down the chute
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            // Calculate distance between player and tile
+            int dx = (mapTiles[x][y].x + mapTiles[x][y].hitbox.x/2) - (player.x + player.hitbox.x/2);
+            int dy = (mapTiles[x][y].y + mapTiles[x][y].hitbox.y/2) - (player.y + player.hitbox.y/2);
+            int distanceSq = dx*dx + dy*dy;
+            
+            if (distanceSq <= interactionRange*interactionRange) {
+                if (mapTiles[x][y].type == CHUTE_CLOSED || mapTiles[x][y].type == CHUTE_OPEN) {
+                    DrawText("8bitMageFont", mapTiles[x][y].type == CHUTE_CLOSED ? "[X] Open chute" : "[X] Close chute", player.x - 12, player.y - 8, {255, 255, 255, 255}, 0.2f, ALIGN_CENTER);
+                    if (mapTiles[x][y].type == CHUTE_OPEN) {
+                        DrawText("8bitMageFont", "[Enter] Enter chute", player.x - 12, player.y - 3, {255, 255, 255, 255}, 0.2f, ALIGN_CENTER);
+                        if (IsKeyPressed(KEY_ENTER, false)) {
+                            // player has gone down the chute
+                        }
                     }
-                }
-                if (IsKeyPressed(KEY_X, false)) {
-                    // Toggle the chute state
-                    TileType newType = (tile.type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
-                    ChangeTile(tile.x, tile.y, false, newType);
-                    break; // Only interact with one chute at a time
+                    if (IsKeyPressed(KEY_X, false)) {
+                        // Toggle the chute state
+                        TileType newType = (mapTiles[x][y].type == CHUTE_CLOSED) ? CHUTE_OPEN : CHUTE_CLOSED;
+                        ChangeTile(mapTiles[x][y].x, mapTiles[x][y].y, false, newType);
+                        break; // Only interact with one chute at a time
+                    }
                 }
             }
         }

@@ -8,7 +8,7 @@ extern int mapHeight;
 extern int tileSize;
 
 // The map is a collection of tiles
-extern std::vector<Tile> mapTiles;
+extern std::vector<std::vector<Tile>> mapTiles;
 extern Partition map;
 
 extern int currentLevel;

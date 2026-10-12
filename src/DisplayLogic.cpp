@@ -33,29 +33,30 @@ void RenderPlayer() {
 
 void RenderMap() {
     extern int cameraX, cameraY;
-    for (const auto& tile : mapTiles) {
-        int drawX = tile.x - cameraX;
-        int drawY = tile.y - cameraY;
-        switch (tile.type)
-        {
-        case GROUND:
-            DrawSprite("tile_ground", drawX, drawY, tile.width, tile.height);
-            break;
-        case WALL:
-            DrawSprite("tile_wall", drawX, drawY, tile.width, tile.height);
-            break;
-        case WALL_TOP:
-            DrawSprite("tile_wall_top", drawX, drawY, tile.width, tile.height);
-            break;
-        case CHUTE_CLOSED:
-            DrawSprite("tile_chute_closed", drawX, drawY, tile.width, tile.height);
-            break;
-        case CHUTE_OPEN:
-            DrawSprite("tile_chute_open", drawX, drawY, tile.width, tile.height);
-            break;
-        default:
-            DrawSprite("tile", drawX, drawY, tile.width, tile.height);
-            break;
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            int drawX = mapTiles[x][y].x - cameraX;
+            int drawY = mapTiles[x][y].y - cameraY;
+            switch (mapTiles[x][y].type) {
+                case GROUND:
+                    DrawSprite("tile_ground", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+                case WALL:
+                    DrawSprite("tile_wall", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+                case WALL_TOP:
+                    DrawSprite("tile_wall_top", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+                case CHUTE_CLOSED:
+                    DrawSprite("tile_chute_closed", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+                case CHUTE_OPEN:
+                    DrawSprite("tile_chute_open", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+                default:
+                    DrawSprite("tile", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    break;
+            }
         }
     }
 }

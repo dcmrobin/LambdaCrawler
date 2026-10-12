@@ -106,11 +106,13 @@ bool Intersects(Hitbox& current, Hitbox other){
 }
 
 void ChangeTile(int x, int y, bool solid, TileType type) {
-    for (auto& tile : mapTiles) {
-        if (tile.x == x && tile.y == y) {
-            tile.solid = solid;
-            tile.type = type;
-            return;
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            if (mapTiles[x][y].x == x && mapTiles[x][y].y == y) {
+                mapTiles[x][y].solid = solid;
+                mapTiles[x][y].type = type;
+                return;
+            }
         }
     }
     // If not found, create a new tile
@@ -120,7 +122,7 @@ void ChangeTile(int x, int y, bool solid, TileType type) {
     newTile.hitbox = {x, y, tileSize, tileSize};
     newTile.solid = solid;
     newTile.type = type;
-    mapTiles.push_back(newTile);
+    mapTiles[x][y] = newTile;
 }
 
 void UpdateButtons() {
