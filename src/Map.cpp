@@ -51,7 +51,7 @@ void GenerateMap() {
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
             Tile tile;
-            tile.type = WALL;
+            tile.type = WALL_TOP;
             tile.solid = true;
             tile.x = x * tileSize;
             tile.y = y * tileSize;
@@ -68,16 +68,20 @@ void GenerateMap() {
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
 
-    /*for (auto& mapTile : mapTiles) {
-        for (auto& partition : mapPartitions) {
+    for (auto& partition : mapPartitions) {
+        for (auto& mapTile : mapTiles) {
             for (int x = 0; x < partition.width; x++) {
                 for (int y = 0; y < partition.height; y++) {
-                    mapTile.solid = false;
-                    mapTile.type = GROUND;
+                    bool insidePartitionWidth = (int)(mapTile.x/tileSize) > partition.x && (int)(mapTile.x/tileSize) < partition.x + partition.width;
+                    bool insidePartitionHeight = (int)(mapTile.y/tileSize) > partition.y && (int)(mapTile.y/tileSize) < partition.y + partition.height;
+                    if (insidePartitionWidth && insidePartitionHeight) {
+                        mapTile.solid = false;
+                        mapTile.type = GROUND;
+                    }
                 }
             }
         }
-    }*/ //                                              NEED A WAY OF CHECKING WHERE IT IS A PARTITION AND WHERE IT IS NOT- RN EVERYTHING IS BEING MADE GROUND
+    }
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
