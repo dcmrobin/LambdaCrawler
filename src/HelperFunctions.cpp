@@ -8,6 +8,7 @@ float cameraXF = 0.0f;
 float cameraYF = 0.0f;
 const float CAMERA_LERP = 0.15f;
 TTF_Font* font = TTF_OpenFont("assets/fonts/DiaryOfAn8BitMage-lYDD.ttf", 24);
+static std::mt19937 map_gen(std::random_device{}());
 
 void UpdateKeyStates() {
   // Save previous states
@@ -51,20 +52,22 @@ void UpdateCamera() {
     }
 }
 
+void SeedRandom(const std::string& seed_string) {
+    std::seed_seq seed_data(seed_string.begin(), seed_string.end());
+    map_gen.seed(seed_data);
+}
+
 int Random(int min, int max) {
-    std::random_device mapRandomDevice;
-    std::mt19937 gen(mapRandomDevice());
-    std::uniform_int_distribution<int> rand_int(min, max);
+    // Handle edge case where min might be greater than max to prevent crashes
+    if (min > max) std::swap(min, max); 
     
-    return rand_int(gen);
+    std::uniform_int_distribution<int> rand_int(min, max);
+    return rand_int(map_gen); // Uses the seeded map_gen
 }
 
 bool CoinFlip() {
-    std::random_device mapRandomDevice;
-    std::mt19937 gen(mapRandomDevice());
     std::bernoulli_distribution coin_flip(0.5);
-
-    return coin_flip(gen);
+    return coin_flip(map_gen); // Uses the seeded map_gen
 }
 
 bool IsKeyPressed(InputKey key, bool held) {
