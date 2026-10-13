@@ -53,6 +53,26 @@ void GenerateMap() {
     }
 
     // Carve corridors between each room
+    for (int i = 0; i < (int)mapPartitions.size(); i++) {
+        int randIndex = Random(0, (int)(mapPartitions.size() - 1));
+        if (randIndex == i) { randIndex += ((randIndex + 1) >= (int)mapPartitions.size()) ? -1 : 1; } // Make sure target partition index is not this partition
+
+        Partition targetPartition = mapPartitions[randIndex];
+        // Carve horizontal segment of corridor
+        if (mapPartitions[i].x > targetPartition.x) {
+            // Is target partition to the right of this partition?
+            for (int x = (int)((mapPartitions[i].width / 2) + mapPartitions[i].x); x < (targetPartition.width / 2) + targetPartition.x; x++) {
+                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].solid = false;
+                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].type = GROUND;
+            }
+        } else if (mapPartitions[i].x < targetPartition.x) {
+            // Is target partition to the left of this partition?
+            for (int x = (int)((mapPartitions[i].width / 2) + mapPartitions[i].x); x > (targetPartition.width / 2) + targetPartition.x; x--) {
+                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].solid = false;
+                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].type = GROUND;
+            }
+        }
+    }
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical

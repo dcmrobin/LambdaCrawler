@@ -58,16 +58,15 @@ void SeedRandom(const std::string& seed_string) {
 }
 
 int Random(int min, int max) {
-    // Handle edge case where min might be greater than max to prevent crashes
     if (min > max) std::swap(min, max); 
     
     std::uniform_int_distribution<int> rand_int(min, max);
-    return rand_int(map_gen); // Uses the seeded map_gen
+    return rand_int(map_gen);
 }
 
 bool CoinFlip() {
     std::bernoulli_distribution coin_flip(0.5);
-    return coin_flip(map_gen); // Uses the seeded map_gen
+    return coin_flip(map_gen);
 }
 
 bool IsKeyPressed(InputKey key, bool held) {
