@@ -17,7 +17,8 @@ std::vector<Partition> mapPartitions;
 int currentLevel = 0;
 
 void GenerateMap() {
-    mapTiles.clear();
+    mapTiles.assign(mapWidth, std::vector<Tile>(mapHeight));
+    currentSplitCount = 0;
 
     // Fill the map with solid tiles to carve rooms and corridors out of
     for (int x = 0; x < mapWidth; x++) {
@@ -42,14 +43,10 @@ void GenerateMap() {
 
     // Carve out all partitions in the map of solid tiles
     for (auto& partition : mapPartitions) {
-        for (int px = 1; px < partition.width; px++) {
-            for (int py = 1; py < partition.height; py++) {
-                bool insidePartitionWidth = (int)(mapTiles[px][py].x/tileSize) > partition.x && (int)(mapTiles[px][py].x/tileSize) < partition.x + partition.width;
-                bool insidePartitionHeight = (int)(mapTiles[px][py].y/tileSize) > partition.y && (int)(mapTiles[px][py].y/tileSize) < partition.y + partition.height;
-                if (insidePartitionWidth && insidePartitionHeight) {
-                    mapTiles[px][py].solid = false;
-                    mapTiles[px][py].type = GROUND;
-                }
+        for (int px = partition.x + 1; px < partition.x + partition.width; px++) {
+            for (int py = partition.y + 1; py < partition.y + partition.height; py++) {
+                mapTiles[px][py].solid = false;
+                mapTiles[px][py].type = GROUND;
             }
         }
     }
