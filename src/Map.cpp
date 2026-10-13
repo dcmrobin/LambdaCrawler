@@ -17,6 +17,7 @@ std::vector<Partition> mapPartitions;
 int currentLevel = 0;
 
 void GenerateMap() {
+    // Reset mapTiles vector
     mapTiles.assign(mapWidth, std::vector<Tile>(mapHeight));
     currentSplitCount = 0;
 
