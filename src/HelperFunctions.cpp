@@ -108,23 +108,50 @@ bool Intersects(Hitbox& current, Hitbox other){
 }
 
 void ChangeTile(int x, int y, bool solid, TileType type) {
-    for (int x = 0; x < mapWidth; x++) {
-        for (int y = 0; y < mapHeight; y++) {
-            if (mapTiles[x][y].x == x && mapTiles[x][y].y == y) {
-                mapTiles[x][y].solid = solid;
-                mapTiles[x][y].type = type;
-                return;
-            }
+    mapTiles[x][y].solid = solid;
+    mapTiles[x][y].type = type;
+}
+
+// currentTile = the tile being checked for visibility, visibleToTile = the tile that is checking for visibility (usually the player)
+bool IsVisible(Tile& currentTile, Tile& visibleToTile) {
+    int x0 = currentTile.x / tileSize;
+    int y0 = currentTile.y / tileSize;
+    const int targetX = x0;
+    const int targetY = y0;
+    int x1 = visibleToTile.x / tileSize;
+    int y1 = visibleToTile.y / tileSize;
+    int dx = abs(x1 - x0);
+    int dy = abs(y1 - y0);
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
+
+    while (true) {
+        // Check bounds first
+        if (x0 < 0 || x0 >= mapWidth || y0 < 0 || y0 >= mapHeight) return false;
+
+        // **If we've reached the target tile, exit the loop**
+        if (x0 == x1 && y0 == y1)
+        break;
+
+        // The tile being checked is visible even when it blocks the view beyond it.
+        if ((x0 != targetX || y0 != targetY) &&
+            (mapTiles[x0][y0].type == WALL || mapTiles[x0][y0].type == WALL_TOP)) {
+            return false;
+        }
+
+        // Move to the next tile along the line
+        int e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x0 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y0 += sy;
         }
     }
-    // If not found, create a new tile
-    Tile newTile;
-    newTile.x = x;
-    newTile.y = y;
-    newTile.hitbox = {x, y, tileSize, tileSize};
-    newTile.solid = solid;
-    newTile.type = type;
-    mapTiles[x][y] = newTile;
+    return true;
 }
 
 void UpdateButtons() {

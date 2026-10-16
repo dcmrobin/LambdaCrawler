@@ -35,26 +35,27 @@ void RenderMap() {
     extern int cameraX, cameraY;
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
+            float brightness = IsVisible(mapTiles[x][y], mapTiles[player.getWorldHitbox().x / tileSize][player.getWorldHitbox().y / tileSize]) ? mapTiles[x][y].brightness : 0.0f;
             int drawX = mapTiles[x][y].x - cameraX;
             int drawY = mapTiles[x][y].y - cameraY;
             switch (mapTiles[x][y].type) {
                 case GROUND:
-                    DrawSprite("tile_ground", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile_ground", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
                 case WALL:
-                    DrawSprite("tile_wall", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile_wall", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
                 case WALL_TOP:
-                    DrawSprite("tile_wall_top", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile_wall_top", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
                 case CHUTE_CLOSED:
-                    DrawSprite("tile_chute_closed", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile_chute_closed", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
                 case CHUTE_OPEN:
-                    DrawSprite("tile_chute_open", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile_chute_open", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
                 default:
-                    DrawSprite("tile", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height);
+                    DrawSprite("tile", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, brightness);
                     break;
             }
         }

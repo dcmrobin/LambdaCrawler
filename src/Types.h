@@ -141,6 +141,7 @@ struct Tile {
     int height;
     int x;
     int y;
+    float brightness = 1.0f;
 };
 
 struct Partition {

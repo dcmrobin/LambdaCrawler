@@ -32,6 +32,7 @@ int Random(int min, int max);
 bool CoinFlip();
 bool IsKeyPressed(InputKey key, bool held);
 void ChangeTile(int x, int y, bool solid, TileType type);
+bool IsVisible(Tile& currentTile, Tile& visibleToTile);
 void UpdateButtons();
 bool IsMouseButtonPressed(int button);
 void TriggerButtonAction(ButtonAction action);
