@@ -112,46 +112,86 @@ void ChangeTile(int x, int y, bool solid, TileType type) {
     mapTiles[x][y].type = type;
 }
 
-// currentTile = the tile being checked for visibility, visibleToTile = the tile that is checking for visibility (usually the player)
-bool IsVisible(Tile& currentTile, Tile& visibleToTile) {
-    int x0 = currentTile.x / tileSize;
-    int y0 = currentTile.y / tileSize;
-    const int targetX = x0;
-    const int targetY = y0;
-    int x1 = visibleToTile.x / tileSize;
-    int y1 = visibleToTile.y / tileSize;
-    int dx = abs(x1 - x0);
-    int dy = abs(y1 - y0);
-    int sx = (x0 < x1) ? 1 : -1;
-    int sy = (y0 < y1) ? 1 : -1;
-    int err = dx - dy;
+bool IsVisibleFromPlayer(int playerX, int playerY, int targetX, int targetY) {
+    const int dx = std::abs(targetX - playerX);
+    const int dy = std::abs(targetY - playerY);
+    const int stepX = playerX < targetX ? 1 : -1;
+    const int stepY = playerY < targetY ? 1 : -1;
+    int error = dx - dy;
+    int x = playerX;
+    int y = playerY;
 
-    while (true) {
-        // Check bounds first
-        if (x0 < 0 || x0 >= mapWidth || y0 < 0 || y0 >= mapHeight) return false;
+    while (x != targetX || y != targetY) {
+        const int doubledError = 2 * error;
+        if (doubledError > -dy) {
+            error -= dy;
+            x += stepX;
+        }
+        if (doubledError < dx) {
+            error += dx;
+            y += stepY;
+        }
 
-        // **If we've reached the target tile, exit the loop**
-        if (x0 == x1 && y0 == y1)
-        break;
+        if (x == targetX && y == targetY) {
+            return true;
+        }
 
-        // The tile being checked is visible even when it blocks the view beyond it.
-        if ((x0 != targetX || y0 != targetY) &&
-            (mapTiles[x0][y0].type == WALL || mapTiles[x0][y0].type == WALL_TOP)) {
+        const TileType type = mapTiles[x][y].type;
+        if (type == WALL || type == WALL_TOP) {
             return false;
         }
+    }
 
-        // Move to the next tile along the line
-        int e2 = 2 * err;
-        if (e2 > -dy) {
-            err -= dy;
-            x0 += sx;
-        }
-        if (e2 < dx) {
-            err += dx;
-            y0 += sy;
+    return true;
+}
+
+float CalculateBrightness(int mapX, int mapY, int playerX, int playerY) {
+    constexpr float maxBrightness = 1.0f;
+    constexpr float minBrightness = 3.0f / 15.0f;
+    constexpr float falloffStart = 5.0f;
+    constexpr float falloffEnd = 10.0f;
+
+    const float distanceX = static_cast<float>(playerX - mapX);
+    const float distanceY = static_cast<float>(playerY - mapY);
+    const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+    if (distance >= falloffEnd) {
+        return minBrightness;
+    }
+
+    int totalNeighbors = 0;
+    int litNeighbors = 0;
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) {
+                continue;
+            }
+
+            const int neighborX = mapX + dx;
+            const int neighborY = mapY + dy;
+            if (neighborX < 0 || neighborX >= mapWidth ||
+                neighborY < 0 || neighborY >= mapHeight) {
+                continue;
+            }
+
+            totalNeighbors++;
+            if (IsVisibleFromPlayer(playerX, playerY, neighborX, neighborY)) {
+                litNeighbors++;
+            }
         }
     }
-    return true;
+
+    const float litFraction = totalNeighbors > 0
+        ? static_cast<float>(litNeighbors) / totalNeighbors
+        : 0.0f;
+    float brightness = minBrightness + litFraction * (maxBrightness - minBrightness);
+
+    if (distance > falloffStart) {
+        const float falloffRange = falloffEnd - falloffStart;
+        const float factor = std::clamp(1.0f - (distance - falloffStart) / falloffRange, 0.0f, 1.0f);
+        brightness = minBrightness + factor * (brightness - minBrightness);
+    }
+
+    return std::clamp(brightness, minBrightness, maxBrightness);
 }
 
 void UpdateButtons() {
