@@ -22,7 +22,7 @@ void Cleanup();
 
 // Sprite loading & drawing
 void LoadSprite(const std::string& name, const char* path);
-void DrawSprite(const std::string& name, int x, int y, int w = 16, int h = 16);
+void DrawSprite(const std::string& name, int x, int y, int w = 16, int h = 16, float brightness = 1.0f);
 
 // Mouse pointer
 void SetCustomCursor(const std::string& sprite_name, int hot_x = 0, int hot_y = 0);

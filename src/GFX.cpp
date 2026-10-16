@@ -100,15 +100,18 @@ void LoadSprite(const std::string& name, const char* path) {
     sprites[name] = texture;
 }
 
-void DrawSprite(const std::string& name, int x, int y, int w, int h) {
+void DrawSprite(const std::string& name, int x, int y, int w, int h, float brightness) {
     auto it = sprites.find(name);
     if (it == sprites.end()) {
         std::cerr << "Sprite not found: " << name << std::endl;
         return;
     }
 
+    const Uint8 brightnessMod = static_cast<Uint8>(std::clamp(brightness, 0.0f, 1.0f) * 255.0f);
+    SDL_SetTextureColorMod(it->second, brightnessMod, brightnessMod, brightnessMod);
     SDL_Rect dest = { x, y, w, h };
     SDL_RenderCopy(renderer, it->second, nullptr, &dest);
+    SDL_SetTextureColorMod(it->second, 255, 255, 255);
 }
 
 // Draw outline rectangle
