@@ -11,7 +11,7 @@ struct Player {
     int speed = 1;
     int maxHealth = 100;
     int currentHealth = 100;
-    Hitbox hitbox = {3, 12, 10, 4};
+    Hitbox hitbox = {3, 28, 10, 4};
     // Returns the hitbox in world coordinates
     Hitbox getWorldHitbox() const {
         return Hitbox{x + hitbox.x, y + hitbox.y, hitbox.width, hitbox.height};
