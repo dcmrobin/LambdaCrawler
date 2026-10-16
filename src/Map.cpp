@@ -73,6 +73,17 @@ void GenerateMap() {
             }
         }
     }
+
+    // Clean up map- any wall-top tiles that have a ground tile to their south, will be turned into a wall tile, this adds verticality
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            if (mapTiles[x][y].type == WALL_TOP) {
+                if (y + 1 < mapHeight && mapTiles[x][y + 1].type == GROUND) {
+                    mapTiles[x][y].type = WALL;
+                }
+            }
+        }
+    }
 }
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
