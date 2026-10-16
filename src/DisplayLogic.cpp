@@ -38,7 +38,9 @@ void RenderMap() {
     const int playerTileY = (playerHitbox.y + playerHitbox.height / 2) / tileSize;
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
-            mapTiles[x][y].brightness = CalculateBrightness(x, y, playerTileX, playerTileY);
+            Tile& tile = mapTiles[x][y];
+            const bool visited = tile.brightness > 0.0f;
+            tile.brightness = CalculateBrightness(x, y, playerTileX, playerTileY, visited);
             int drawX = mapTiles[x][y].x - cameraX;
             int drawY = mapTiles[x][y].y - cameraY;
             switch (mapTiles[x][y].type) {

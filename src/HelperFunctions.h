@@ -32,7 +32,7 @@ int Random(int min, int max);
 bool CoinFlip();
 bool IsKeyPressed(InputKey key, bool held);
 void ChangeTile(int x, int y, bool solid, TileType type);
-float CalculateBrightness(int mapX, int mapY, int playerX, int playerY);
+float CalculateBrightness(int mapX, int mapY, int playerX, int playerY, bool visited);
 void UpdateButtons();
 bool IsMouseButtonPressed(int button);
 void TriggerButtonAction(ButtonAction action);

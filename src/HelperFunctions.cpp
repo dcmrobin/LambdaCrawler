@@ -145,9 +145,9 @@ bool IsVisibleFromPlayer(int playerX, int playerY, int targetX, int targetY) {
     return true;
 }
 
-float CalculateBrightness(int mapX, int mapY, int playerX, int playerY) {
+float CalculateBrightness(int mapX, int mapY, int playerX, int playerY, bool visited) {
     constexpr float maxBrightness = 1.0f;
-    constexpr float minBrightness = 3.0f / 15.0f;
+    const float minBrightness = visited ? 0.2f : 0.0f;
     constexpr float falloffStart = 5.0f;
     constexpr float falloffEnd = 10.0f;
 
