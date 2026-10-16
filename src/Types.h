@@ -148,4 +148,5 @@ struct Partition {
     int height;
     int x;
     int y;
+    bool connected = false;
 };

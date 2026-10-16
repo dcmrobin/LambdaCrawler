@@ -19,6 +19,7 @@ int currentLevel = 0;
 void GenerateMap() {
     // Reset mapTiles vector
     mapTiles.assign(mapWidth, std::vector<Tile>(mapHeight));
+    mapPartitions.clear();
     currentSplitCount = 0;
 
     // Fill the map with solid tiles to carve rooms and corridors out of
@@ -46,32 +47,45 @@ void GenerateMap() {
     for (auto& partition : mapPartitions) {
         for (int px = partition.x + 1; px < partition.x + partition.width; px++) {
             for (int py = partition.y + 1; py < partition.y + partition.height; py++) {
-                mapTiles[px][py].solid = false;
-                mapTiles[px][py].type = GROUND;
+                if (px < mapWidth - 1 && py < mapHeight - 1) { // Ensure we don't go out of bounds
+                    mapTiles[px][py].solid = false;
+                    mapTiles[px][py].type = GROUND;
+                }
             }
         }
     }
 
     // Carve corridors between each room
-    for (int i = 0; i < (int)mapPartitions.size(); i++) {
-        int randIndex = Random(0, (int)(mapPartitions.size() - 1));
-        if (randIndex == i) { randIndex += ((randIndex + 1) >= (int)mapPartitions.size()) ? -1 : 1; } // Make sure target partition index is not this partition
-
-        Partition targetPartition = mapPartitions[randIndex];
-        // Carve horizontal segment of corridor
-        if (mapPartitions[i].x > targetPartition.x) {
-            // Is target partition to the right of this partition?
-            for (int x = (int)((mapPartitions[i].width / 2) + mapPartitions[i].x); x < (targetPartition.width / 2) + targetPartition.x; x++) {
-                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].solid = false;
-                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].type = GROUND;
-            }
-        } else if (mapPartitions[i].x < targetPartition.x) {
-            // Is target partition to the left of this partition?
-            for (int x = (int)((mapPartitions[i].width / 2) + mapPartitions[i].x); x > (targetPartition.width / 2) + targetPartition.x; x--) {
-                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].solid = false;
-                mapTiles[x][mapPartitions[i].height + mapPartitions[i].y].type = GROUND;
-            }
+    for (int i = 0; mapPartitions.size() > 1 && i < (int)mapPartitions.size(); i++) {
+        int randIndex = Random(0, (int)mapPartitions.size() - 2); // Pick a random partition to connect to
+        if (randIndex >= i) {
+            randIndex++; // Ensure a partition does not connect to itself
         }
+
+        bool alreadyConnected = mapPartitions[i].connected && mapPartitions[randIndex].connected;
+        if (alreadyConnected) {
+            continue; // If both partitions are already connected, skip to the next iteration to avoid redundant connections
+        }
+
+        const Partition& currentPartition = mapPartitions[i];
+        const Partition& targetPartition = mapPartitions[randIndex];
+        const int currentCenterX = currentPartition.x + currentPartition.width / 2;
+        const int currentCenterY = currentPartition.y + currentPartition.height / 2;
+        const int targetCenterX = targetPartition.x + targetPartition.width / 2;
+        const int targetCenterY = targetPartition.y + targetPartition.height / 2;
+
+        // Carve a connected L-shaped corridor between the room centers
+        for (int x = std::min(currentCenterX, targetCenterX); x <= std::max(currentCenterX, targetCenterX); x++) {
+            mapTiles[x][currentCenterY].solid = false;
+            mapTiles[x][currentCenterY].type = GROUND;
+        }
+        for (int y = std::min(currentCenterY, targetCenterY); y <= std::max(currentCenterY, targetCenterY); y++) {
+            mapTiles[targetCenterX][y].solid = false;
+            mapTiles[targetCenterX][y].type = GROUND;
+        }
+
+        mapPartitions[i].connected = true;
+        mapPartitions[randIndex].connected = true; // Mark both current and target partitions as connected
     }
 
     // Clean up map- any wall-top tiles that have a ground tile to their south, will be turned into a wall tile, this adds verticality
