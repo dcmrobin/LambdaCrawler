@@ -186,3 +186,41 @@ void RenderSliders() {
         FillRect((slider.x + normalizedSliderValue) + (6 * 0.2)/2, (slider.y - (slider.height*0.2)/2) + (slider.height * 0.2)/2, 6 * 0.8, slider.height * 0.8, handleColour);
     }
 }
+
+void RenderPlayerUI() {
+    // Draw a minimap in the top right corner of the screen, showing the player's position and the surrounding area
+    int minimapSize = 100;
+    float pixelSize = minimapSize / mapWidth;
+    FillRect(LOGICAL_WIDTH - minimapSize - pixelSize, pixelSize, minimapSize + pixelSize * 2, minimapSize + pixelSize * 2, {75, 105, 47, 255});
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            int minimapX = LOGICAL_WIDTH - minimapSize + (x * minimapSize / mapWidth);
+            int minimapY = (y * minimapSize / mapHeight) + pixelSize * 2;
+            bool discovered = (Uint8)(mapTiles[x][y].brightness == 0.0f);
+            bool playerTile = (x == player.x / tileSize && y == player.y / tileSize);
+            Uint8 floorColour = discovered ? 0 : playerTile ? 255 : 20;
+            Uint8 wallColour = discovered ? 0 : playerTile ? 255 : 63;
+            Uint8 chuteColour = discovered ? 0 : playerTile ? 255 : 63;
+            switch (mapTiles[x][y].type) {
+                case GROUND:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {floorColour, floorColour, floorColour, 255});
+                    break;
+                case WALL:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
+                    break;
+                case WALL_TOP:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
+                    break;
+                case CHUTE_CLOSED:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
+                    break;
+                case CHUTE_OPEN:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
+                    break;
+                default:
+                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {0, 0, 0, 255});
+                    break;
+            }
+        }
+    }
+}

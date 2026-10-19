@@ -6,3 +6,4 @@ void RenderMap();
 void RenderMenu();
 void RenderButtons();
 void RenderSliders();
+void RenderPlayerUI();

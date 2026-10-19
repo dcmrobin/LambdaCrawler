@@ -51,6 +51,7 @@ void RenderGame() {
     if (gameState == STATE_RUN) {
         RenderMap(); // Render map and player if the player has clicked play and therefore is in STATE_RUN
         RenderPlayer();
+        RenderPlayerUI(); // Overlay player UI
     } else if (gameState == STATE_MENU) {
         RenderMenu(); // Render the title screen menu, as the value of gameState is STATE_MENU on bootup
         RenderButtons(); // Render buttons on top of everything, as they won't need to be hidden by anything and nothing will be on top of them
