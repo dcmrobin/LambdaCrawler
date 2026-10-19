@@ -197,7 +197,7 @@ void RenderPlayerUI() {
             int minimapX = LOGICAL_WIDTH - minimapSize + (x * minimapSize / mapWidth);
             int minimapY = (y * minimapSize / mapHeight) + pixelSize * 2;
             bool discovered = (Uint8)(mapTiles[x][y].brightness == 0.0f);
-            bool playerTile = (x == player.x / tileSize && y == player.y / tileSize);
+            bool playerTile = (x == (player.x + player.hitbox.width / 2) / tileSize && y == (player.y + player.hitbox.height * 7) / tileSize);
             Uint8 floorColour = discovered ? 0 : playerTile ? 255 : 20;
             Uint8 wallColour = discovered ? 0 : playerTile ? 255 : 63;
             Uint8 chuteColour = discovered ? 0 : playerTile ? 255 : 63;
