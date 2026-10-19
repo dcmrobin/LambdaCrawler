@@ -43,6 +43,14 @@ void GenerateMap() {
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
 
+    int roomsToRemove = (int)(mapPartitions.size() / 2);
+
+    // Remove some rooms to create a more open layout
+    for (int i = 0; i < roomsToRemove; i++) {
+        int randIndex = Random(0, (int)mapPartitions.size() - 1);
+        mapPartitions.erase(mapPartitions.begin() + randIndex);
+    }
+
     // Carve out all partitions in the map of solid tiles
     for (auto& partition : mapPartitions) {
         for (int px = partition.x + 1; px < partition.x + partition.width; px++) {
