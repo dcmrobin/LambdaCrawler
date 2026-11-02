@@ -20,42 +20,43 @@ void GenerateMap() {
     // Reset mapTiles vector
     mapTiles.assign(mapWidth, std::vector<Tile>(mapHeight));
     mapPartitions.clear();
+
+    // Reset split count just in case the map is being regenerated
     currentSplitCount = 0;
 
     // Fill the map with solid tiles to carve rooms and corridors out of
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
-            Tile tile;
-            tile.type = WALL_TOP;
-            tile.solid = true;
-            tile.x = x * tileSize;
+            Tile tile; // Declare new tile to be assigned to the tile at coords x and y
+            tile.type = WALL_TOP; // Set type to a tile that would be solid
+            tile.solid = true; // Set solid to true so that player cannot physically walk through it
+            tile.x = x * tileSize; // Set position to the current coordinates
             tile.y = y * tileSize;
-            tile.hitbox.x = tile.x;
+            tile.hitbox.x = tile.x; // Make sure the tile's hitbox is in line with the tile
             tile.hitbox.y = tile.y;
-            tile.width = tileSize;
+            tile.width = tileSize; // Set tile size
             tile.height = tileSize;
-            tile.hitbox.width = tile.width;
+            tile.hitbox.width = tile.width; // Make sure the tile's hitbox is the same size as the tile
             tile.hitbox.height = tile.height;
-            mapTiles[x][y] = tile;
+            mapTiles[x][y] = tile; // Finally, set the tile at the current coordinates inside mapTiles[][] to the new tile that was just declared
         }
     }
 
     // Split the map into partitions until each partition is small enough for only one room or max partitions have been made
     Split(map, 0);
 
-    int roomsToRemove = (int)(mapPartitions.size() / 2);
-
     // Remove some rooms to create a more open layout
+    int roomsToRemove = (int)(mapPartitions.size() / 2); // Always remove half of the rooms generated
     for (int i = 0; i < roomsToRemove; i++) {
-        int randIndex = Random(0, (int)mapPartitions.size() - 1);
-        mapPartitions.erase(mapPartitions.begin() + randIndex);
-    }
+        int randIndex = Random(0, (int)mapPartitions.size() - 1); // Find a random room to remove,
+        mapPartitions.erase(mapPartitions.begin() + randIndex); // And remove it
+    } // Repeat until half the rooms have been removed
 
-    // Carve out all partitions in the map of solid tiles
+    // Carve out all partitions (rooms) in the map of solid tiles
     for (auto& partition : mapPartitions) {
         for (int px = partition.x + 1; px < partition.x + partition.width; px++) {
             for (int py = partition.y + 1; py < partition.y + partition.height; py++) {
-                if (px < mapWidth - 1 && py < mapHeight - 1) { // Ensure we don't go out of bounds
+                if (px < mapWidth - 1 && py < mapHeight - 1) { // Ensure it doesn't go out of bounds
                     mapTiles[px][py].solid = false;
                     mapTiles[px][py].type = GROUND;
                 }
