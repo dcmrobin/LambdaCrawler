@@ -66,16 +66,17 @@ void GenerateMap() {
 
     // Carve corridors between each room
     for (int i = 0; mapPartitions.size() > 1 && i < (int)mapPartitions.size(); i++) {
-        int randIndex = Random(0, (int)mapPartitions.size() - 2); // Pick a random partition to connect to
+        int randIndex = Random(0, (int)mapPartitions.size() - 2); // Pick a random partition (room) to connect to
         if (randIndex >= i) {
-            randIndex++; // Ensure a partition does not connect to itself
+            randIndex++; // Ensure a room does not connect to itself
         }
 
         bool alreadyConnected = mapPartitions[i].connected && mapPartitions[randIndex].connected;
         if (alreadyConnected) {
-            continue; // If both partitions are already connected, skip to the next iteration to avoid redundant connections
+            continue; // If both rooms are already connected, skip to the next iteration to avoid redundant connections
         }
 
+        // Declare both rooms and their centers
         const Partition& currentPartition = mapPartitions[i];
         const Partition& targetPartition = mapPartitions[randIndex];
         const int currentCenterX = currentPartition.x + currentPartition.width / 2;
@@ -84,11 +85,11 @@ void GenerateMap() {
         const int targetCenterY = targetPartition.y + targetPartition.height / 2;
 
         // Carve a connected L-shaped corridor between the room centers
-        for (int x = std::min(currentCenterX, targetCenterX); x <= std::max(currentCenterX, targetCenterX); x++) {
+        for (int x = std::min(currentCenterX, targetCenterX); x <= std::max(currentCenterX, targetCenterX); x++) { // The horizontal part
             mapTiles[x][currentCenterY].solid = false;
             mapTiles[x][currentCenterY].type = GROUND;
         }
-        for (int y = std::min(currentCenterY, targetCenterY); y <= std::max(currentCenterY, targetCenterY); y++) {
+        for (int y = std::min(currentCenterY, targetCenterY); y <= std::max(currentCenterY, targetCenterY); y++) { // The vertical part
             mapTiles[targetCenterX][y].solid = false;
             mapTiles[targetCenterX][y].type = GROUND;
         }
@@ -97,12 +98,12 @@ void GenerateMap() {
         mapPartitions[randIndex].connected = true; // Mark both current and target partitions as connected
     }
 
-    // Clean up map- any wall-top tiles that have a ground tile to their south, will be turned into a wall tile, this adds verticality
+    // Clean up map- any wall-top tiles that have a ground tile to their south, will be turned into a wall tile, this adds a sense of depth to the walls
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
-            if (mapTiles[x][y].type == WALL_TOP) {
-                if (y + 1 < mapHeight && mapTiles[x][y + 1].type == GROUND) {
-                    mapTiles[x][y].type = WALL;
+            if (mapTiles[x][y].type == WALL_TOP) { // Only consider wall tiles
+                if (y + 1 < mapHeight && mapTiles[x][y + 1].type == GROUND) { // Check if the neighbour tile to the south of this one is a ground tile
+                    mapTiles[x][y].type = WALL; // If it is, then change this tile to a wall variant tile, one that acts like a transition between walls and ground
                 }
             }
         }
@@ -111,16 +112,15 @@ void GenerateMap() {
 
 // Axis: 0 = random, 1 = horizontal, 2 = vertical
 void Split(Partition region, int axis) {
-    // Make sure infinite splitting does not occur, but also make sure any partitions that are hoping to get split instantly get saved to the list if the max splits have been met
+    // Make sure infinite splitting does not occur, also make sure any partitions that are hoping to get split instantly get saved to the list if the max splits have been met
     currentSplitCount++;
     if (currentSplitCount >= maxSplits) {
-        mapPartitions.push_back(region);
+        mapPartitions.push_back(region); // Max splits have been met, save the the unsplit partition
         return; 
     }
 
-    bool randAxis = CoinFlip();
-
     // Pick a random axis to split on
+    bool randAxis = CoinFlip(); // 50% chance to be either horizontal or vertical
     if ((randAxis && axis == 0) || axis == 1) {
         if (region.height > maxPartitionSize) { // Don't split if room is already small enough on that axis
             // Horizontal split line
@@ -153,7 +153,7 @@ void Split(Partition region, int axis) {
             Split(region, 2); // Region cannot split horizontally due to being too small on that dimention already, so split vertically (but only if it can be split vertically)
         } else {
             mapPartitions.push_back(region);
-            return; // Region cannot be split anymore, cache it
+            return; // Region cannot be split anymore, save it
         }
     } else if ((!randAxis && axis == 0) || axis == 2) {
         if (region.width > maxPartitionSize) { // Don't split if room is already small enough on that axis
@@ -187,7 +187,7 @@ void Split(Partition region, int axis) {
             Split(region, 1); // Region cannot split vertically due to being too small on that dimention already, so split horizontally (but only if it can be split horizontally)
         } else {
             mapPartitions.push_back(region);
-            return; // Region cannot be split anymore, cache it
+            return; // Region cannot be split anymore, save it
         }
     }
 }
