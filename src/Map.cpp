@@ -125,6 +125,7 @@ void Split(Partition region, int axis) {
         if (region.height > maxPartitionSize) { // Don't split if room is already small enough on that axis
             // Horizontal split line
 
+            // Have a random offset to a partition's split line, so that all rooms won't end up being uniform and the same
             int randOffset = Random(-(int)(maxPartitionSize/3), (int)(region.height/3));
 
             Partition tp; // Top partition
@@ -159,6 +160,7 @@ void Split(Partition region, int axis) {
         if (region.width > maxPartitionSize) { // Don't split if room is already small enough on that axis
             // Vertical split line
             
+            // Have a random offset to a partition's split line, so that all rooms won't end up being uniform and the same
             int randOffset = Random(-(int)(maxPartitionSize/3), (int)(region.width/3));
 
             Partition lp; // Left partition
