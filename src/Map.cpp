@@ -195,7 +195,7 @@ void Split(Partition region, int axis) {
 }
 
 void UpdateMap() {
-    for (int x = 0; x < mapWidth; x++) {
+    /*for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
             // Update the hitbox based on the tile's position and solid state
             if (mapTiles[x][y].solid) {
@@ -204,5 +204,5 @@ void UpdateMap() {
                 mapTiles[x][y].hitbox = {0, 0, 0, 0}; // Non-solid tiles have no hitbox
             }
         }
-    }
+    }*/
 }
