@@ -3,46 +3,56 @@
 int hopTimer = 0;
 void RenderPlayer() {
     if (player.dy == -1 && player.spriteName != "player_idle_back_hop") {
-        player.spriteName = "player_idle_back";
-    } else if (player.dy == 1 && player.spriteName != "player_idle_hop") {
+        player.spriteName = "player_idle_back"; // If player is facing north, show their back
+    } else if (player.dy == 1 && player.spriteName != "player_idle_hop") { // Else show their front
         player.spriteName = "player_idle";
     }
     if ((player.dx == -1 || player.dx == 1) && (player.dy == 0) && player.spriteName != "player_idle_side_hop") {
-        player.spriteName = "player_idle_side";
+        player.spriteName = "player_idle_side"; // If the player is facing east or west, show their side but only if they are not moving vertically
     }
 
+    // Make the player hop if they are currently moving
     if (player.moving) {
         hopTimer++;
         if (hopTimer == 2) {
-            player.spriteName = player.spriteName == "player_idle_back" ? "player_idle_back_hop" : player.spriteName == "player_idle" ? "player_idle_hop" : player.spriteName == "player_idle_side_hop" ? "player_idle_side" : player.spriteName;
+            player.spriteName = player.spriteName == "player_idle_back" ? "player_idle_back_hop" :
+                player.spriteName == "player_idle" ? "player_idle_hop" : player.spriteName == "player_idle_side_hop" ? "player_idle_side" : player.spriteName;
         }
         if (hopTimer > 12) {
-            player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName == "player_idle_side" ? "player_idle_side_hop" : player.spriteName;
+            player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" :
+                player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName == "player_idle_side" ? "player_idle_side_hop" : player.spriteName;
         }
         if (hopTimer > 22) {
             hopTimer = 0;
         }
     } else {
-        player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" : player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName == "player_idle_side_hop" ? "player_idle_side" : player.spriteName;
+        player.spriteName = player.spriteName == "player_idle_back_hop" ? "player_idle_back" :
+            player.spriteName == "player_idle_hop" ? "player_idle" : player.spriteName == "player_idle_side_hop" ? "player_idle_side" : player.spriteName;
         hopTimer = 0;
     }
 
     extern int cameraX, cameraY;
-    DrawSprite(player.spriteName, player.x - cameraX, player.y - cameraY, 16, 32);
+    DrawSprite(player.spriteName, player.x - cameraX, player.y - cameraY, 16, 32); // Draw the current player sprite
 }
 
 void RenderMap() {
+    // Get player tile position
     extern int cameraX, cameraY;
     const Hitbox playerHitbox = player.getWorldHitbox();
     const int playerTileX = (playerHitbox.x + playerHitbox.width / 2) / tileSize;
     const int playerTileY = (playerHitbox.y + playerHitbox.height / 2) / tileSize;
+
+    // Draw every tile in the map
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
-            Tile& tile = mapTiles[x][y];
-            const bool visited = tile.brightness > 0.0f;
+            Tile& tile = mapTiles[x][y]; // Reference current map tile for easy access
+            const bool visited = tile.brightness > 0.0f; // Have a "visited" value that is true if the tile's brightness is above zero
+            // Calculate brightness of the current tile based on player line-of-sight, proximity, and surrounding tiles' brightness
             tile.brightness = CalculateBrightness(x, y, playerTileX, playerTileY, visited);
             int drawX = mapTiles[x][y].x - cameraX;
             int drawY = mapTiles[x][y].y - cameraY;
+            
+            // Draw tile based on its brightness and type
             switch (mapTiles[x][y].type) {
                 case GROUND:
                     DrawSprite("tile_ground", drawX, drawY, mapTiles[x][y].width, mapTiles[x][y].height, mapTiles[x][y].brightness);
@@ -191,16 +201,19 @@ void RenderPlayerUI() {
     // Draw a minimap in the top right corner of the screen, showing the player's position and the surrounding area
     int minimapSize = 100;
     float pixelSize = minimapSize / mapWidth;
-    FillRect(LOGICAL_WIDTH - minimapSize - pixelSize, pixelSize, minimapSize + pixelSize * 2, minimapSize + pixelSize * 2, {75, 105, 47, 255});
+    FillRect(LOGICAL_WIDTH - minimapSize - pixelSize, pixelSize, minimapSize + pixelSize * 2, minimapSize + pixelSize * 2, {75, 105, 47, 255}); // Draw the background
+    // Loop through the whole map to get the brightness value of each tile
     for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
             int minimapX = LOGICAL_WIDTH - minimapSize + (x * minimapSize / mapWidth);
             int minimapY = (y * minimapSize / mapHeight) + pixelSize * 2;
             bool discovered = (Uint8)(mapTiles[x][y].brightness == 0.0f);
             bool playerTile = (x == (player.x + player.hitbox.width / 2) / tileSize && y == (player.y + player.hitbox.height * 7) / tileSize);
+            // Declare the colours of each tile type, but have them all be black if they haven't been visited
             Uint8 floorColour = discovered ? 0 : playerTile ? 255 : 20;
             Uint8 wallColour = discovered ? 0 : playerTile ? 255 : 63;
             Uint8 chuteColour = discovered ? 0 : playerTile ? 255 : 63;
+            // Draw the tiles using squares depending on their colour and position
             switch (mapTiles[x][y].type) {
                 case GROUND:
                     FillRect(minimapX, minimapY, pixelSize, pixelSize, {floorColour, floorColour, floorColour, 255});
