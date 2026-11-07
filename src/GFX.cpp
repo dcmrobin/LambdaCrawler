@@ -248,9 +248,9 @@ void DrawText(const std::string& font_name, const std::string& text, int x, int 
         x = x - scaledW;
     }
 
-    // Apply camera scrolling
-    x -= cameraX;
-    y -= cameraY;
+    // Apply camera scrolling (only do this if world-space text is wanted)
+    //x -= cameraX;
+    //y -= cameraY;
 
     SDL_Rect dest = { x, y, scaledW, scaledH };
     SDL_RenderCopy(renderer, texture, nullptr, &dest);
