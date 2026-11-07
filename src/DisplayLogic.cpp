@@ -42,9 +42,15 @@ void RenderMap() {
     const int playerTileX = (playerHitbox.x + playerHitbox.width / 2) / tileSize;
     const int playerTileY = (playerHitbox.y + playerHitbox.height / 2) / tileSize;
 
+    // Only draw tiles that are within the camera's view
+    const int startX = std::max(0, cameraX / tileSize);
+    const int endX = std::min(cameraX / tileSize + (LOGICAL_WIDTH / tileSize) + 1, mapWidth);
+    const int startY = std::max(0, cameraY / tileSize);
+    const int endY = std::min(cameraY / tileSize + (LOGICAL_HEIGHT / tileSize) + 1, mapHeight);
+
     // Draw every tile in the map
-    for (int x = 0; x < mapWidth; x++) {
-        for (int y = 0; y < mapHeight; y++) {
+    for (int x = startX; x < endX; x++) {
+        for (int y = startY; y < endY; y++) {
             Tile& tile = mapTiles[x][y]; // Reference current map tile for easy access
             const bool visited = tile.brightness > 0.0f; // Have a "visited" value that is true if the tile's brightness is above zero
             // Calculate brightness of the current tile based on player line-of-sight, proximity, and surrounding tiles' brightness
