@@ -58,7 +58,8 @@ enum ButtonAction {
     BTN_WINDOWED,
     BTN_LOAD_SETTINGS,
     BTN_SAVE_SETTINGS,
-    BTN_APPLY_SETTINGS
+    BTN_APPLY_SETTINGS,
+    BTN_TOGGLE_MINIMAP,
 }; // Defining all possible button actions
 
 struct Button {

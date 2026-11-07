@@ -197,43 +197,59 @@ void RenderSliders() {
     }
 }
 
-void RenderPlayerUI() {
-    // Draw a minimap in the top right corner of the screen, showing the player's position and the surrounding area
+void DrawMinimap() {
     int minimapSize = 100;
     float pixelSize = minimapSize / mapWidth;
-    FillRect(LOGICAL_WIDTH - minimapSize - pixelSize, pixelSize, minimapSize + pixelSize * 2, minimapSize + pixelSize * 2, {75, 105, 47, 255}); // Draw the background
-    // Loop through the whole map to get the brightness value of each tile
-    for (int x = 0; x < mapWidth; x++) {
-        for (int y = 0; y < mapHeight; y++) {
-            int minimapX = LOGICAL_WIDTH - minimapSize + (x * minimapSize / mapWidth);
-            int minimapY = (y * minimapSize / mapHeight) + pixelSize * 2;
-            bool discovered = (Uint8)(mapTiles[x][y].brightness == 0.0f);
-            bool playerTile = (x == (player.x + player.hitbox.width / 2) / tileSize && y == (player.y + player.hitbox.height * 7) / tileSize);
-            // Declare the colours of each tile type, but have them all be black if they haven't been visited
-            Uint8 floorColour = discovered ? 0 : playerTile ? 255 : 20;
-            Uint8 wallColour = discovered ? 0 : playerTile ? 255 : 63;
-            Uint8 chuteColour = discovered ? 0 : playerTile ? 255 : 63;
-            // Draw the tiles using squares depending on their colour and position
-            switch (mapTiles[x][y].type) {
-                case GROUND:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {floorColour, floorColour, floorColour, 255});
-                    break;
-                case WALL:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
-                    break;
-                case WALL_TOP:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
-                    break;
-                case CHUTE_CLOSED:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
-                    break;
-                case CHUTE_OPEN:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
-                    break;
-                default:
-                    FillRect(minimapX, minimapY, pixelSize, pixelSize, {0, 0, 0, 255});
-                    break;
+    int minimapElementX = LOGICAL_WIDTH - pixelSize + minimapOffset;
+    // Set up minimap button
+    buttons[0].text = minimapOffset == 0 ? "Minimap" : "Close";
+    buttons[0].action = BTN_TOGGLE_MINIMAP;
+    buttons[0].width = 50;
+    buttons[0].x = (LOGICAL_WIDTH / 2) + 160 + minimapOffset - buttons[0].width;
+    buttons[0].y = (LOGICAL_HEIGHT /2 ) - 120;
+    buttons[0].active = true;
+    if (minimapOffset != 0) { // Only draw the minimap if it is shown
+        FillRect(minimapElementX, pixelSize, minimapSize + pixelSize * 2, minimapSize + pixelSize * 2, {75, 105, 47, 255}); // Draw the background
+        // Loop through the whole map to get the brightness value of each tile
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                int minimapX = LOGICAL_WIDTH - minimapSize + (x * minimapSize / mapWidth);
+                int minimapY = (y * minimapSize / mapHeight) + pixelSize * 2;
+                bool discovered = (Uint8)(mapTiles[x][y].brightness == 0.0f);
+                bool playerTile = (x == (player.x + player.hitbox.width / 2) / tileSize && y == (player.y + player.hitbox.height * 7) / tileSize);
+                // Declare the colours of each tile type, but have them all be black if they haven't been visited
+                Uint8 floorColour = discovered ? 0 : playerTile ? 255 : 20;
+                Uint8 wallColour = discovered ? 0 : playerTile ? 255 : 63;
+                Uint8 chuteColour = discovered ? 0 : playerTile ? 255 : 63;
+                // Draw the tiles using squares depending on their colour and position
+                switch (mapTiles[x][y].type) {
+                    case GROUND:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {floorColour, floorColour, floorColour, 255});
+                        break;
+                    case WALL:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
+                        break;
+                    case WALL_TOP:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {wallColour, wallColour, wallColour, 255});
+                        break;
+                    case CHUTE_CLOSED:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
+                        break;
+                    case CHUTE_OPEN:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {chuteColour, chuteColour, chuteColour, 255});
+                        break;
+                    default:
+                        FillRect(minimapX, minimapY, pixelSize, pixelSize, {0, 0, 0, 255});
+                        break;
+                }
             }
         }
     }
+}
+
+void RenderPlayerUI() {
+    // Draw a minimap in the top right corner of the screen, showing the player's position and the surrounding area
+    DrawMinimap();
+    RenderButtons();
+    UpdateButtons();
 }

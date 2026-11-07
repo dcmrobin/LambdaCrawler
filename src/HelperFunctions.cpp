@@ -370,6 +370,9 @@ void TriggerButtonAction(ButtonAction action) {
             originalVolumeSliderValue = sliders[0].value; // Prevent the volume slider from reverting, as it has been applied
             mainVolume = originalVolumeSliderValue; // Set the main volume to the value of the volume slider
             break;
+        case BTN_TOGGLE_MINIMAP:
+            minimapOffset = (minimapOffset == 0) ? -100 : 0; // Toggle the minimap offset between 0 and -100 to show/hide the minimap
+            break;
         default:
             return;
     }

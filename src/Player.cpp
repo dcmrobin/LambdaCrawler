@@ -12,7 +12,7 @@ void HandlePlayerInput() {
         newHitbox.y = newY + player.hitbox.y;
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
-                if (Intersects(newHitbox, mapTiles[x][y].hitbox)) {
+                if (mapTiles[x][y].solid && Intersects(newHitbox, mapTiles[x][y].hitbox)) {
                     currentIntersectingTile = mapTiles[x][y];
                     return false;
                 }

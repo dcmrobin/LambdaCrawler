@@ -9,6 +9,8 @@ int maxSplits = 200;
 int currentSplitCount = 0;
 int maxPartitionSize = 20;
 
+int minimapOffset = 0;
+
 // Define the mapTiles vector
 std::vector<std::vector<Tile>> mapTiles;
 Partition map = {mapWidth, mapHeight, 0, 0};
@@ -51,6 +53,12 @@ void GenerateMap() {
         int randIndex = Random(0, (int)mapPartitions.size() - 1); // Find a random room to remove,
         mapPartitions.erase(mapPartitions.begin() + randIndex); // And remove it
     } // Repeat until half the rooms have been removed
+
+    // Choose a random room for the player to spawn in, and set the player's position to the center of that room
+    int randRoomIndex = Random(0, (int)mapPartitions.size() - 1);
+    Partition& spawnRoom = mapPartitions[randRoomIndex];
+    player.x = spawnRoom.x * tileSize + (spawnRoom.width * tileSize) / 2 - player.hitbox.width / 2; // Center the player in the room
+    player.y = spawnRoom.y * tileSize + (spawnRoom.height * tileSize) / 2 - player.hitbox.height / 2;
 
     // Carve out all partitions (rooms) in the map of solid tiles
     for (auto& partition : mapPartitions) {
