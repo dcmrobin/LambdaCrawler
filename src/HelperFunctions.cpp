@@ -23,12 +23,12 @@ void UpdateKeyStates() {
 
   // Read current states
   const Uint8* keystate = SDL_GetKeyboardState(NULL);
-  keystates.upPressed = keystate[SDL_SCANCODE_UP];
-  keystates.downPressed = keystate[SDL_SCANCODE_DOWN];
-  keystates.leftPressed = keystate[SDL_SCANCODE_LEFT];
-  keystates.rightPressed = keystate[SDL_SCANCODE_RIGHT];
-  keystates.zPressed = keystate[SDL_SCANCODE_Z];
-  keystates.xPressed = keystate[SDL_SCANCODE_X];
+  keystates.upPressed = keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W];
+  keystates.downPressed = keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S];
+  keystates.leftPressed = keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A];
+  keystates.rightPressed = keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D];
+  keystates.zPressed = keystate[SDL_SCANCODE_Z] || keystate[SDL_SCANCODE_LSHIFT];
+  keystates.xPressed = keystate[SDL_SCANCODE_X] || keystate[SDL_SCANCODE_SPACE];
   keystates.startPressed = keystate[SDL_SCANCODE_ESCAPE];
   keystates.enterPressed = keystate[SDL_SCANCODE_RETURN];
 }

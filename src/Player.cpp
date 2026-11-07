@@ -10,8 +10,12 @@ void HandlePlayerInput() {
         Hitbox newHitbox = player.getWorldHitbox();
         newHitbox.x = newX + player.hitbox.x;
         newHitbox.y = newY + player.hitbox.y;
-        for (int x = 0; x < mapWidth; x++) {
-            for (int y = 0; y < mapHeight; y++) {
+        int startX = std::max(0, newHitbox.x / tileSize - 1);
+        int endX = std::min(mapWidth - 1, (newHitbox.x + newHitbox.width) / tileSize + 1);
+        int startY = std::max(0, newHitbox.y / tileSize - 1);
+        int endY = std::min(mapHeight - 1, (newHitbox.y + newHitbox.height) / tileSize + 1);
+        for (int x = startX; x < endX + 1; x++) {
+            for (int y = startY; y < endY + 1; y++) {
                 if (mapTiles[x][y].solid && Intersects(newHitbox, mapTiles[x][y].hitbox)) {
                     currentIntersectingTile = mapTiles[x][y];
                     return false;
