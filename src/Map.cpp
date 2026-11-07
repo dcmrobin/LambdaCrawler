@@ -1,7 +1,7 @@
 #include "Map.h"
 
-int mapWidth = 100; // tiles wide
-int mapHeight = 100; // tiles tall
+int mapWidth = 70; // tiles wide
+int mapHeight = 70; // tiles tall
 int tileSize = 16;  // pixels per tile
 
 // map generation constraints
