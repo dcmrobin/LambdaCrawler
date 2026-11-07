@@ -48,7 +48,7 @@ void RenderMap() {
     const int startY = std::max(0, cameraY / tileSize);
     const int endY = std::min(cameraY / tileSize + (LOGICAL_HEIGHT / tileSize) + 1, mapHeight);
 
-    // Draw every tile in the map
+    // Draw tiles inside viewport
     for (int x = startX; x < endX; x++) {
         for (int y = startY; y < endY; y++) {
             Tile& tile = mapTiles[x][y]; // Reference current map tile for easy access
